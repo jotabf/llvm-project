@@ -977,6 +977,18 @@ __kmp_dispatch_init(ident_t *loc, int gtid, enum sched_type schedule, T lb,
                    sizeof(dispatch_shared_info));
   __kmp_assert_valid_gtid(gtid);
 
+  bool check_at = true;
+  for (auto at : __kmp_sched_autotunig_list) {
+    if (at.loc == loc) {
+      check_at = false;
+      break;
+    }
+  }
+  if (check_at) {
+    __kmp_sched_autotunig_list.push_back(
+        {0, loc, new Autotuning(lb, ub, 1, new NelderMead(1, 1))});
+  }
+
   if (!TCR_4(__kmp_init_parallel))
     __kmp_parallel_initialize();
 

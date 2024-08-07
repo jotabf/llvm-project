@@ -263,6 +263,18 @@ typedef struct ident {
     return (((flags & KMP_IDENT_OPENMP_SPEC_VERSION_MASK) >> 24) & 0xFF);
   }
 } ident_t;
+
+#include <vector>
+#include "autotuning/Autotuning.hpp"
+
+struct kmp_sched_autotunig {
+  kmp_uint32 chunk;
+  ident_t *loc;
+  Autotuning *at;
+};
+
+extern std::vector<kmp_sched_autotunig> __kmp_sched_autotunig_list;
+
 /*!
 @}
 */
