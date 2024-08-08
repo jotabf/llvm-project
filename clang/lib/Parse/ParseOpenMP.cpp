@@ -1872,9 +1872,9 @@ void Parser::ParseOMPDeclareTargetClauses(
                       ? diag::err_omp_declare_target_unexpected_clause_52
                       : diag::err_omp_declare_target_unexpected_clause)
             << ClauseName
-            << (getLangOpts().OpenMP >= 51
-                    ? 4
-                    : getLangOpts().OpenMP >= 50 ? 2 : 1);
+            << (getLangOpts().OpenMP >= 51   ? 4
+                : getLangOpts().OpenMP >= 50 ? 2
+                                             : 1);
         break;
       }
 
@@ -1893,8 +1893,7 @@ void Parser::ParseOMPDeclareTargetClauses(
         if (DevTypeData) {
           if (DeviceTypeLoc.isValid()) {
             // We already saw another device_type clause, diagnose it.
-            Diag(DevTypeData->Loc,
-                 diag::warn_omp_more_one_device_type_clause);
+            Diag(DevTypeData->Loc, diag::warn_omp_more_one_device_type_clause);
             break;
           }
           switch (static_cast<OpenMPDeviceType>(DevTypeData->Type)) {
@@ -3830,8 +3829,7 @@ OMPClause *Parser::ParseOpenMPSimpleClause(OpenMPClauseKind Kind,
     return nullptr;
   if (getLangOpts().OpenMP < 51 && Kind == OMPC_default &&
       (static_cast<DefaultKind>(Val->Type) == OMP_DEFAULT_private ||
-       static_cast<DefaultKind>(Val->Type) ==
-           OMP_DEFAULT_firstprivate)) {
+       static_cast<DefaultKind>(Val->Type) == OMP_DEFAULT_firstprivate)) {
     Diag(Val->LOpen, diag::err_omp_invalid_dsa)
         << getOpenMPClauseName(static_cast<DefaultKind>(Val->Type) ==
                                        OMP_DEFAULT_private
@@ -3906,6 +3904,7 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
                          getOpenMPClauseName(Kind).data()))
     return nullptr;
 
+  bool AutoExpression = false;
   ExprResult Val;
   SmallVector<unsigned, 4> Arg;
   SmallVector<SourceLocation, 4> KLoc;
@@ -3916,6 +3915,8 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
     Arg[Modifier1] = OMPC_SCHEDULE_MODIFIER_unknown;
     Arg[Modifier2] = OMPC_SCHEDULE_MODIFIER_unknown;
     Arg[ScheduleKind] = OMPC_SCHEDULE_unknown;
+
+    // Type of the 'schedule' clause.
     unsigned KindModifier = getOpenMPSimpleClauseType(
         Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
     if (KindModifier > OMPC_SCHEDULE_unknown) {
@@ -3930,6 +3931,7 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
         ConsumeAnyToken();
         KindModifier = getOpenMPSimpleClauseType(
             Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
+
         Arg[Modifier2] = KindModifier > OMPC_SCHEDULE_unknown
                              ? KindModifier
                              : (unsigned)OMPC_SCHEDULE_unknown;
@@ -3956,6 +3958,16 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
          Arg[ScheduleKind] == OMPC_SCHEDULE_guided) &&
         Tok.is(tok::comma))
       DelimLoc = ConsumeAnyToken();
+
+    // Parse auto expression.
+    if (DelimLoc.isValid()) {
+      unsigned KindExpression = getOpenMPSimpleClauseType(
+          Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
+
+      AutoExpression = (KindExpression == OMPC_SCHEDULE_auto);
+      if (AutoExpression)
+        ConsumeAnyToken();
+    }
   } else if (Kind == OMPC_dist_schedule) {
     Arg.push_back(getOpenMPSimpleClauseType(
         Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts()));
@@ -4113,10 +4125,11 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
     }
   }
 
-  bool NeedAnExpression = (Kind == OMPC_schedule && DelimLoc.isValid()) ||
-                          (Kind == OMPC_dist_schedule && DelimLoc.isValid()) ||
-                          Kind == OMPC_if || Kind == OMPC_device ||
-                          Kind == OMPC_grainsize || Kind == OMPC_num_tasks;
+  bool NeedAnExpression =
+      (Kind == OMPC_schedule && DelimLoc.isValid() && !AutoExpression) ||
+      (Kind == OMPC_dist_schedule && DelimLoc.isValid()) || Kind == OMPC_if ||
+      Kind == OMPC_device || Kind == OMPC_grainsize || Kind == OMPC_num_tasks;
+
   if (NeedAnExpression) {
     SourceLocation ELoc = Tok.getLocation();
     ExprResult LHS(ParseCastExpression(AnyCastExpr, false, NotTypeCast));
