@@ -9,15 +9,15 @@
 #endif
 
 NelderMead::NelderMead(int dim, double error) : m_dim(dim), m_error(error) {
-  if (dim < 1) {
-    throw std::invalid_argument("Dimensional Value Invalid! Set dim > 0.");
-  }
-  if (error < 0) {
-    throw std::invalid_argument("Invalid m_error! Set error >= 0.");
-  }
+  // if (dim < 1) {
+  //   throw std::invalid_argument("Dimensional Value Invalid! Set dim > 0.");
+  // }
+  // if (error < 0) {
+  //   throw std::invalid_argument("Invalid m_error! Set error >= 0.");
+  // }
   m_nPoints = (dim > 2) ? (dim + 1) : 3;
 
-  try {
+  // try {
     p_points = new double *[m_nPoints];
     p_costs = new double[m_nPoints];
     p_centroid = new double[m_dim];
@@ -28,10 +28,10 @@ NelderMead::NelderMead(int dim, double error) : m_dim(dim), m_error(error) {
     for (int i = 0; i < m_nPoints; i++) {
       p_points[i] = new double[m_dim];
     }
-  } catch (const std::bad_alloc &e) {
-    std::cout << "Memory Allocation"
-              << " is failed: " << e.what() << std::endl;
-  }
+  // } catch (const std::bad_alloc &e) {
+  //   std::cout << "Memory Allocation"
+  //             << " is failed: " << e.what() << std::endl;
+  // }
 
   m_worstID = m_nPoints - 1;   // index of the worst solution
   m_secondID = m_nPoints - 2;  // index of the second worst solution
@@ -236,10 +236,10 @@ void NelderMead::reset(int level) {
       }
       break;
 
-    default:
-      throw std::runtime_error("There is not the Nelder-Mead reset option level " +
-                               std::to_string(level));
-      break;
+    // default:
+    //   throw std::runtime_error("There is not the Nelder-Mead reset option level " +
+    //                            std::to_string(level));
+    //   break;
   }
 }
 

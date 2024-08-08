@@ -964,6 +964,24 @@ __kmp_dispatch_init(ident_t *loc, int gtid, enum sched_type schedule, T lb,
                     typename traits_t<T>::signed_t chunk, int push_ws) {
   typedef typename traits_t<T>::unsigned_t UT;
 
+  if (chunk == 1) {
+    Autotuning *__sched_at = nullptr;
+    bool found_at = false;
+    for (auto item : __kmp_sched_autotunig_list) {
+      if (item.loc == loc) {
+        __sched_at = item.at;
+        found_at = true;
+        break;
+      }
+    }
+    if (!found_at) {
+      int at_ub = ub / __kmp_nth;
+      __sched_at = new Autotuning(1, at_ub, 1, new NelderMead(1, 1));
+      __kmp_sched_autotunig_list.push_back({0, loc, __sched_at});
+    }
+    __sched_at->start(&chunk);
+  }
+
   int active;
   kmp_info_t *th;
   kmp_team_t *team;
@@ -976,18 +994,6 @@ __kmp_dispatch_init(ident_t *loc, int gtid, enum sched_type schedule, T lb,
   KMP_BUILD_ASSERT(sizeof(dispatch_shared_info_template<UT>) ==
                    sizeof(dispatch_shared_info));
   __kmp_assert_valid_gtid(gtid);
-
-  bool check_at = true;
-  for (auto at : __kmp_sched_autotunig_list) {
-    if (at.loc == loc) {
-      check_at = false;
-      break;
-    }
-  }
-  if (check_at) {
-    __kmp_sched_autotunig_list.push_back(
-        {0, loc, new Autotuning(lb, ub, 1, new NelderMead(1, 1))});
-  }
 
   if (!TCR_4(__kmp_init_parallel))
     __kmp_parallel_initialize();
@@ -2188,6 +2194,8 @@ int __kmp_dispatch_next_algorithm(int gtid,
 #define KMP_STATS_LOOP_END /* Nothing */
 #endif
 
+#include <iostream>
+
 template <typename T>
 static int __kmp_dispatch_next(ident_t *loc, int gtid, kmp_int32 *p_last,
                                T *p_lb, T *p_ub,
@@ -3026,7 +3034,15 @@ void __kmpc_dispatch_fini_8u(ident_t *loc, kmp_int32 gtid) {
 /*!
 See @ref __kmpc_dispatch_deinit
 */
-void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid) {}
+void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid) {
+  for (auto item : __kmp_sched_autotunig_list) {
+    if (item.loc == loc) {
+      item.at->end();
+      break;
+    }
+  }
+  
+}
 /*! @} */
 
 //-----------------------------------------------------------------------------

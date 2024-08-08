@@ -43,7 +43,7 @@ void CSA::reset(int level) {
   switch (level) {
     case 2:  // Remove infomation of best solution
       m_bestCost = DBL_MAX;
-      memset(m_bestSol, 0, m_dim * sizeof(double));
+      std::memset(m_bestSol, 0, m_dim * sizeof(double));
 
     case 1:  // Reset points and temperatures
       m_step = 0;
@@ -91,22 +91,22 @@ void CSA::reset(int level) {
       }
       break;
 
-    default:
-      throw std::runtime_error("There is not the CSA reset option level " + std::to_string(level));
-      break;
+    // default:
+    //   throw std::runtime_error("There is not the CSA reset option level " + std::to_string(level));
+    //   break;
   }
 }
 
 CSA::CSA(int dim, int num_opt, int max_iter) : m_maxCost(0.0), m_bestCost(0.0) {
-  if (dim < 1) {
-    throw std::invalid_argument("Dimensional Value Invalid! Set dim > 0.");
-  }
-  if (num_opt < 1) {
-    throw std::invalid_argument("Optmizers Number Invalid! Set num_opt > 0.");
-  }
-  if (max_iter < 1) {
-    throw std::invalid_argument("Max number of intereration Invalid! Set max_iter > 0.");
-  }
+  // if (dim < 1) {
+  //   throw std::invalid_argument("Dimensional Value Invalid! Set dim > 0.");
+  // }
+  // if (num_opt < 1) {
+  //   throw std::invalid_argument("Optmizers Number Invalid! Set num_opt > 0.");
+  // }
+  // if (max_iter < 1) {
+  //   throw std::invalid_argument("Max number of intereration Invalid! Set max_iter > 0.");
+  // }
 
   int i, j;
 
@@ -116,11 +116,11 @@ CSA::CSA(int dim, int num_opt, int max_iter) : m_maxCost(0.0), m_bestCost(0.0) {
   this->m_nOpt = num_opt;
   this->m_dim = dim;
 
-  try {
+  // try {
     this->m_maxIter = (int)(max_iter / (double)num_opt);
-  } catch (std::runtime_error &e) {
-    std::cout << "Exception occurred" << std::endl << e.what();
-  }
+  // } catch (std::runtime_error &e) {
+  //   std::cout << "Exception occurred" << std::endl << e.what();
+  // }
 
   this->m_tGen = TG;
   this->m_tAcc = TA;
@@ -130,7 +130,7 @@ CSA::CSA(int dim, int num_opt, int max_iter) : m_maxCost(0.0), m_bestCost(0.0) {
   this->m_tmp = 0;
   this->m_probVar = 0;
 
-  try {
+  // try {
     m_point = new double[m_dim];
     m_opts = new Opt[m_nOpt];
     m_bestSol = new double[m_dim];
@@ -138,10 +138,10 @@ CSA::CSA(int dim, int num_opt, int max_iter) : m_maxCost(0.0), m_bestCost(0.0) {
       m_opts[i].curSol = new double[m_dim];
       m_opts[i].probSol = new double[m_dim];
     }
-  } catch (const std::bad_alloc &e) {
-    std::cout << "Memory Allocation"
-              << " is failed: " << e.what() << std::endl;
-  }
+  // } catch (const std::bad_alloc &e) {
+  //   std::cout << "Memory Allocation"
+  //             << " is failed: " << e.what() << std::endl;
+  // }
 
   // Step 1: Initialize variables [Optimizers]
   srand(time(nullptr));

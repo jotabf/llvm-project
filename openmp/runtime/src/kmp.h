@@ -265,10 +265,10 @@ typedef struct ident {
 } ident_t;
 
 #include <vector>
-#include "autotuning/Autotuning.hpp"
+#include "thirdparty/autotuning/Autotuning.hpp"
 
 struct kmp_sched_autotunig {
-  kmp_uint32 chunk;
+  unsigned chunk;
   ident_t *loc;
   Autotuning *at;
 };

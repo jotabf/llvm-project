@@ -55,6 +55,7 @@ include_directories(
   ${LIBOMP_SRC_DIR}/i18n
   ${LIBOMP_INC_DIR}
   ${LIBOMP_SRC_DIR}/thirdparty/ittnotify
+  ${LIBOMP_SRC_DIR}/thirdparty/autotuning
 )
 
 # Building with time profiling support requires LLVM directory includes.
@@ -122,6 +123,9 @@ else()
     endif()
   endif()
   libomp_append(LIBOMP_CXXFILES thirdparty/ittnotify/ittnotify_static.cpp LIBOMP_USE_ITT_NOTIFY)
+  libomp_append(LIBOMP_CXXFILES thirdparty/autotuning/Autotuning.cpp TRUE)
+  libomp_append(LIBOMP_CXXFILES thirdparty/autotuning/NelderMead.cpp TRUE)
+  libomp_append(LIBOMP_CXXFILES thirdparty/autotuning/CSA.cpp TRUE)
   libomp_append(LIBOMP_CXXFILES kmp_debugger.cpp LIBOMP_USE_DEBUGGER)
   libomp_append(LIBOMP_CXXFILES kmp_stats.cpp LIBOMP_STATS)
   libomp_append(LIBOMP_CXXFILES kmp_stats_timing.cpp LIBOMP_STATS)
