@@ -982,9 +982,10 @@ public:
   /// Called on well-formed 'schedule' clause.
   OMPClause *ActOnOpenMPScheduleClause(
       OpenMPScheduleClauseModifier M1, OpenMPScheduleClauseModifier M2,
-      OpenMPScheduleClauseKind Kind, Expr *ChunkSize, SourceLocation StartLoc,
-      SourceLocation LParenLoc, SourceLocation M1Loc, SourceLocation M2Loc,
-      SourceLocation KindLoc, SourceLocation CommaLoc, SourceLocation EndLoc);
+      OpenMPScheduleClauseKind Kind, OpenMPScheduleChunkMode Mode,
+      Expr *ChunkSize, SourceLocation StartLoc, SourceLocation LParenLoc,
+      SourceLocation M1Loc, SourceLocation M2Loc, SourceLocation KindLoc,
+      SourceLocation CommaLoc, SourceLocation EndLoc);
 
   OMPClause *ActOnOpenMPClause(OpenMPClauseKind Kind, SourceLocation StartLoc,
                                SourceLocation EndLoc);

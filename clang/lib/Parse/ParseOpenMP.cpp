@@ -3909,16 +3909,18 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
   SmallVector<unsigned, 4> Arg;
   SmallVector<SourceLocation, 4> KLoc;
   if (Kind == OMPC_schedule) {
-    enum { Modifier1, Modifier2, ScheduleKind, NumberOfElements };
+    enum { Modifier1, Modifier2, ScheduleKind, ChunkMode, NumberOfElements };
     Arg.resize(NumberOfElements);
     KLoc.resize(NumberOfElements);
     Arg[Modifier1] = OMPC_SCHEDULE_MODIFIER_unknown;
     Arg[Modifier2] = OMPC_SCHEDULE_MODIFIER_unknown;
     Arg[ScheduleKind] = OMPC_SCHEDULE_unknown;
+    Arg[ChunkMode] = OMPC_SCHEDULE_CHUNK_MODE_unknown;
 
     // Type of the 'schedule' clause.
     unsigned KindModifier = getOpenMPSimpleClauseType(
         Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
+
     if (KindModifier > OMPC_SCHEDULE_unknown) {
       // Parse 'modifier'
       Arg[Modifier1] = KindModifier;
@@ -3956,17 +3958,18 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
     if ((Arg[ScheduleKind] == OMPC_SCHEDULE_static ||
          Arg[ScheduleKind] == OMPC_SCHEDULE_dynamic ||
          Arg[ScheduleKind] == OMPC_SCHEDULE_guided) &&
-        Tok.is(tok::comma))
+        Tok.is(tok::comma)) {
       DelimLoc = ConsumeAnyToken();
 
-    // Parse auto expression.
-    if (DelimLoc.isValid()) {
-      unsigned KindExpression = getOpenMPSimpleClauseType(
-          Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
-
-      AutoExpression = (KindExpression == OMPC_SCHEDULE_auto);
-      if (AutoExpression)
-        ConsumeAnyToken();
+      if (DelimLoc.isValid()) {
+        KindModifier = getOpenMPSimpleClauseType(
+            Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
+        if (KindModifier == OMPC_SCHEDULE_auto) {
+          AutoExpression = true;
+          Arg[ChunkMode] = OMPC_SCHEDULE_CHUNK_MODE_auto;
+          DelimLoc = ConsumeAnyToken();
+        }
+      }
     }
   } else if (Kind == OMPC_dist_schedule) {
     Arg.push_back(getOpenMPSimpleClauseType(

@@ -16033,13 +16033,14 @@ OMPClause *SemaOpenMP::ActOnOpenMPSingleExprWithArgClause(
   OMPClause *Res = nullptr;
   switch (Kind) {
   case OMPC_schedule:
-    enum { Modifier1, Modifier2, ScheduleKind, NumberOfElements };
+    enum { Modifier1, Modifier2, ScheduleKind, ChunkMode, NumberOfElements };
     assert(Argument.size() == NumberOfElements &&
            ArgumentLoc.size() == NumberOfElements);
     Res = ActOnOpenMPScheduleClause(
         static_cast<OpenMPScheduleClauseModifier>(Argument[Modifier1]),
         static_cast<OpenMPScheduleClauseModifier>(Argument[Modifier2]),
-        static_cast<OpenMPScheduleClauseKind>(Argument[ScheduleKind]), Expr,
+        static_cast<OpenMPScheduleClauseKind>(Argument[ScheduleKind]),
+        static_cast<OpenMPScheduleChunkMode>(Argument[ChunkMode]), Expr,
         StartLoc, LParenLoc, ArgumentLoc[Modifier1], ArgumentLoc[Modifier2],
         ArgumentLoc[ScheduleKind], DelimLoc, EndLoc);
     break;
@@ -16195,9 +16196,10 @@ static bool checkScheduleModifiers(Sema &S, OpenMPScheduleClauseModifier M1,
 
 OMPClause *SemaOpenMP::ActOnOpenMPScheduleClause(
     OpenMPScheduleClauseModifier M1, OpenMPScheduleClauseModifier M2,
-    OpenMPScheduleClauseKind Kind, Expr *ChunkSize, SourceLocation StartLoc,
+    OpenMPScheduleClauseKind Kind, OpenMPScheduleChunkMode Mode, Expr *ChunkSize, SourceLocation StartLoc,
     SourceLocation LParenLoc, SourceLocation M1Loc, SourceLocation M2Loc,
     SourceLocation KindLoc, SourceLocation CommaLoc, SourceLocation EndLoc) {
+
   if (checkScheduleModifiers(SemaRef, M1, M2, M1Loc, M2Loc) ||
       checkScheduleModifiers(SemaRef, M2, M1, M2Loc, M1Loc))
     return nullptr;
@@ -16279,7 +16281,7 @@ OMPClause *SemaOpenMP::ActOnOpenMPScheduleClause(
 
   return new (getASTContext())
       OMPScheduleClause(StartLoc, LParenLoc, KindLoc, CommaLoc, EndLoc, Kind,
-                        ValExpr, HelperValStmt, M1, M1Loc, M2, M2Loc);
+                        ValExpr, HelperValStmt, M1, M1Loc, M2, M2Loc, Mode);
 }
 
 OMPClause *SemaOpenMP::ActOnOpenMPClause(OpenMPClauseKind Kind,

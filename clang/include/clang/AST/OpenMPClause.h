@@ -1707,6 +1707,9 @@ class OMPScheduleClause : public OMPClause, public OMPClauseWithPreInit {
   enum {FIRST, SECOND, NUM_MODIFIERS};
   OpenMPScheduleClauseModifier Modifiers[NUM_MODIFIERS];
 
+  /// Chunk size mode for 'schedule' clause.
+  OpenMPScheduleChunkMode Mode = OMPC_SCHEDULE_CHUNK_MODE_unknown;
+
   /// Locations of modifiers.
   SourceLocation ModifiersLoc[NUM_MODIFIERS];
 
@@ -1796,14 +1799,16 @@ public:
   /// \param M1Loc Location of the first modifier
   /// \param M2 The second modifier applied to 'schedule' clause.
   /// \param M2Loc Location of the second modifier
+  /// \param Mode Chunk size mode.
   OMPScheduleClause(SourceLocation StartLoc, SourceLocation LParenLoc,
                     SourceLocation KLoc, SourceLocation CommaLoc,
                     SourceLocation EndLoc, OpenMPScheduleClauseKind Kind,
                     Expr *ChunkSize, Stmt *HelperChunkSize,
                     OpenMPScheduleClauseModifier M1, SourceLocation M1Loc,
-                    OpenMPScheduleClauseModifier M2, SourceLocation M2Loc)
+                    OpenMPScheduleClauseModifier M2, SourceLocation M2Loc,
+                    OpenMPScheduleChunkMode Mode)
       : OMPClause(llvm::omp::OMPC_schedule, StartLoc, EndLoc),
-        OMPClauseWithPreInit(this), LParenLoc(LParenLoc), Kind(Kind),
+        OMPClauseWithPreInit(this), LParenLoc(LParenLoc), Kind(Kind), Mode(Mode),
         KindLoc(KLoc), CommaLoc(CommaLoc), ChunkSize(ChunkSize) {
     setPreInitStmt(HelperChunkSize);
     Modifiers[FIRST] = M1;

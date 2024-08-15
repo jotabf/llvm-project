@@ -1831,8 +1831,8 @@ public:
       SourceLocation LParenLoc, SourceLocation M1Loc, SourceLocation M2Loc,
       SourceLocation KindLoc, SourceLocation CommaLoc, SourceLocation EndLoc) {
     return getSema().OpenMP().ActOnOpenMPScheduleClause(
-        M1, M2, Kind, ChunkSize, StartLoc, LParenLoc, M1Loc, M2Loc, KindLoc,
-        CommaLoc, EndLoc);
+        M1, M2, Kind, OMPC_SCHEDULE_CHUNK_MODE_auto, ChunkSize, StartLoc,
+        LParenLoc, M1Loc, M2Loc, KindLoc, CommaLoc, EndLoc);
   }
 
   /// Build a new OpenMP 'ordered' clause.
