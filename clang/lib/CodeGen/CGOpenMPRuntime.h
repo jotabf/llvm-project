@@ -952,7 +952,8 @@ public:
   /// \param CGF Reference to current CodeGenFunction.
   /// \param Loc Clang source location.
   ///
-  virtual void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc);
+  virtual void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc,
+                                     const OpenMPScheduleTy &ScheduleKind);
 
   /// Struct with the values to be passed to the static runtime function
   struct StaticRTInput {
@@ -1842,8 +1843,10 @@ public:
   ///
   /// \param CGF Reference to current CodeGenFunction.
   /// \param Loc Clang source location.
+  /// \param ScheduleKind Schedule kind, specified by the 'schedule' clause.
   ///
-  void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc) override;
+  void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc,
+                             const OpenMPScheduleTy &ScheduleKind) override;
 
   /// Call the appropriate runtime routine to initialize it before start
   /// of loop.

@@ -264,17 +264,6 @@ typedef struct ident {
   }
 } ident_t;
 
-#include <vector>
-#include "thirdparty/autotuning/Autotuning.hpp"
-
-struct kmp_sched_autotunig {
-  unsigned chunk;
-  ident_t *loc;
-  Autotuning *at;
-};
-
-extern std::vector<kmp_sched_autotunig> __kmp_sched_autotunig_list;
-
 /*!
 @}
 */
@@ -467,11 +456,14 @@ enum sched_type : kmp_int32 {
      pass the additional information. They will be stripped early in the
      processing in __kmp_dispatch_init when setting up schedules, so most of the
      code won't ever see schedules with these bits set.  */
+  kmp_sch_chunk_mode_auto = (1 << 28), /**< Set if chunk was specified as auto */
   kmp_sch_modifier_monotonic =
       (1 << 29), /**< Set if the monotonic schedule modifier was present */
   kmp_sch_modifier_nonmonotonic =
       (1 << 30), /**< Set if the nonmonotonic schedule modifier was present */
 
+#define SCHEDULE_WITHOUT_MODE(s)                                               \
+  (enum sched_type)((s) & ~(kmp_sch_chunk_mode_auto))
 #define SCHEDULE_WITHOUT_MODIFIERS(s)                                          \
   (enum sched_type)(                                                           \
       (s) & ~(kmp_sch_modifier_nonmonotonic | kmp_sch_modifier_monotonic))
@@ -3852,7 +3844,8 @@ extern void __kmpc_dispatch_fini_8(ident_t *loc, kmp_int32 gtid);
 extern void __kmpc_dispatch_fini_4u(ident_t *loc, kmp_int32 gtid);
 extern void __kmpc_dispatch_fini_8u(ident_t *loc, kmp_int32 gtid);
 
-extern void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid);
+extern void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid, 
+                                   enum sched_type schedule);
 
 #ifdef KMP_GOMP_COMPAT
 

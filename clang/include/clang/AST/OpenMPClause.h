@@ -1838,6 +1838,9 @@ public:
     return Modifiers[SECOND];
   }
 
+  /// Get chunk size mode.
+  OpenMPScheduleChunkMode getChunkSizeMode() const { return Mode; }
+
   /// Get location of '('.
   SourceLocation getLParenLoc() { return LParenLoc; }
 

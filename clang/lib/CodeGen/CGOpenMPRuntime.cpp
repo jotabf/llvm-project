@@ -548,6 +548,8 @@ enum OpenMPSchedType {
   /// dist_schedule types
   OMP_dist_sch_static_chunked = 91,
   OMP_dist_sch_static = 92,
+  /// Set if chunk was specified as auto.
+  OMP_sch_chunk_mode_auto = (1 << 28),
   /// Support for OpenMP 4.5 monotonic and nonmonotonic schedule modifiers.
   /// Set if the monotonic schedule modifier was present.
   OMP_sch_modifier_monotonic = (1 << 29),
@@ -2470,6 +2472,17 @@ bool CGOpenMPRuntime::isDynamic(OpenMPScheduleClauseKind ScheduleKind) const {
   return Schedule != OMP_sch_static;
 }
 
+static int addChunkMode(int previous, OpenMPScheduleChunkMode mode) {
+  switch (mode) {
+  case OMPC_SCHEDULE_CHUNK_MODE_auto:
+    return previous | OMP_sch_chunk_mode_auto;
+  case OMPC_SCHEDULE_CHUNK_MODE_unknown:
+  case OMPC_SCHEDULE_CHUNK_MODE_last:
+    return previous;
+  }
+  return previous;
+}
+
 static int addMonoNonMonoModifier(CodeGenModule &CGM, OpenMPSchedType Schedule,
                                   OpenMPScheduleClauseModifier M1,
                                   OpenMPScheduleClauseModifier M2) {
@@ -2541,26 +2554,32 @@ void CGOpenMPRuntime::emitForDispatchInit(
   // If the Chunk was not specified in the clause - use default value 1.
   llvm::Value *Chunk = DispatchValues.Chunk ? DispatchValues.Chunk
                                             : CGF.Builder.getIntN(IVSize, 1);
+  int ScheduleType = addChunkMode(
+      addMonoNonMonoModifier(CGM, Schedule, ScheduleKind.M1, ScheduleKind.M2),
+      ScheduleKind.Mode);
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc),
       getThreadID(CGF, Loc),
-      CGF.Builder.getInt32(addMonoNonMonoModifier(
-          CGM, Schedule, ScheduleKind.M1, ScheduleKind.M2)), // Schedule type
-      DispatchValues.LB,                                     // Lower
-      DispatchValues.UB,                                     // Upper
-      CGF.Builder.getIntN(IVSize, 1),                        // Stride
-      Chunk                                                  // Chunk
+      CGF.Builder.getInt32(ScheduleType), // Schedule type
+      DispatchValues.LB,                  // Lower
+      DispatchValues.UB,                  // Upper
+      CGF.Builder.getIntN(IVSize, 1),     // Stride
+      Chunk,                              // Chunk
   };
   CGF.EmitRuntimeCall(OMPBuilder.createDispatchInitFunction(IVSize, IVSigned),
                       Args);
 }
 
-void CGOpenMPRuntime::emitForDispatchDeinit(CodeGenFunction &CGF,
-                                            SourceLocation Loc) {
+void CGOpenMPRuntime::emitForDispatchDeinit(
+    CodeGenFunction &CGF, SourceLocation Loc,
+    const OpenMPScheduleTy &ScheduleKind) {
   if (!CGF.HaveInsertPoint())
     return;
+
+  int ScheduleType = addChunkMode(0, ScheduleKind.Mode);
   // Call __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 tid);
-  llvm::Value *Args[] = {emitUpdateLocation(CGF, Loc), getThreadID(CGF, Loc)};
+  llvm::Value *Args[] = {emitUpdateLocation(CGF, Loc), getThreadID(CGF, Loc),
+                         CGF.Builder.getInt32(ScheduleType)};
   CGF.EmitRuntimeCall(OMPBuilder.createDispatchDeinitFunction(), Args);
 }
 
@@ -3387,7 +3406,6 @@ static bool checkInitIsRequired(CodeGenFunction &CGF,
   }
   return InitRequired;
 }
-
 
 /// Emit task_dup function (for initialization of
 /// private/firstprivate/lastprivate vars and last_iter flag)
@@ -12046,8 +12064,9 @@ void CGOpenMPSIMDRuntime::emitForDispatchInit(
   llvm_unreachable("Not supported in SIMD-only mode");
 }
 
-void CGOpenMPSIMDRuntime::emitForDispatchDeinit(CodeGenFunction &CGF,
-                                                SourceLocation Loc) {
+void CGOpenMPSIMDRuntime::emitForDispatchDeinit(
+    CodeGenFunction &CGF, SourceLocation Loc,
+    const OpenMPScheduleTy &ScheduleKind) {
   llvm_unreachable("Not supported in SIMD-only mode");
 }
 

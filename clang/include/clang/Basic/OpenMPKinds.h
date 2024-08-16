@@ -189,6 +189,7 @@ struct OpenMPScheduleTy final {
   OpenMPScheduleClauseKind Schedule = OMPC_SCHEDULE_unknown;
   OpenMPScheduleClauseModifier M1 = OMPC_SCHEDULE_MODIFIER_unknown;
   OpenMPScheduleClauseModifier M2 = OMPC_SCHEDULE_MODIFIER_unknown;
+  OpenMPScheduleChunkMode Mode = OMPC_SCHEDULE_CHUNK_MODE_unknown;
 };
 
 /// OpenMP modifiers for 'reduction' clause.

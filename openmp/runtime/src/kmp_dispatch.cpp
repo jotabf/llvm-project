@@ -23,11 +23,12 @@
 #include "kmp_itt.h"
 #include "kmp_stats.h"
 #include "kmp_str.h"
+#include "thirdparty/autotuning/kmp_autotuning.h"
 #if KMP_USE_X87CONTROL
 #include <float.h>
 #endif
-#include "kmp_lock.h"
 #include "kmp_dispatch.h"
+#include "kmp_lock.h"
 #if KMP_USE_HIER_SCHED
 #include "kmp_dispatch_hier.h"
 #endif
@@ -158,8 +159,8 @@ __kmp_initialize_self_buffer(kmp_team_t *team, T id,
 enum { // values for steal_flag (possible states of private per-loop buffer)
   UNUSED = 0,
   CLAIMED = 1, // owner thread started initialization
-  READY = 2, // available for stealing
-  THIEF = 3 // finished by owner, or claimed by thief
+  READY = 2,   // available for stealing
+  THIEF = 3    // finished by owner, or claimed by thief
   // possible state changes:
   // 0 -> 1 owner only, sync
   // 0 -> 3 thief only, sync
@@ -381,7 +382,7 @@ void __kmp_dispatch_init_algorithm(ident_t *loc, int gtid,
   if (st == 1) { // most common case
     if (ub >= lb) {
       tc = ub - lb + 1;
-    } else { // ub < lb
+    } else {  // ub < lb
       tc = 0; // zero-trip
     }
   } else if (st < 0) {
@@ -389,7 +390,7 @@ void __kmp_dispatch_init_algorithm(ident_t *loc, int gtid,
       // AC: cast to unsigned is needed for loops like (i=2B; i>-2B; i-=1B),
       // where the division needs to be unsigned regardless of the result type
       tc = (UT)(lb - ub) / (-st) + 1;
-    } else { // lb < ub
+    } else {  // lb < ub
       tc = 0; // zero-trip
     }
   } else { // st > 0
@@ -397,7 +398,7 @@ void __kmp_dispatch_init_algorithm(ident_t *loc, int gtid,
       // AC: cast to unsigned is needed for loops like (i=-2B; i<2B; i+=1B),
       // where the division needs to be unsigned regardless of the result type
       tc = (UT)(ub - lb) / st + 1;
-    } else { // ub < lb
+    } else {  // ub < lb
       tc = 0; // zero-trip
     }
   }
@@ -894,7 +895,7 @@ void __kmp_dispatch_init_algorithm(ident_t *loc, int gtid,
 
   default: {
     __kmp_fatal(KMP_MSG(UnknownSchedTypeDetected), // Primary message
-                KMP_HNT(GetNewerLibrary), // Hint
+                KMP_HNT(GetNewerLibrary),          // Hint
                 __kmp_msg_null // Variadic argument list terminator
     );
   } break;
@@ -964,22 +965,10 @@ __kmp_dispatch_init(ident_t *loc, int gtid, enum sched_type schedule, T lb,
                     typename traits_t<T>::signed_t chunk, int push_ws) {
   typedef typename traits_t<T>::unsigned_t UT;
 
-  if (chunk == 1) {
-    Autotuning *__sched_at = nullptr;
-    bool found_at = false;
-    for (auto item : __kmp_sched_autotunig_list) {
-      if (item.loc == loc) {
-        __sched_at = item.at;
-        found_at = true;
-        break;
-      }
-    }
-    if (!found_at) {
-      int at_ub = ub / __kmp_nth;
-      __sched_at = new Autotuning(1, at_ub, 1, new NelderMead(1, 1));
-      __kmp_sched_autotunig_list.push_back({0, loc, __sched_at});
-    }
-    __sched_at->start(&chunk);
+  if (schedule & kmp_sch_chunk_mode_auto) {
+    __kmp_init_autotuning<T>(gtid, loc, lb, ub);
+    chunk = __kmp_start_autotuning<T>(gtid, loc);
+    schedule = SCHEDULE_WITHOUT_MODE(schedule);
   }
 
   int active;
@@ -1408,7 +1397,7 @@ int __kmp_dispatch_next_algorithm(int gtid,
       } else {
         status = 0; // no own chunks
       }
-      if (!status) { // try to steal
+      if (!status) {      // try to steal
         kmp_lock_t *lckv; // victim buffer's lock
         T while_limit = pr->u.p.parm3;
         T while_index = 0;
@@ -1820,7 +1809,7 @@ int __kmp_dispatch_next_algorithm(int gtid,
     trip = pr->u.p.tc;
     // Start atomic part of calculations
     while (1) {
-      ST remaining; // signed, because can be < 0
+      ST remaining;             // signed, because can be < 0
       init = sh->u.s.iteration; // shared value
       remaining = trip - init;
       if (remaining <= 0) { // AC: need to compare with 0 first
@@ -1889,11 +1878,11 @@ int __kmp_dispatch_next_algorithm(int gtid,
     trip = pr->u.p.tc;
     // Start atomic part of calculations
     while (1) {
-      ST remaining; // signed, because can be < 0
+      ST remaining;             // signed, because can be < 0
       init = sh->u.s.iteration; // shared value
       remaining = trip - init;
       if (remaining <= 0) { // AC: need to compare with 0 first
-        status = 0; // nothing to do, don't try atomic op
+        status = 0;         // nothing to do, don't try atomic op
         break;
       }
       KMP_DEBUG_ASSERT(chunk && init % chunk == 0);
@@ -2097,7 +2086,7 @@ int __kmp_dispatch_next_algorithm(int gtid,
   default: {
     status = 0; // to avoid complaints on uninitialized variable use
     __kmp_fatal(KMP_MSG(UnknownSchedTypeDetected), // Primary message
-                KMP_HNT(GetNewerLibrary), // Hint
+                KMP_HNT(GetNewerLibrary),          // Hint
                 __kmp_msg_null // Variadic argument list terminator
     );
   } break;
@@ -2158,7 +2147,7 @@ int __kmp_dispatch_next_algorithm(int gtid,
   }
 // TODO: implement count
 #else
-#define OMPT_LOOP_END // no-op
+#define OMPT_LOOP_END                          // no-op
 #define OMPT_LOOP_DISPATCH(lb, ub, st, status) // no-op
 #endif
 
@@ -2193,8 +2182,6 @@ int __kmp_dispatch_next_algorithm(int gtid,
 #else
 #define KMP_STATS_LOOP_END /* Nothing */
 #endif
-
-#include <iostream>
 
 template <typename T>
 static int __kmp_dispatch_next(ident_t *loc, int gtid, kmp_int32 *p_last,
@@ -3034,14 +3021,10 @@ void __kmpc_dispatch_fini_8u(ident_t *loc, kmp_int32 gtid) {
 /*!
 See @ref __kmpc_dispatch_deinit
 */
-void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid) {
-  for (auto item : __kmp_sched_autotunig_list) {
-    if (item.loc == loc) {
-      item.at->end();
-      break;
-    }
-  }
-  
+void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid,
+                            enum sched_type schedule) {
+  if (schedule & kmp_sch_chunk_mode_auto)
+    __kmp_end_autotuning(gtid, loc);
 }
 /*! @} */
 

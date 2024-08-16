@@ -9,7 +9,7 @@
 #include <cmath>
 #include <ctime>  // drand48_data
 
-#include "NumericalOptimizer.hpp"
+#include "NumericalOptimizer.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327 /**< PI mathematical constant. */
@@ -34,7 +34,7 @@
  */
 class CSA : public NumericalOptimizer {
   struct Opt {
-    int id = 0;                /**< Identifier for the optimizer. */
+    unsigned id = 0;                /**< Identifier for the optimizer. */
     double *curSol = nullptr;  /**< Current solution vector. */
     double *probSol = nullptr; /**< Probable solution vector. */
     double curCost = 0.0;      /**< Current cost associated with the current solution. */
@@ -45,12 +45,12 @@ class CSA : public NumericalOptimizer {
     struct drand48_data buffer; /**< Buffer for random number generation. */
   };
 
-  int m_step;    /**< Current step in the optimization process. */
-  int m_iter;    /**< Iteration count. */
-  int m_maxIter; /**< Maximum number of iterations. */
-  int m_iOpt;    /**< Iterator for Optimizers. */
-  int m_nOpt;    /**< Number of Optimizers. */
-  int m_dim;     /**< Number of Dimensions. */
+  unsigned m_step;    /**< Current step in the optimization process. */
+  unsigned m_iter;    /**< Iteration count. */
+  unsigned m_maxIter; /**< Maximum number of iterations. */
+  unsigned m_iOpt;    /**< Iterator for Optimizers. */
+  unsigned m_nOpt;    /**< Number of Optimizers. */
+  unsigned m_dim;     /**< Number of Dimensions. */
 
   double m_tGen;     /**< Generation Temperature. */
   double m_tAcc;     /**< Acceptance Temperature. */
@@ -84,7 +84,7 @@ class CSA : public NumericalOptimizer {
    * maximum.
    * @param i Switch position.
    */
-  void swap_opt_info(int i);
+  void swap_opt_info(unsigned i);
 
   /**
    * @brief Perform partial execution of the CSA algorithm.
@@ -98,7 +98,7 @@ class CSA : public NumericalOptimizer {
    * @param num_opt Number of optimizers.
    * @param max_iter Maximum number of iterations.
    */
-  CSA(int dim, int num_opt, int max_iter);
+  CSA(unsigned dim, unsigned num_opt, unsigned max_iter);
 
   /**
    * @brief Destructor for the CSA class.
@@ -109,13 +109,13 @@ class CSA : public NumericalOptimizer {
    * @brief Get the number of points (optimizers) used in the CSA algorithm.
    * @return Number of optimizers.
    */
-  int getNumPoints() const override { return m_nOpt; }
+  unsigned getNumPoints() const override { return m_nOpt; }
 
   /**
    * @brief Get the dimension of the cost function.
    * @return Dimension of the cost function.
    */
-  int getDimension() const override { return m_dim; }
+  unsigned getDimension() const override { return m_dim; }
 
   /**
    * @brief Check if the optimization process has reached its end.
@@ -142,7 +142,7 @@ class CSA : public NumericalOptimizer {
    *    - level 1: Reset the points and temperatures (plus the previous ones).
    *    - level 2: Remove the best solution (plus the previous ones).
    */
-  void reset(int level = 0) override;
+  void reset(unsigned level = 0) override;
 
   /**
    * @brief Default constructor.

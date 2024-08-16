@@ -53,14 +53,14 @@ class NumericalOptimizer {
    *
    * @return The number of points.
    */
-  virtual int getNumPoints() const = 0;
+  virtual unsigned getNumPoints() const = 0;
 
   /**
    * @brief Retrieves the dimension of the optimization problem.
    *
    * @return The dimension of the problem.
    */
-  virtual int getDimension() const = 0;
+  virtual unsigned getDimension() const = 0;
 
   /**
    * @brief Checks if the optimization has reached a termination condition.
@@ -74,7 +74,7 @@ class NumericalOptimizer {
    *
    * @param level An optional level parameter for specific reset behaviors.
    */
-  virtual void reset(int level) {};
+  virtual void reset(unsigned level) {};
 
   /**
    * @brief Prints information about the concret class.
@@ -83,5 +83,5 @@ class NumericalOptimizer {
 };
 
 // Include headers for concrete optimization algorithms
-#include "CSA.hpp"
-#include "NelderMead.hpp"
+#include "CSA.h"
+#include "NelderMead.h"

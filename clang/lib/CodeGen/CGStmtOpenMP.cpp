@@ -3115,7 +3115,7 @@ void CodeGenFunction::EmitOMPForOuterLoop(
   EmitOMPOuterLoop(DynamicOrOrdered, IsMonotonic, S, LoopScope, OuterLoopArgs,
                    emitOMPLoopBodyWithStopPoint, CodeGenOrdered);
   if (DynamicOrOrdered) {
-    RT.emitForDispatchDeinit(*this, S.getBeginLoc());
+    RT.emitForDispatchDeinit(*this, S.getBeginLoc(), ScheduleKind);
   }
 }
 
@@ -3448,6 +3448,7 @@ bool CodeGenFunction::EmitOMPWorksharingLoop(
         ScheduleKind.Schedule = C->getScheduleKind();
         ScheduleKind.M1 = C->getFirstScheduleModifier();
         ScheduleKind.M2 = C->getSecondScheduleModifier();
+        ScheduleKind.Mode = C->getChunkSizeMode();
         ChunkExpr = C->getChunkSize();
       } else {
         // Default behaviour for schedule clause.
