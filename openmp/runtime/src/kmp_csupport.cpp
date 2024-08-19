@@ -20,6 +20,7 @@
 #include "kmp_stats.h"
 #include "kmp_utils.h"
 #include "ompt-specific.h"
+#include "thirdparty/autotuning/kmp_autotuning.h"
 
 #define MAX_MESSAGE 512
 
@@ -2030,6 +2031,8 @@ void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid) {
 #endif
   if (__kmp_env_consistency_check)
     __kmp_pop_workshare(global_tid, ct_pdo, loc);
+
+  __kmp_end_autotuning(global_tid, loc);
 }
 
 // User routines which take C-style arguments (call by value)

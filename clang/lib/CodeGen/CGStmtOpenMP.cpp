@@ -3546,7 +3546,7 @@ bool CodeGenFunction::EmitOMPWorksharingLoop(
         EmitBlock(LoopExit.getBlock());
         // Tell the runtime we are done.
         auto &&CodeGen = [&S](CodeGenFunction &CGF) {
-          CGF.CGM.getOpenMPRuntime().emitForStaticFinish(CGF, S.getEndLoc(),
+          CGF.CGM.getOpenMPRuntime().emitForStaticFinish(CGF, S.getBeginLoc(),
                                                          OMPD_for);
         };
         OMPCancelStack.emitExit(*this, EKind, CodeGen);

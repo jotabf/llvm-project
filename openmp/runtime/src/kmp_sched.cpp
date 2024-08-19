@@ -22,6 +22,7 @@
 #include "kmp_itt.h"
 #include "kmp_stats.h"
 #include "kmp_str.h"
+#include "thirdparty/autotuning/kmp_autotuning.h"
 
 #if OMPT_SUPPORT
 #include "ompt-specific.h"
@@ -82,6 +83,13 @@ static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
                                   void *codeptr
 #endif
 ) {
+
+  if (schedtype & kmp_sch_chunk_mode_auto) {
+    __kmp_init_autotuning<T>(global_tid, loc, (*plower), (*pupper));
+    chunk = __kmp_start_autotuning<T>(global_tid, loc);
+    schedtype = SCHEDULE_WITHOUT_MODE(schedtype);
+  }
+
   KMP_COUNT_BLOCK(OMP_LOOP_STATIC);
   KMP_PUSH_PARTITIONED_TIMER(OMP_loop_static);
   KMP_PUSH_PARTITIONED_TIMER(OMP_loop_static_scheduling);

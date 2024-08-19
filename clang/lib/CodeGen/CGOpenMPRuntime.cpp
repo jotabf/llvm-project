@@ -2587,7 +2587,8 @@ static void emitForStaticInitCall(
     CodeGenFunction &CGF, llvm::Value *UpdateLocation, llvm::Value *ThreadId,
     llvm::FunctionCallee ForStaticInitFunction, OpenMPSchedType Schedule,
     OpenMPScheduleClauseModifier M1, OpenMPScheduleClauseModifier M2,
-    const CGOpenMPRuntime::StaticRTInput &Values) {
+    const CGOpenMPRuntime::StaticRTInput &Values,
+    OpenMPScheduleChunkMode Mode) {
   if (!CGF.HaveInsertPoint())
     return;
 
@@ -2617,17 +2618,18 @@ static void emitForStaticInitCall(
             Schedule == OMP_dist_sch_static_chunked) &&
            "expected static chunked schedule");
   }
+  int ScheduleType = addChunkMode(
+    addMonoNonMonoModifier(CGF.CGM, Schedule, M1, M2), Mode);
   llvm::Value *Args[] = {
       UpdateLocation,
       ThreadId,
-      CGF.Builder.getInt32(addMonoNonMonoModifier(CGF.CGM, Schedule, M1,
-                                                  M2)), // Schedule type
-      Values.IL.emitRawPointer(CGF),                    // &isLastIter
-      Values.LB.emitRawPointer(CGF),                    // &LB
-      Values.UB.emitRawPointer(CGF),                    // &UB
-      Values.ST.emitRawPointer(CGF),                    // &Stride
-      CGF.Builder.getIntN(Values.IVSize, 1),            // Incr
-      Chunk                                             // Chunk
+      CGF.Builder.getInt32(ScheduleType),   // Schedule type
+      Values.IL.emitRawPointer(CGF),        // &isLastIter
+      Values.LB.emitRawPointer(CGF),        // &LB
+      Values.UB.emitRawPointer(CGF),        // &UB
+      Values.ST.emitRawPointer(CGF),        // &Stride
+      CGF.Builder.getIntN(Values.IVSize, 1),// Incr
+      Chunk                                 // Chunk
   };
   CGF.EmitRuntimeCall(ForStaticInitFunction, Args);
 }
@@ -2651,7 +2653,8 @@ void CGOpenMPRuntime::emitForStaticInit(CodeGenFunction &CGF,
                                              false);
   auto DL = ApplyDebugLocation::CreateDefaultArtificial(CGF, Loc);
   emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, StaticInitFunction,
-                        ScheduleNum, ScheduleKind.M1, ScheduleKind.M2, Values);
+                        ScheduleNum, ScheduleKind.M1, ScheduleKind.M2, Values,
+                        ScheduleKind.Mode);
 }
 
 void CGOpenMPRuntime::emitDistributeStaticInit(
@@ -2672,7 +2675,8 @@ void CGOpenMPRuntime::emitDistributeStaticInit(
 
   emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, StaticInitFunction,
                         ScheduleNum, OMPC_SCHEDULE_MODIFIER_unknown,
-                        OMPC_SCHEDULE_MODIFIER_unknown, Values);
+                        OMPC_SCHEDULE_MODIFIER_unknown, Values,
+                        OMPC_SCHEDULE_CHUNK_MODE_unknown);
 }
 
 void CGOpenMPRuntime::emitForStaticFinish(CodeGenFunction &CGF,
