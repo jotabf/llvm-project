@@ -20,7 +20,7 @@
 #include "kmp_stats.h"
 #include "kmp_utils.h"
 #include "ompt-specific.h"
-#include "thirdparty/autotuning/kmp_autotuning.h"
+#include "kmp_autotuning.h"
 
 #define MAX_MESSAGE 512
 

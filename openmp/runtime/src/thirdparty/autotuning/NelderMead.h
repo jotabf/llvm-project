@@ -27,7 +27,7 @@ class NelderMead : public NumericalOptimizer {
     out_contraction, ///< Outer contraction step
     in_contraction, ///< Inner contraction step
     reduction, ///< Reduction step
-    finalization = nopt_finalization
+    finalization = NOPT_FINALIZATION
   };
 
   // Algorithm parameters

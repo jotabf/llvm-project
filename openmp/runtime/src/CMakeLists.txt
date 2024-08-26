@@ -98,6 +98,7 @@ else()
     kmp_lock.cpp
     kmp_sched.cpp
     kmp_collapse.cpp
+    kmp_autotuning.cpp
   )
   if(WIN32)
     # Windows specific files
@@ -125,7 +126,6 @@ else()
   libomp_append(LIBOMP_CXXFILES thirdparty/ittnotify/ittnotify_static.cpp LIBOMP_USE_ITT_NOTIFY)
   libomp_append(LIBOMP_CXXFILES thirdparty/autotuning/Autotuning.cpp TRUE)
   libomp_append(LIBOMP_CXXFILES thirdparty/autotuning/NelderMead.cpp TRUE)
-  libomp_append(LIBOMP_CXXFILES thirdparty/autotuning/kmp_autotuning.cpp TRUE)
   libomp_append(LIBOMP_CXXFILES kmp_debugger.cpp LIBOMP_USE_DEBUGGER)
   libomp_append(LIBOMP_CXXFILES kmp_stats.cpp LIBOMP_STATS)
   libomp_append(LIBOMP_CXXFILES kmp_stats_timing.cpp LIBOMP_STATS)

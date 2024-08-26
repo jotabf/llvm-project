@@ -19,7 +19,7 @@
 /// information, and controlling the algorithm's behavior.
 class NumericalOptimizer {
 protected:
-  enum { nopt_finalization = 0x99 };
+  enum { NOPT_FINALIZATION = 0x99 };
 
 public:
   /// @brief Default constructor.

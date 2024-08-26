@@ -23,7 +23,7 @@
 #include "kmp_itt.h"
 #include "kmp_stats.h"
 #include "kmp_str.h"
-#include "thirdparty/autotuning/kmp_autotuning.h"
+#include "kmp_autotuning.h"
 #if KMP_USE_X87CONTROL
 #include <float.h>
 #endif
