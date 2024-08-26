@@ -1,8 +1,9 @@
 #include "Autotuning.h"
 
-#include <cmath>    // round
-#include <cstring>  // memcpy
-#include <iostream> // cout, endl
+#include <cmath> // round
+#include <cstring> // memcpy
+#include <sstream>
+#include <type_traits> // std::is_integral, std::is_floating_point
 
 double error_converter(unsigned error, int min, int max) {
   return (2. * static_cast<double>(error)) / static_cast<double>(max - min);
@@ -16,12 +17,17 @@ Autotuning::Autotuning(double *min, double *max, unsigned ignore,
                        NumericalOptimizer *optimizer)
     : m_iter(0), m_ignore(ignore + 1), m_runtime(0), p_optimizer(optimizer) {
 
-  p_max = new double[p_optimizer->getDimension()];
-  p_min = new double[p_optimizer->getDimension()];
-  p_point = new double[p_optimizer->getDimension()];
+  // p_max = new double[p_optimizer->getDimension()];
+  // p_min = new double[p_optimizer->getDimension()];
+  // p_point = new double[p_optimizer->getDimension()];
+  p_max.resize(p_optimizer->getDimension());
+  p_min.resize(p_optimizer->getDimension());
+  p_point.resize(p_optimizer->getDimension());
 
-  std::memcpy(p_max, max, sizeof(double) * p_optimizer->getDimension());
-  std::memcpy(p_min, min, sizeof(double) * p_optimizer->getDimension());
+  // std::memcpy(p_max, max, sizeof(double) * p_optimizer->getDimension());
+  // std::memcpy(p_min, min, sizeof(double) * p_optimizer->getDimension());
+  p_max.assign(max, max + p_optimizer->getDimension());
+  p_min.assign(min, min + p_optimizer->getDimension());
 
 #ifdef VERBOSE
   print();
@@ -29,9 +35,9 @@ Autotuning::Autotuning(double *min, double *max, unsigned ignore,
 }
 
 Autotuning::~Autotuning() {
-  delete[] p_max;
-  delete[] p_min;
-  delete[] p_point;
+  // delete[] p_max;
+  // delete[] p_min;
+  // delete[] p_point;
   delete p_optimizer;
 }
 
@@ -41,7 +47,7 @@ void Autotuning::start() {
     if ((m_iter % m_ignore) == 0) {
       p_point = p_optimizer->run(m_runtime);
     }
-    m_iter++;
+    ++m_iter;
 
     m_t0 = std::chrono::high_resolution_clock::now();
   }
@@ -59,21 +65,20 @@ void Autotuning::end() {
   }
 }
 
-void Autotuning::print() const {
-  std::cout << "------------------- Autotuning Parameters -------------------"
-            << std::endl;
-  std::cout << "NIgn: " << m_ignore << "\t";
-  std::cout << "Maxs: [ ";
-  for (size_t i = 0; i < p_optimizer->getDimension(); i++) {
-    std::cout << p_max[i] << " ";
-  }
-  std::cout << "]\n";
-  std::cout << "Mins: [ ";
-  for (size_t i = 0; i < p_optimizer->getDimension(); i++) {
-    std::cout << p_min[i] << " ";
-  }
-  std::cout << "]\n";
-  p_optimizer->print();
-  std::cout << "-------------------------------------------------------------"
-            << std::endl;
+std::string array_to_string(std::vector<double> array) {
+  std::stringstream ss;
+  for (auto &elem : array)
+    ss << elem << " ";
+  return ss.str();
+}
+
+std::string Autotuning::getInfo() const {
+  std::stringstream ss;
+  ss << "------------------- Autotuning Parameters -------------------\n";
+  ss << "NIgn: " + std::to_string(m_ignore) + "\t";
+  ss << "Maxs: [ " << array_to_string(p_max) << "]\n";
+  ss << "Mins: [ " << array_to_string(p_min) << "]\n";
+  ss << p_optimizer->getInfo();
+  ss << "-------------------------------------------------------------\n";
+  return ss.str();
 }

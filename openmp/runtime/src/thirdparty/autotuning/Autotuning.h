@@ -5,25 +5,32 @@
 
 #pragma once
 
+#include <cmath> // round
 #include <chrono> // std::chrono::high_resolution_clock
-#include <type_traits>
+#include <string> // std::string
+#include <vector> // std::vector
 
 #include "NumericalOptimizer.h"
+#include "NelderMead.h"
 
 /**
  * @brief Class for Autotuning
  */
 class Autotuning {
 
-  unsigned m_iter;         ///< Iteration number
+  unsigned m_iter; ///< Iteration number
   const unsigned m_ignore; ///< Number of iterations to ignore
 
-  double *p_point;
-  double *p_min; ///< Minimum value of the search interval
-  double *p_max; ///< Maximum value of the search interval
+  // double *p_point;
+  // double *p_min; ///< Minimum value of the search interval
+  // double *p_max; ///< Maximum value of the search interval
+
+  std::vector<double> p_point;
+  std::vector<double> p_min; ///< Minimum value of the search interval
+  std::vector<double> p_max; ///< Maximum value of the search interval
 
   std::chrono::high_resolution_clock::time_point m_t0; ///< Starting time
-  double m_runtime;                                    ///< Total time of a task
+  double m_runtime; ///< Total time of a task
 
   NumericalOptimizer *const p_optimizer; ///< Numerical optimizer instance
 
@@ -32,7 +39,7 @@ class Autotuning {
    * @tparam T Type of the output point
    * @param out Output point
    */
-  template <typename T> void rescale(T *out) const {
+  template <typename T> void rescale(const T *&out) const {
     for (unsigned i = 0; i < p_optimizer->getDimension(); i++) {
       out[i] = rescale<T>(i);
     }
@@ -113,10 +120,12 @@ public:
    */
   void end();
 
+  bool isEnd() const { return p_optimizer->isEnd(); }
+
   /**
-   * @brief Print basic information about the autotuning parameters
+   * @brief
    */
-  void print() const;
+  std::string getInfo() const;
 
   /**
    * @brief Reset the autotuning and numerical optimizer
