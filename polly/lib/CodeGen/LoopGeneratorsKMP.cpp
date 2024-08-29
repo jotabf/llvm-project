@@ -153,6 +153,8 @@ ParallelLoopGeneratorKMP::createSubFn(Value *SequentialLoopStride,
 
   // Fill up basic block HeaderBB.
   Builder.SetInsertPoint(HeaderBB);
+  Value *CodeIDPtr =
+      Builder.CreateAlloca(LongType, nullptr, "polly.par.CodeIDPtr");
   Value *LBPtr = Builder.CreateAlloca(LongType, nullptr, "polly.par.LBPtr");
   Value *UBPtr = Builder.CreateAlloca(LongType, nullptr, "polly.par.UBPtr");
   Value *IsLastPtr = Builder.CreateAlloca(Builder.getInt32Ty(), nullptr,
@@ -167,6 +169,8 @@ ParallelLoopGeneratorKMP::createSubFn(Value *SequentialLoopStride,
   // Skip "bound thread ID" since it is not used (but had to be defined).
   std::advance(AI, 2);
   // Move iterator to: LB, UB, Stride, Shared variable struct.
+  Value *CodeID = &*AI;
+  std::advance(AI, 1);
   Value *LB = &*AI;
   std::advance(AI, 1);
   Value *UB = &*AI;
@@ -181,6 +185,7 @@ ParallelLoopGeneratorKMP::createSubFn(Value *SequentialLoopStride,
   Value *ID = Builder.CreateAlignedLoad(Builder.getInt32Ty(), IDPtr, Alignment,
                                         "polly.par.global_tid");
 
+  Builder.CreateAlignedStore(CodeID, CodeIDPtr, Alignment);
   Builder.CreateAlignedStore(LB, LBPtr, Alignment);
   Builder.CreateAlignedStore(UB, UBPtr, Alignment);
   Builder.CreateAlignedStore(Builder.getInt32(0), IsLastPtr, Alignment);
@@ -204,7 +209,7 @@ ParallelLoopGeneratorKMP::createSubFn(Value *SequentialLoopStride,
     // "DYNAMIC" scheduling types are handled below (including 'runtime')
     {
       UB = AdjustedUB;
-      createCallDispatchInit(ID, LB, UB, Stride, ChunkSize);
+      createCallDispatchInit(ID, CodeID, LB, UB, Stride, ChunkSize);
       Value *HasWork =
           createCallDispatchNext(ID, IsLastPtr, LBPtr, UBPtr, StridePtr);
       Value *HasIteration =
@@ -422,8 +427,8 @@ void ParallelLoopGeneratorKMP::createCallStaticFini(Value *GlobalThreadID) {
 }
 
 void ParallelLoopGeneratorKMP::createCallDispatchInit(Value *GlobalThreadID,
-                                                      Value *LB, Value *UB,
-                                                      Value *Inc,
+                                                      Value *CodeID, Value *LB,
+                                                      Value *UB, Value *Inc,
                                                       Value *ChunkSize) {
   const std::string Name =
       is64BitArch() ? "__kmpc_dispatch_init_8" : "__kmpc_dispatch_init_4";
@@ -436,6 +441,7 @@ void ParallelLoopGeneratorKMP::createCallDispatchInit(Value *GlobalThreadID,
     GlobalValue::LinkageTypes Linkage = Function::ExternalLinkage;
 
     Type *Params[] = {IdentTy->getPointerTo(),
+                      Builder.getInt32Ty(),
                       Builder.getInt32Ty(),
                       Builder.getInt32Ty(),
                       LongType,
@@ -452,6 +458,7 @@ void ParallelLoopGeneratorKMP::createCallDispatchInit(Value *GlobalThreadID,
   Value *Args[] = {
       SourceLocationInfo,
       GlobalThreadID,
+      CodeID,
       Builder.getInt32(int(getSchedType(PollyChunkSize, PollyScheduling))),
       LB,
       UB,

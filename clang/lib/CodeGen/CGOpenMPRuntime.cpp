@@ -2557,10 +2557,12 @@ void CGOpenMPRuntime::emitForDispatchInit(
   int ScheduleType = addChunkMode(
       addMonoNonMonoModifier(CGM, Schedule, ScheduleKind.M1, ScheduleKind.M2),
       ScheduleKind.Mode);
+  unsigned CodeID = Loc.getRawEncoding();
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc),
       getThreadID(CGF, Loc),
       CGF.Builder.getInt32(ScheduleType), // Schedule type
+      CGF.Builder.getIntN(CodeID, 1),       // Code location ID
       DispatchValues.LB,                  // Lower
       DispatchValues.UB,                  // Upper
       CGF.Builder.getIntN(IVSize, 1),     // Stride

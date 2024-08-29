@@ -95,12 +95,13 @@ public:
   /// For dynamically scheduled loops, saving the loop arguments.
   ///
   /// @param GlobalThreadID   The global thread ID.
+  /// @param CodeID           The location code ID.
   /// @param LB               The loop's lower bound.
   /// @param UB               The loop's upper bound.
   /// @param Inc              The loop increment.
   /// @param ChunkSize        The chunk size of the parallel loop.
-  void createCallDispatchInit(Value *GlobalThreadID, Value *LB, Value *UB,
-                              Value *Inc, Value *ChunkSize);
+  void createCallDispatchInit(Value *GlobalThreadID, Value *CodeID, Value *LB,
+                              Value *UB, Value *Inc, Value *ChunkSize);
 
   /// Create a runtime library call to retrieve the next (dynamically)
   /// allocated chunk of work for this thread.

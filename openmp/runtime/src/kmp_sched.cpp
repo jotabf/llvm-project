@@ -17,12 +17,12 @@
         is the largest value __kmp_nth may take, 1 is the smallest. */
 
 #include "kmp.h"
+#include "kmp_autotuning.h"
 #include "kmp_error.h"
 #include "kmp_i18n.h"
 #include "kmp_itt.h"
 #include "kmp_stats.h"
 #include "kmp_str.h"
-#include "kmp_autotuning.h"
 
 #if OMPT_SUPPORT
 #include "ompt-specific.h"
@@ -86,7 +86,7 @@ static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
 
   if (schedtype & kmp_sch_chunk_mode_auto) {
     __kmp_init_autotuning<T>(global_tid, loc, (*plower), (*pupper));
-    chunk = __kmp_start_autotuning<T>(global_tid, loc);
+    chunk = __kmp_start_autotuning<T>(global_tid, loc, (*plower), (*pupper));
     schedtype = SCHEDULE_WITHOUT_MODE(schedtype);
   }
 
@@ -850,7 +850,7 @@ static void __kmp_team_static_init(ident_t *loc, kmp_int32 gtid,
       *p_ub = traits_t<T>::max_value;
     if (*p_ub > upper)
       *p_ub = upper; // tracker C73258
-  } else { // incr < 0
+  } else {           // incr < 0
     if (*p_ub > *p_lb)
       *p_ub = traits_t<T>::min_value;
     if (*p_ub < upper)
