@@ -415,7 +415,8 @@ void ParallelLoopGeneratorKMP::createCallStaticFini(Value *GlobalThreadID) {
   // If F is not available, declare it.
   if (!F) {
     GlobalValue::LinkageTypes Linkage = Function::ExternalLinkage;
-    Type *Params[] = {IdentTy->getPointerTo(), Builder.getInt32Ty()};
+    Type *Params[] = {IdentTy->getPointerTo(), Builder.getInt32Ty(), 
+                      Builder.getInt32Ty()};
     FunctionType *Ty = FunctionType::get(Builder.getVoidTy(), Params, false);
     F = Function::Create(Ty, Linkage, Name, M);
   }

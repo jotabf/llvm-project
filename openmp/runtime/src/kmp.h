@@ -3845,6 +3845,7 @@ extern void __kmpc_dispatch_fini_4u(ident_t *loc, kmp_int32 gtid);
 extern void __kmpc_dispatch_fini_8u(ident_t *loc, kmp_int32 gtid);
 
 extern void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid, 
+                                   kmp_uint32 cid,
                                    enum sched_type schedule);
 
 #ifdef KMP_GOMP_COMPAT
@@ -4253,7 +4254,8 @@ KMP_EXPORT void KMPC_FOR_STATIC_INIT(ident_t *loc, kmp_int32 global_tid,
                                      kmp_int *pstride, kmp_int incr,
                                      kmp_int chunk);
 
-KMP_EXPORT void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid);
+KMP_EXPORT void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
+                                       kmp_uint32 code_id);
 
 KMP_EXPORT void __kmpc_copyprivate(ident_t *loc, kmp_int32 global_tid,
                                    size_t cpy_size, void *cpy_data,

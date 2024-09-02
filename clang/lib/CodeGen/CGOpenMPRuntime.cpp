@@ -2561,8 +2561,10 @@ void CGOpenMPRuntime::emitForDispatchInit(
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc),
       getThreadID(CGF, Loc),
+      // TODO: For while, it's using the code location to determine which
+      // autotuning is used but this can be changed by a counter in the future.
+      CGF.Builder.getInt32(CodeID),       // Code location ID
       CGF.Builder.getInt32(ScheduleType), // Schedule type
-      CGF.Builder.getIntN(CodeID, 1),       // Code location ID
       DispatchValues.LB,                  // Lower
       DispatchValues.UB,                  // Upper
       CGF.Builder.getIntN(IVSize, 1),     // Stride
@@ -2579,17 +2581,19 @@ void CGOpenMPRuntime::emitForDispatchDeinit(
     return;
 
   int ScheduleType = addChunkMode(0, ScheduleKind.Mode);
+  unsigned CodeID = Loc.getRawEncoding();
   // Call __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 tid);
   llvm::Value *Args[] = {emitUpdateLocation(CGF, Loc), getThreadID(CGF, Loc),
+                         CGF.Builder.getInt32(CodeID),
                          CGF.Builder.getInt32(ScheduleType)};
   CGF.EmitRuntimeCall(OMPBuilder.createDispatchDeinitFunction(), Args);
 }
 
 static void emitForStaticInitCall(
     CodeGenFunction &CGF, llvm::Value *UpdateLocation, llvm::Value *ThreadId,
-    llvm::FunctionCallee ForStaticInitFunction, OpenMPSchedType Schedule,
-    OpenMPScheduleClauseModifier M1, OpenMPScheduleClauseModifier M2,
-    const CGOpenMPRuntime::StaticRTInput &Values,
+    llvm::Value *CodeID, llvm::FunctionCallee ForStaticInitFunction,
+    OpenMPSchedType Schedule, OpenMPScheduleClauseModifier M1,
+    OpenMPScheduleClauseModifier M2, const CGOpenMPRuntime::StaticRTInput &Values,
     OpenMPScheduleChunkMode Mode) {
   if (!CGF.HaveInsertPoint())
     return;
@@ -2625,6 +2629,7 @@ static void emitForStaticInitCall(
   llvm::Value *Args[] = {
       UpdateLocation,
       ThreadId,
+      CodeID,                               // Code location ID
       CGF.Builder.getInt32(ScheduleType),   // Schedule type
       Values.IL.emitRawPointer(CGF),        // &isLastIter
       Values.LB.emitRawPointer(CGF),        // &LB
@@ -2650,13 +2655,14 @@ void CGOpenMPRuntime::emitForStaticInit(CodeGenFunction &CGF,
                                                  ? OMP_IDENT_WORK_LOOP
                                                  : OMP_IDENT_WORK_SECTIONS);
   llvm::Value *ThreadId = getThreadID(CGF, Loc);
+  llvm::Value *CodeID = CGF.Builder.getInt32(Loc.getRawEncoding());
   llvm::FunctionCallee StaticInitFunction =
       OMPBuilder.createForStaticInitFunction(Values.IVSize, Values.IVSigned,
                                              false);
   auto DL = ApplyDebugLocation::CreateDefaultArtificial(CGF, Loc);
-  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, StaticInitFunction,
-                        ScheduleNum, ScheduleKind.M1, ScheduleKind.M2, Values,
-                        ScheduleKind.Mode);
+  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, CodeID,
+                        StaticInitFunction, ScheduleNum, ScheduleKind.M1,
+                        ScheduleKind.M2, Values, ScheduleKind.Mode);
 }
 
 void CGOpenMPRuntime::emitDistributeStaticInit(
@@ -2668,6 +2674,7 @@ void CGOpenMPRuntime::emitDistributeStaticInit(
   llvm::Value *UpdatedLocation =
       emitUpdateLocation(CGF, Loc, OMP_IDENT_WORK_DISTRIBUTE);
   llvm::Value *ThreadId = getThreadID(CGF, Loc);
+  llvm::Value *CodeID = CGF.Builder.getInt32(Loc.getRawEncoding());
   llvm::FunctionCallee StaticInitFunction;
   bool isGPUDistribute =
       CGM.getLangOpts().OpenMPIsTargetDevice &&
@@ -2675,8 +2682,9 @@ void CGOpenMPRuntime::emitDistributeStaticInit(
   StaticInitFunction = OMPBuilder.createForStaticInitFunction(
       Values.IVSize, Values.IVSigned, isGPUDistribute);
 
-  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, StaticInitFunction,
-                        ScheduleNum, OMPC_SCHEDULE_MODIFIER_unknown,
+  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, CodeID,
+                        StaticInitFunction, ScheduleNum,
+                        OMPC_SCHEDULE_MODIFIER_unknown,
                         OMPC_SCHEDULE_MODIFIER_unknown, Values,
                         OMPC_SCHEDULE_CHUNK_MODE_unknown);
 }
@@ -2689,6 +2697,7 @@ void CGOpenMPRuntime::emitForStaticFinish(CodeGenFunction &CGF,
          "Expected distribute, for, or sections directive kind");
   if (!CGF.HaveInsertPoint())
     return;
+  unsigned CodeID = Loc.getRawEncoding();
   // Call __kmpc_for_static_fini(ident_t *loc, kmp_int32 tid);
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc,
@@ -2698,7 +2707,7 @@ void CGOpenMPRuntime::emitForStaticFinish(CodeGenFunction &CGF,
                          : isOpenMPLoopDirective(DKind)
                              ? OMP_IDENT_WORK_LOOP
                              : OMP_IDENT_WORK_SECTIONS),
-      getThreadID(CGF, Loc)};
+      getThreadID(CGF, Loc), CGF.Builder.getInt32(CodeID)};
   auto DL = ApplyDebugLocation::CreateDefaultArtificial(CGF, Loc);
   if (isOpenMPDistributeDirective(DKind) &&
       CGM.getLangOpts().OpenMPIsTargetDevice &&

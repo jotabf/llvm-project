@@ -967,11 +967,11 @@ static void __kmp_dispatch_init(ident_t *loc, int gtid, unsigned cid,
   typedef typename traits_t<T>::unsigned_t UT;
 
   if (schedule & kmp_sch_chunk_mode_auto) {
-    __kmp_init_autotuning<T>(gtid, loc, lb, ub);
-    T result = __kmp_start_autotuning<T>(gtid, loc, lb, ub);
+    __kmp_init_autotuning<T>(gtid, cid, lb, ub);
+    T result = __kmp_start_autotuning<T>(gtid, cid, lb, ub);
     schedule = SCHEDULE_WITHOUT_MODE(schedule);
     chunk = static_cast<typename traits_t<T>::signed_t>(result);
-    printf("chunk: %d\n", result);
+    // printf("chunk: %d\n", result);
   }
 
   int active;
@@ -3033,9 +3033,10 @@ void __kmpc_dispatch_fini_8u(ident_t *loc, kmp_int32 gtid) {
 See @ref __kmpc_dispatch_deinit
 */
 void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid,
+                            kmp_uint32 cid,
                             enum sched_type schedule) {
   if (schedule & kmp_sch_chunk_mode_auto)
-    __kmp_end_autotuning(gtid, loc);
+    __kmp_end_autotuning(gtid, cid);
 }
 /*! @} */
 

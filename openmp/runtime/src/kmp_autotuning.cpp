@@ -53,9 +53,10 @@ void Autotuning::end() {
   }
 }
 
-void __kmp_end_autotuning(int gtid, ident_t *loc) {
+void __kmp_end_autotuning(int gtid, unsigned cid) {
+  printf("Ending autotuning %d\n", cid);
 
-  kmp_autotuning_info *info = __kmp_find_autotuning_info(loc);
+  kmp_autotuning_info *info = __kmp_find_autotuning_info(cid);
   if (info == NULL || info->at->isEnd())
     return;
 
@@ -73,11 +74,11 @@ void __kmp_end_autotuning(int gtid, ident_t *loc) {
   KMP_ATOMIC_ST_REL(&info->count, 0);
 }
 
-kmp_autotuning_info *__kmp_find_autotuning_info(ident_t *loc) {
+kmp_autotuning_info *__kmp_find_autotuning_info(unsigned cid) {
   auto it = __kmp_sched_autotunig_head;
 
   while (it != NULL) {
-    if (it->loc == loc) {
+    if (it->id == cid) {
       return it;
     }
     it = it->next;
@@ -86,7 +87,7 @@ kmp_autotuning_info *__kmp_find_autotuning_info(ident_t *loc) {
   return NULL;
 }
 
-kmp_autotuning_info *__kmp_create_autotuning_info(ident_t *loc) {
+kmp_autotuning_info *__kmp_create_autotuning_info(unsigned cid) {
 
   kmp_autotuning_info *at_info = static_cast<kmp_autotuning_info *>(
       __kmp_allocate(sizeof(kmp_autotuning_info)));
@@ -100,7 +101,7 @@ kmp_autotuning_info *__kmp_create_autotuning_info(ident_t *loc) {
   __kmp_sched_autotunig_head = at_info;
 
   KMP_MB();
-  at_info->loc = loc;
+  at_info->id = cid;
 
   return at_info;
 }

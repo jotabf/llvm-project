@@ -31,24 +31,24 @@ class Autotuning;
 struct kmp_autotuning_info {
   volatile bool initialized = FALSE;
   volatile bool release_start = FALSE;
-  ident_t *loc;
-  std::atomic<int> count;
+  unsigned id;
+  std::atomic<int> count = 0;
   kmp_lock_t lock;
   Autotuning *at = NULL;
   kmp_autotuning_info *next = NULL;
 };
 
 template <typename T>
-void __kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub);
+void __kmp_init_autotuning(int gtid, unsigned cid, T lb, T ub);
 
 template <typename T>
-T __kmp_start_autotuning(int gtid, ident_t *loc, T lb, T ub);
+T __kmp_start_autotuning(int gtid, unsigned cid, T lb, T ub);
 
-void __kmp_end_autotuning(int gtid, ident_t *loc);
+void __kmp_end_autotuning(int gtid, unsigned cid);
 
-kmp_autotuning_info *__kmp_find_autotuning_info(ident_t *loc);
+kmp_autotuning_info *__kmp_find_autotuning_info(unsigned cid);
 
-kmp_autotuning_info *__kmp_create_autotuning_info(ident_t *loc);
+kmp_autotuning_info *__kmp_create_autotuning_info(unsigned cid);
 
 ///@brief Class for Autotuning
 class Autotuning {
@@ -127,13 +127,13 @@ public:
 };
 
 template <typename T>
-void __kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub) {
+void __kmp_init_autotuning(int gtid, unsigned cid, T lb, T ub) {
 
-  printf("Initializing autotuning %d %d %p %s\n", lb, ub, loc, loc->psource);
+  printf("Initializing autotuning %d\n", cid);
   
-  T max = (ub + 1) / static_cast<T>(__kmp_nth);
+  // T max = (ub + 1) / static_cast<T>(__kmp_nth);
 
-  auto it = __kmp_find_autotuning_info(loc);
+  auto it = __kmp_find_autotuning_info(cid);
   if (it != NULL && TCR_4(it->initialized))
     return;
   __kmp_acquire_bootstrap_lock(&__kmp_initz_lock);
@@ -142,10 +142,10 @@ void __kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub) {
     return;
   }
 
-  auto *info = __kmp_create_autotuning_info(loc);
+  auto *info = __kmp_create_autotuning_info(cid);
   TCW_SYNC_4(info->initialized, TRUE);
 
-  KMP_DEBUG_ASSERT2(__kmp_find_autotuning_info(loc) != NULL,
+  KMP_DEBUG_ASSERT2(__kmp_find_autotuning_info(cid) != NULL,
                     "Error creating autotuning info\n");
   KMP_MB(); // Flush initialized
 
@@ -154,8 +154,10 @@ void __kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub) {
 
 // TO DO: TEST IF ALL THREADS ARE RETURNING THE SAME VALUE
 template <typename T>
-T __kmp_start_autotuning(int gtid, ident_t *loc, T lb, T ub) {
-  kmp_autotuning_info *info = __kmp_find_autotuning_info(loc);
+T __kmp_start_autotuning(int gtid, unsigned cid, T lb, T ub) {
+  printf("Starting autotuning %d\n", cid);
+
+  kmp_autotuning_info *info = __kmp_find_autotuning_info(cid);
 
   KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
   KMP_ASSERT2(info->at != NULL, "Autotuning was not initialized");
@@ -181,47 +183,6 @@ T __kmp_start_autotuning(int gtid, ident_t *loc, T lb, T ub) {
   __kmp_release_bootstrap_lock(&info->lock);
 
   return info->at->getPoint<T>(min, max);
-
-  // if (info->at->isEnd())
-  //   return info->at->getPoint<T>(min, max);
-
-  // __kmpc_barrier(loc, gtid);
-  // if (__kmpc_single(loc, gtid)) {
-  //   info->at->start();
-  //   KMP_MB();
-  //   TCW_SYNC_4(info->release_start, TRUE);
-  //   __kmpc_end_single(loc, gtid);
-  // }
-  // __kmpc_barrier(loc, gtid);
-
-  // // KMP_MB();
-  // // while (!TCR_4(info->release_start))
-  // //   KMP_YIELD(TRUE);
-
-  // return info->at->getPoint<T>(min, max);
-
-  // auto &kmp_at = __kmp_sched_autotunig_map[loc];
-  // KMP_ASSERT2(kmp_at.at != nullptr, "Autotuning is not initialized");
-
-  // // if (kmp_at.at->isEnd())
-  // // return kmp_at.at->getPoint<typename traits_t<T>::signed_t>();
-  // if (Autotuning_IsEnd(kmp_at.at))
-  //   return Autotuning_GetPoint(kmp_at.at, 0);
-
-  // if (__kmpc_single(loc, gtid)) {
-  //   // kmp_at.at->start();
-  //   Autotuning_Start(kmp_at.at);
-  //   KMP_MFENCE();
-  //   TCW_SYNC_4(kmp_at.release_start, TRUE);
-  //   __kmpc_end_single(loc, gtid);
-  // }
-
-  // KMP_SFENCE();
-  // while (!kmp_at.release_start)
-  //   KMP_YIELD(TRUE);
-
-  // // return kmp_at.at->getPoint<typename traits_t<T>::signed_t>();
-  // return Autotuning_GetPoint(kmp_at.at, 0);
 }
 
 #endif // KMP_AUTOTUNING_H
