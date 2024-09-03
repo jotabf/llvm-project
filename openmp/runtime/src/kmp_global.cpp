@@ -446,7 +446,7 @@ kmp_uint64 __kmp_pause_init = 1; // for tpause
 /* TODO: None of this global padding stuff works consistently because the order
    of declaration is not necessarily correlated to storage order. To fix this,
    all the important globals must be put in a big structure instead. */
-KMP_ALIGN_CACHE
+
 kmp_info_t **__kmp_threads = NULL;
 kmp_root_t **__kmp_root = NULL;
 kmp_old_threads_list_t *__kmp_old_threads_list = NULL;

@@ -29,29 +29,33 @@
 class Autotuning;
 
 struct kmp_autotuning_info {
+  KMP_ALIGN_CACHE
   volatile bool initialized = FALSE;
   volatile bool release_start = FALSE;
-  unsigned id;
+  KMP_ALIGN_CACHE
   std::atomic<int> count = 0;
   kmp_lock_t lock;
   Autotuning *at = NULL;
-  kmp_autotuning_info *next = NULL;
 };
 
-template <typename T>
-void __kmp_init_autotuning(int gtid, unsigned cid, T lb, T ub);
+extern const unsigned __KMP_NUM_AUTO_MODE;
+
+void __kmp_init_autotuning(int gtid, unsigned id);
 
 template <typename T>
-T __kmp_start_autotuning(int gtid, unsigned cid, T lb, T ub);
+T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub);
 
-void __kmp_end_autotuning(int gtid, unsigned cid);
+void __kmp_autotuning_global_initialize();
 
-kmp_autotuning_info *__kmp_find_autotuning_info(unsigned cid);
+void __kmp_end_autotuning(int gtid, unsigned id);
 
-kmp_autotuning_info *__kmp_create_autotuning_info(unsigned cid);
+kmp_autotuning_info *__kmp_find_autotuning_info(unsigned id);
 
 ///@brief Class for Autotuning
 class Autotuning {
+
+  long long m_min; ///< Minimum value of the search interval
+  long long m_max; ///< Maximum value of the search interval
 
   double p_point;    ///< Point in the search space
   unsigned m_ignore; ///< Number of iterations to ignore
@@ -67,10 +71,14 @@ public:
     static_assert(std::is_integral<T>::value ||
                       std::is_floating_point<T>::value,
                   "T must be either an integer or a floating point type");
+    const double opt_min = -1;
+    const double opt_max = 1;
     if constexpr (std::is_floating_point<T>::value) {
-      return static_cast<T>((p_point + 1.0) / 2.0 * (max - min) + min);
+      return static_cast<T>(
+          (p_point - opt_min) / (opt_max - opt_min) * (max - min) + min);
     } else {
-      return static_cast<T>(round(((p_point + 1.0) / 2.0) * (max - min) + min));
+      return static_cast<T>(
+          round((p_point - opt_min) / (opt_max - opt_min) * (max - min) + min));
     }
   }
 
@@ -90,7 +98,7 @@ public:
   ///@param ignore Number of iterations to ignore
   ///@param num_opt Number of optimizers
   ///@param max_iter Maximum number of iterations
-  static Autotuning *Create(double min, double max, unsigned ignore = 0);
+  static Autotuning *Create(int min, int max, unsigned ignore = 0);
 
   ///@brief Destructor
   static void Destroy(Autotuning *at) { __kmp_free(at); }
@@ -116,48 +124,14 @@ public:
   ///@brief Reset the autotuning and numerical optimizer
   ///@param level Reset level, depending on the Optimizer
   void reset(unsigned level);
-
-  // double getMin() const { return p_min; }
-
-  // double getMax() const { return p_max; }
-
-  // void setMin(double min) { p_min = min; }
-
-  // void setMax(double max) { p_max = max; }
 };
-
-template <typename T>
-void __kmp_init_autotuning(int gtid, unsigned cid, T lb, T ub) {
-
-  printf("Initializing autotuning %d\n", cid);
-  
-  // T max = (ub + 1) / static_cast<T>(__kmp_nth);
-
-  auto it = __kmp_find_autotuning_info(cid);
-  if (it != NULL && TCR_4(it->initialized))
-    return;
-  __kmp_acquire_bootstrap_lock(&__kmp_initz_lock);
-  if (it != NULL && TCR_4(it->initialized)) {
-    __kmp_release_bootstrap_lock(&__kmp_initz_lock);
-    return;
-  }
-
-  auto *info = __kmp_create_autotuning_info(cid);
-  TCW_SYNC_4(info->initialized, TRUE);
-
-  KMP_DEBUG_ASSERT2(__kmp_find_autotuning_info(cid) != NULL,
-                    "Error creating autotuning info\n");
-  KMP_MB(); // Flush initialized
-
-  __kmp_release_bootstrap_lock(&__kmp_initz_lock);
-}
 
 // TO DO: TEST IF ALL THREADS ARE RETURNING THE SAME VALUE
 template <typename T>
-T __kmp_start_autotuning(int gtid, unsigned cid, T lb, T ub) {
-  printf("Starting autotuning %d\n", cid);
+T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
+  printf("Starting autotuning %d\n", id);
 
-  kmp_autotuning_info *info = __kmp_find_autotuning_info(cid);
+  kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
   KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
   KMP_ASSERT2(info->at != NULL, "Autotuning was not initialized");
@@ -168,7 +142,7 @@ T __kmp_start_autotuning(int gtid, unsigned cid, T lb, T ub) {
   if (info->at->isEnd())
     return info->at->getPoint<T>(min, max);
 
-  if(TCR_4(info->release_start))
+  if (TCR_4(info->release_start))
     return info->at->getPoint<T>(min, max);
   __kmp_acquire_bootstrap_lock(&info->lock);
   if (TCR_4(info->release_start)) {

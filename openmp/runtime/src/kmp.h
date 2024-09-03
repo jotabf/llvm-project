@@ -4255,7 +4255,7 @@ KMP_EXPORT void KMPC_FOR_STATIC_INIT(ident_t *loc, kmp_int32 global_tid,
                                      kmp_int chunk);
 
 KMP_EXPORT void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
-                                       kmp_uint32 code_id);
+                                       kmp_uint32 auto_id);
 
 KMP_EXPORT void __kmpc_copyprivate(ident_t *loc, kmp_int32 global_tid,
                                    size_t cpy_size, void *cpy_data,

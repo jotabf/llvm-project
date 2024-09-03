@@ -38,7 +38,7 @@ public:
 
   /// @brief Retrieves the dimension of the optimization problem.
   /// @return The dimension of the problem.
-  virtual unsigned getDimension() const = 0;
+  virtual unsigned getDim() const = 0;
 
   /// @brief Checks if the optimization has reached a termination condition.
   /// @return True if the optimization has ended, false otherwise.
