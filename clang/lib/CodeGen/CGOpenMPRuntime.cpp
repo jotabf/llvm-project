@@ -2478,12 +2478,12 @@ llvm::DenseMap<unsigned, unsigned> cgomp_sched_auto_mode_map;
 static unsigned getAutoModeCount(unsigned code) {
   auto it = cgomp_sched_auto_mode_map.find(code);
   if (it == cgomp_sched_auto_mode_map.end())
-    return 0; 
+    return 0;
   return cgomp_sched_auto_mode_map[code];
 }
 
-static unsigned getAutoModeCount(unsigned code, OpenMPScheduleChunkMode mode) { 
-  if (mode != OMPC_SCHEDULE_CHUNK_MODE_auto) 
+static unsigned getAutoModeCount(unsigned code, OpenMPScheduleChunkMode mode) {
+  if (mode != OMPC_SCHEDULE_CHUNK_MODE_auto)
     return 0;
 
   auto it = cgomp_sched_auto_mode_map.find(code);

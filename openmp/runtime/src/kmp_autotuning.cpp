@@ -1,32 +1,21 @@
 #include "kmp_autotuning.h"
 
-#include <cmath>   // round
-#include <cstring> // memcpy
-#include <sstream>
-#include <type_traits> // std::is_integral, std::is_floating_point
-
 volatile bool __kmp_global_auto_initialized = FALSE;
 kmp_autotuning_info *__kmp_sched_autotunig_vector;
 
-static double error_converter(unsigned error, int min, int max) {
-  return (2. * static_cast<double>(error)) / static_cast<double>(max - min);
-}
-
-Autotuning *Autotuning::Create(int min, int max, unsigned ignore) {
+Autotuning *Autotuning::Create(int64_t min, int64_t max, unsigned ignore) {
+  const int DIM = 1;
+  const int MIN_ERROR = 1;
 
   Autotuning *at =
       static_cast<Autotuning *>(__kmp_allocate(sizeof(Autotuning)));
 
-  const int DIM = 1;
-  const int MIN_ERROR = 1;
-
-  at->p_point = 0.0;
+  at->p_point = NULL;
   // at->p_min = min;
   // at->p_max = max;
   at->m_ignore = ignore + 1;
   at->m_iter = 0;
-  at->p_optimizer =
-      NelderMead::Create(DIM, error_converter(MIN_ERROR, min, max));
+  at->p_optimizer = NelderMead::Create(min, max, DIM, MIN_ERROR);
 
   return at;
 }
@@ -37,8 +26,7 @@ void Autotuning::start() {
     return;
 
   if ((m_iter % m_ignore) == 0) {
-    double *value = p_optimizer->run(m_runtime);
-    p_point = value[0];
+    p_point = p_optimizer->run(m_runtime);
   }
 
   ++m_iter;
@@ -82,35 +70,7 @@ void __kmp_autotuning_global_initialize() {
   __kmp_release_bootstrap_lock(&__kmp_initz_lock);
 }
 
-void __kmp_init_autotuning(int gtid, unsigned id) {
-
-  printf("Initializing autotuning %d GOMP %d\n", id, __KMP_NUM_AUTO_MODE);
-
-  __kmp_autotuning_global_initialize();
-
-  auto info = __kmp_find_autotuning_info(id);
-
-  KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
-
-  if (TCR_4(info->initialized))
-    return;
-  __kmp_acquire_bootstrap_lock(&__kmp_initz_lock);
-  if (TCR_4(info->initialized)) {
-    __kmp_release_bootstrap_lock(&__kmp_initz_lock);
-    return;
-  }
-
-  info->at = Autotuning::Create(1, 1);
-
-  KMP_MB(); // Flush initialized
-  TCW_SYNC_4(info->initialized, TRUE);
-
-  __kmp_release_bootstrap_lock(&__kmp_initz_lock);
-}
-
 void __kmp_end_autotuning(int gtid, unsigned id) {
-  printf("Ending autotuning %d\n", id);
-
   kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
   if (info == NULL || info->at->isEnd())

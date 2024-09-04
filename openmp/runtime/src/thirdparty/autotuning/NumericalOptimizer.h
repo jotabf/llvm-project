@@ -27,10 +27,10 @@ public:
   NumericalOptimizer() = delete;
   ~NumericalOptimizer() = delete;
 
-  /// @brief Runs the optimization algorithm.
-  /// @param cost The cost value to minimized the application.
-  /// @return A pointer to the optimized solution (array of values).
-  virtual double *run(double cost) = 0;
+  // /// @brief Runs the optimization algorithm.
+  // /// @param cost The cost value to minimized the application.
+  // /// @return A pointer to the optimized solution (array of values).
+  virtual int64_t *run(double cost) = 0;
 
   /// @brief Retrieves the number of points used in the optimization.
   /// @return The number of points.
@@ -43,6 +43,11 @@ public:
   /// @brief Checks if the optimization has reached a termination condition.
   /// @return True if the optimization has ended, false otherwise.
   virtual bool isEnd() const = 0;
+
+  /// @brief Sets the limits of the optimization search space.
+  /// @param min The minimum value of the search interval.
+  /// @param max The maximum value of the search interval.
+  virtual void setLimits(int64_t min, int64_t max) = 0;
 
   /// @brief Resets the optimization, the levels are defined by concret class.
   /// @param level An optional level parameter for specific reset behaviors.

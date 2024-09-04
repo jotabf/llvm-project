@@ -85,7 +85,7 @@ static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
 ) {
 
   if (schedtype & kmp_sch_chunk_mode_auto) {
-    __kmp_init_autotuning(global_tid, auto_id);
+    __kmp_init_autotuning<T>(global_tid, auto_id, (*plower), (*pupper));
     chunk =
         __kmp_start_autotuning<T>(global_tid, auto_id, (*plower), (*pupper));
     schedtype = SCHEDULE_WITHOUT_MODE(schedtype);
