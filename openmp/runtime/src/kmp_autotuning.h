@@ -138,7 +138,6 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
   int64_t max =
       static_cast<int64_t>((ub + 1) / static_cast<T>(TCR_4(__kmp_nth) * 2));
 
-
   info->at = Autotuning::Create(min, max);
   TCW_SYNC_4(info->started, FALSE);
 
