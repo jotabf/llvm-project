@@ -967,7 +967,6 @@ static void __kmp_dispatch_init(ident_t *loc, int gtid, unsigned cid,
   typedef typename traits_t<T>::unsigned_t UT;
 
   if (schedule & kmp_sch_chunk_mode_auto) {
-    __kmp_init_autotuning<T>(gtid, cid, lb, ub);
     T result = __kmp_start_autotuning<T>(gtid, cid, lb, ub);
     schedule = SCHEDULE_WITHOUT_MODE(schedule);
     chunk = static_cast<typename traits_t<T>::signed_t>(result);

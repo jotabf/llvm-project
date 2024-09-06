@@ -29,11 +29,13 @@ extern __attribute__((weak)) const unsigned __KMP_NUM_AUTO_MODE;
 
 struct kmp_autotuning_info {
   KMP_ALIGN_CACHE
-  volatile bool initialized = FALSE;
-  volatile bool release_start = FALSE;
+  volatile int initialized = FALSE;
+  volatile int started = FALSE;
+  volatile int ended = FALSE;
   KMP_ALIGN_CACHE
+  kmp_lock_t start_lock;
+  kmp_lock_t end_lock;
   std::atomic<int> count = 0;
-  kmp_lock_t lock;
   Autotuning *at = NULL;
 };
 
@@ -86,13 +88,14 @@ public:
   static void Destroy(Autotuning *at) { __kmp_free(at); }
 
   ///@brief Get the point in the search space
-  ///@tparam T Type of the output point
   ///@param i Index of the point
   ///@return The point in the search space
   int64_t getPoint(int i = 0) const {
     KMP_ASSERT(p_point != NULL);
     return p_point[0];
   }
+
+  unsigned getIter() const { return m_iter; }
 
   ///@brief Start a new iteration of the autotuning algorithm
   ///@param point Input/output array of tuning parameters
@@ -119,32 +122,38 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
 
   __kmp_autotuning_global_initialize();
 
-  auto info = __kmp_find_autotuning_info(id);
+  kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
   KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
 
   if (TCR_4(info->initialized))
     return;
-  __kmp_acquire_bootstrap_lock(&__kmp_initz_lock);
+  __kmp_acquire_bootstrap_lock(&info->start_lock);
   if (TCR_4(info->initialized)) {
-    __kmp_release_bootstrap_lock(&__kmp_initz_lock);
+    __kmp_release_bootstrap_lock(&info->start_lock);
     return;
   }
 
   int64_t min = static_cast<int64_t>(lb + 1);
-  int64_t max = static_cast<int64_t>((ub + 1) / static_cast<T>(__kmp_nth));
+  int64_t max =
+      static_cast<int64_t>((ub + 1) / static_cast<T>(TCR_4(__kmp_nth) * 2));
+
 
   info->at = Autotuning::Create(min, max);
+  TCW_SYNC_4(info->started, FALSE);
 
-  KMP_MB(); // Flush initialized
   TCW_SYNC_4(info->initialized, TRUE);
+  KMP_MB(); // Flush initialized
 
-  __kmp_release_bootstrap_lock(&__kmp_initz_lock);
+  __kmp_release_bootstrap_lock(&info->start_lock);
 }
 
 // TO DO: TEST IF ALL THREADS ARE RETURNING THE SAME VALUE
 template <typename T>
 T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
+
+  __kmp_init_autotuning(gtid, id, lb, ub);
+
   kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
   KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
@@ -153,24 +162,26 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
   if (info->at->isEnd())
     return info->at->getPoint();
 
-  if (TCR_4(info->release_start))
+  if (TCR_4(info->started))
     return info->at->getPoint();
-  __kmp_acquire_bootstrap_lock(&info->lock);
-  if (TCR_4(info->release_start)) {
-    __kmp_release_bootstrap_lock(&info->lock);
+  __kmp_acquire_bootstrap_lock(&info->start_lock);
+  if (TCR_4(info->started)) {
+    __kmp_release_bootstrap_lock(&info->start_lock);
     return info->at->getPoint();
   }
 
   int64_t min = static_cast<int64_t>(lb + 1);
-  int64_t max = static_cast<int64_t>((ub + 1) / static_cast<T>(__kmp_nth));
+  int64_t max =
+      static_cast<int64_t>((ub + 1) / static_cast<T>(TCR_4(__kmp_nth) * 2));
 
   info->at->setLimits(min, max);
-
   info->at->start();
-  TCW_SYNC_4(info->release_start, TRUE);
+
+  TCW_SYNC_4(info->started, TRUE);
+  TCW_SYNC_4(info->ended, FALSE);
   KMP_MB();
 
-  __kmp_release_bootstrap_lock(&info->lock);
+  __kmp_release_bootstrap_lock(&info->start_lock);
 
   return info->at->getPoint();
 }
