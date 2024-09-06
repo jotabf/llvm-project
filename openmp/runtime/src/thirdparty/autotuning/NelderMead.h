@@ -98,6 +98,8 @@ public:
     m_max = max;
   }
 
+  int64_t *getMinPoint() const { return p_points[m_bestID]; }
+
   void setError(int64_t error) { m_error = error; }
 
   /// @brief Reset the state of the algorithm.

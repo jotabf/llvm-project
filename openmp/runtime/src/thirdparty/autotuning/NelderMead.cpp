@@ -123,7 +123,7 @@ int64_t *NelderMead::run(double _cost) {
         p_costs[m_iCost] = _cost;
       }
       if (m_iPoint < m_nPoints) {
-        auto &point = p_points[m_iPoint];
+        auto point = p_points[m_iPoint];
         m_iCost = m_iPoint;
         m_iPoint++;
         return point;
@@ -150,7 +150,7 @@ int64_t *NelderMead::run(double _cost) {
         break;
       case steps::decision_expansion:
         // Xe = Xo + gamma * (Xr - Xo)
-        calculate_point(p_pointReflection, m_gamma, p_pointReflection,
+        calculate_point(p_pointExpansion, m_gamma, p_pointReflection,
                         p_centroid);
         m_step = steps::expansion;
         return p_pointExpansion;

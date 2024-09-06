@@ -85,10 +85,10 @@ static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
 ) {
 
   if (schedtype & kmp_sch_chunk_mode_auto) {
-    __kmp_init_autotuning<T>(global_tid, auto_id, (*plower), (*pupper));
-    chunk =
+    T result =
         __kmp_start_autotuning<T>(global_tid, auto_id, (*plower), (*pupper));
     schedtype = SCHEDULE_WITHOUT_MODE(schedtype);
+    chunk = static_cast<typename traits_t<T>::signed_t>(result);
   }
 
   KMP_COUNT_BLOCK(OMP_LOOP_STATIC);
