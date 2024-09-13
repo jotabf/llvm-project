@@ -50,6 +50,9 @@ void Autotuning::end() {
 }
 
 void __kmp_autotuning_global_initialize() {
+
+  printf("Initializing %i autotunings\n", __KMP_NUM_AUTO_MODE );
+
   if (TCR_4(__kmp_global_auto_initialized))
     return;
   __kmp_acquire_bootstrap_lock(&__kmp_initz_lock);

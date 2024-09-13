@@ -112,7 +112,7 @@ void collapsed(int mp) {
 // CHECK-NEXT:    store i64 [[TMP16]], ptr [[DOTOMP_UB]], align 8
 // CHECK-NEXT:    store i64 1, ptr [[DOTOMP_STRIDE]], align 8
 // CHECK-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
-// CHECK-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1:[0-9]+]], i32 [[TMP0]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
+// CHECK-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1:[0-9]+]], i32 [[TMP0]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
 // CHECK-NEXT:    [[TMP17:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
 // CHECK-NEXT:    [[TMP18:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_3]], align 8
 // CHECK-NEXT:    [[CMP22:%.*]] = icmp sgt i64 [[TMP17]], [[TMP18]]
@@ -249,7 +249,7 @@ void collapsed(int mp) {
 // CHECK:       omp.inner.for.end:
 // CHECK-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK:       omp.loop.exit:
-// CHECK-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]])
+// CHECK-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]], i32 0)
 // CHECK-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK:       omp.precond.end:
 // CHECK-NEXT:    call void @__kmpc_barrier(ptr @[[GLOB3:[0-9]+]], i32 [[TMP0]])

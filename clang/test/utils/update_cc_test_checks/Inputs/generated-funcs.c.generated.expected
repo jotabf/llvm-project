@@ -100,7 +100,7 @@ void foo(void) {
 // OMP:       omp.inner.for.end:
 // OMP-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // OMP:       omp.loop.exit:
-// OMP-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP1]])
+// OMP-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP1]], i32 0)
 // OMP-NEXT:    ret void
 //
 //
@@ -171,7 +171,7 @@ void foo(void) {
 // OMP:       omp.inner.for.end:
 // OMP-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // OMP:       omp.loop.exit:
-// OMP-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP1]])
+// OMP-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP1]], i32 0)
 // OMP-NEXT:    ret void
 //
 //

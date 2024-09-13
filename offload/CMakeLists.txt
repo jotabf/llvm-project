@@ -127,7 +127,7 @@ include(LibomptargetGetDependencies)
 # Set up testing infrastructure.
 include(OpenMPTesting)
 
-check_cxx_compiler_flag(-Werror=global-constructors OFFLOAD_HAVE_WERROR_CTOR)
+# check_cxx_compiler_flag(-Werror=global-constructors OFFLOAD_HAVE_WERROR_CTOR)
 
 # LLVM source tree is required at build time for libomptarget
 if (NOT LIBOMPTARGET_LLVM_INCLUDE_DIRS)

@@ -35,7 +35,7 @@ int main() {
   {
 // CHECK:      store i32 0, ptr [[LB_PTR:%.+]],
 // CHECK:      store i32 1, ptr [[UB_PTR:%.+]],
-// CHECK:      call void @__kmpc_for_static_init_4(ptr [[SECTIONS_LOC]], i32 [[GTID]], i32 34, ptr [[IS_LAST_PTR:%.+]], ptr [[LB_PTR]], ptr [[UB_PTR]], ptr [[STRIDE_PTR:%.+]], i32 1, i32 1)
+// CHECK:      call void @__kmpc_for_static_init_4(ptr [[SECTIONS_LOC]], i32 [[GTID]], i32 0, i32 34, ptr [[IS_LAST_PTR:%.+]], ptr [[LB_PTR]], ptr [[UB_PTR]], ptr [[STRIDE_PTR:%.+]], i32 1, i32 1)
 // <<UB = min(UB, GlobalUB);>>
 // CHECK:      [[UB:%.+]] = load i32, ptr [[UB_PTR]]
 // CHECK:      [[CMP:%.+]] = icmp slt i32 [[UB]], 1
@@ -75,7 +75,7 @@ int main() {
 // CHECK-NEXT: br label %[[INNER_FOR_COND]]
 // CHECK:      [[INNER_LOOP_END]]
   }
-// CHECK:      call void @__kmpc_for_static_fini(ptr [[SECTIONS_LOC]], i32 [[GTID]])
+// CHECK:      call void @__kmpc_for_static_fini(ptr [[SECTIONS_LOC]], i32 [[GTID]], i32 0)
 // CHECK:      call void @__kmpc_barrier(ptr [[IMPLICIT_BARRIER_SECTIONS_LOC]],
 #pragma omp sections nowait
   {

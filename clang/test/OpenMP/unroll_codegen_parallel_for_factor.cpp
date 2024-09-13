@@ -102,7 +102,7 @@ extern "C" void func(int start, int end, int step) {
 // IR-NEXT:    store i32 0, ptr %[[DOTOMP_IS_LAST]], align 4
 // IR-NEXT:    %[[TMP15:.+]] = load ptr, ptr %[[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    %[[TMP16:.+]] = load i32, ptr %[[TMP15]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_init_4u(ptr @1, i32 %[[TMP16]], i32 34, ptr %[[DOTOMP_IS_LAST]], ptr %[[DOTOMP_LB]], ptr %[[DOTOMP_UB]], ptr %[[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-NEXT:    call void @__kmpc_for_static_init_4u(ptr @1, i32 %[[TMP16]], i32 0, i32 34, ptr %[[DOTOMP_IS_LAST]], ptr %[[DOTOMP_LB]], ptr %[[DOTOMP_UB]], ptr %[[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-NEXT:    %[[TMP17:.+]] = load i32, ptr %[[DOTOMP_UB]], align 4
 // IR-NEXT:    %[[TMP18:.+]] = load i32, ptr %[[DOTCAPTURE_EXPR_8]], align 4
 // IR-NEXT:    %[[CMP13:.+]] = icmp ugt i32 %[[TMP17]], %[[TMP18]]
@@ -195,7 +195,7 @@ extern "C" void func(int start, int end, int step) {
 // IR-NEXT:  [[OMP_LOOP_EXIT]]:
 // IR-NEXT:    %[[TMP40:.+]] = load ptr, ptr %[[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    %[[TMP41:.+]] = load i32, ptr %[[TMP40]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @1, i32 %[[TMP41]])
+// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @1, i32 %[[TMP41]], i32 0)
 // IR-NEXT:    br label %[[OMP_PRECOND_END]]
 // IR-EMPTY:
 // IR-NEXT:  [[OMP_PRECOND_END]]:

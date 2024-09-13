@@ -991,11 +991,10 @@ private:
   /// \param ChunkSize    The user-specified chunk size.
   ///
   /// \returns Point where to insert code after the workshare construct.
-  InsertPointTy applyStaticChunkedWorkshareLoop(DebugLoc DL,
-                                                CanonicalLoopInfo *CLI,
-                                                InsertPointTy AllocaIP,
-                                                bool NeedsBarrier,
-                                                Value *ChunkSize);
+  InsertPointTy
+  applyStaticChunkedWorkshareLoop(DebugLoc DL, CanonicalLoopInfo *CLI,
+                                  InsertPointTy AllocaIP, bool NeedsBarrier,
+                                  Value *ChunkSize, unsigned AutoID);
 
   /// Modifies the canonical loop to be a dynamically-scheduled workshare loop.
   ///
@@ -1021,7 +1020,8 @@ private:
                                           InsertPointTy AllocaIP,
                                           omp::OMPScheduleType SchedType,
                                           bool NeedsBarrier,
-                                          Value *Chunk = nullptr);
+                                          Value *Chunk = nullptr,
+                                          unsigned AutoID = 0);
 
   /// Create alternative version of the loop to support if clause
   ///
@@ -1078,7 +1078,7 @@ public:
       llvm::omp::ScheduleKind SchedKind = llvm::omp::OMP_SCHEDULE_Default,
       Value *ChunkSize = nullptr, bool HasSimdModifier = false,
       bool HasMonotonicModifier = false, bool HasNonmonotonicModifier = false,
-      bool HasOrderedClause = false,
+      bool HasOrderedClause = false, unsigned AutoID = 0,
       omp::WorksharingLoopType LoopType =
           omp::WorksharingLoopType::ForStaticLoop);
 

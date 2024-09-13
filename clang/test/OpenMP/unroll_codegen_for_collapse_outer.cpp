@@ -106,7 +106,7 @@ extern "C" void body(...) {}
 // IR-NEXT:    store i64 %[[TMP22]], ptr %[[DOTOMP_UB]], align 8
 // IR-NEXT:    store i64 1, ptr %[[DOTOMP_STRIDE]], align 8
 // IR-NEXT:    store i32 0, ptr %[[DOTOMP_IS_LAST]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_init_8(ptr @1, i32 %[[TMP0]], i32 34, ptr %[[DOTOMP_IS_LAST]], ptr %[[DOTOMP_LB]], ptr %[[DOTOMP_UB]], ptr %[[DOTOMP_STRIDE]], i64 1, i64 1)
+// IR-NEXT:    call void @__kmpc_for_static_init_8(ptr @1, i32 %[[TMP0]], i32 0, i32 34, ptr %[[DOTOMP_IS_LAST]], ptr %[[DOTOMP_LB]], ptr %[[DOTOMP_UB]], ptr %[[DOTOMP_STRIDE]], i64 1, i64 1)
 // IR-NEXT:    %[[TMP23:.+]] = load i64, ptr %[[DOTOMP_UB]], align 8
 // IR-NEXT:    %[[TMP24:.+]] = load i64, ptr %[[DOTCAPTURE_EXPR_12]], align 8
 // IR-NEXT:    %[[CMP24:.+]] = icmp sgt i64 %[[TMP23]], %[[TMP24]]
@@ -227,7 +227,7 @@ extern "C" void body(...) {}
 // IR-NEXT:    br label %[[OMP_LOOP_EXIT:.+]]
 // IR-EMPTY:
 // IR-NEXT:  [[OMP_LOOP_EXIT]]:
-// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @1, i32 %[[TMP0]])
+// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @1, i32 %[[TMP0]], i32 0)
 // IR-NEXT:    br label %[[OMP_PRECOND_END]]
 // IR-EMPTY:
 // IR-NEXT:  [[OMP_PRECOND_END]]:

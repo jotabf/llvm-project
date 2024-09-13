@@ -2472,28 +2472,6 @@ bool CGOpenMPRuntime::isDynamic(OpenMPScheduleClauseKind ScheduleKind) const {
   return Schedule != OMP_sch_static;
 }
 
-unsigned cgomp_sched_auto_mode_count = 0;
-llvm::DenseMap<unsigned, unsigned> cgomp_sched_auto_mode_map;
-
-static unsigned getAutoModeCount(unsigned code) {
-  auto it = cgomp_sched_auto_mode_map.find(code);
-  if (it == cgomp_sched_auto_mode_map.end())
-    return 0;
-  return cgomp_sched_auto_mode_map[code];
-}
-
-static unsigned getAutoModeCount(unsigned code, OpenMPScheduleChunkMode mode) {
-  if (mode != OMPC_SCHEDULE_CHUNK_MODE_auto)
-    return 0;
-
-  auto it = cgomp_sched_auto_mode_map.find(code);
-  if (it == cgomp_sched_auto_mode_map.end()) {
-    cgomp_sched_auto_mode_map[code] = ++cgomp_sched_auto_mode_count;
-  }
-
-  return cgomp_sched_auto_mode_map[code];
-}
-
 static int addChunkMode(int previous, OpenMPScheduleChunkMode mode) {
   switch (mode) {
   case OMPC_SCHEDULE_CHUNK_MODE_auto:
@@ -2580,7 +2558,7 @@ void CGOpenMPRuntime::emitForDispatchInit(
   int ScheduleType =
       addMonoNonMonoModifier(CGM, Schedule, ScheduleKind.M1, ScheduleKind.M2);
   ScheduleType = addChunkMode(ScheduleType, ScheduleKind.Mode);
-  unsigned AutoID = getAutoModeCount(Loc.getRawEncoding(), ScheduleKind.Mode);
+  unsigned AutoID = ScheduleKind.AtID;
   llvm::Value *AutoIDValue = CGF.Builder.getInt32(AutoID);
   if (ScheduleKind.Mode == OMPC_SCHEDULE_CHUNK_MODE_auto) {
     llvm::GlobalVariable *GTotalAutoMode =
@@ -2613,7 +2591,7 @@ void CGOpenMPRuntime::emitForDispatchDeinit(
     return;
 
   int ScheduleType = addChunkMode(0, ScheduleKind.Mode);
-  unsigned AutoID = getAutoModeCount(Loc.getRawEncoding(), ScheduleKind.Mode);
+  unsigned AutoID = ScheduleKind.AtID;
   // Call __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 tid);
   llvm::Value *Args[] = {emitUpdateLocation(CGF, Loc), getThreadID(CGF, Loc),
                          CGF.Builder.getInt32(AutoID),
@@ -2658,6 +2636,7 @@ static void emitForStaticInitCall(
   }
   int ScheduleType = addChunkMode(
     addMonoNonMonoModifier(CGF.CGM, Schedule, M1, M2), Mode);
+
   llvm::Value *Args[] = {
       UpdateLocation,
       ThreadId,
@@ -2687,7 +2666,7 @@ void CGOpenMPRuntime::emitForStaticInit(CodeGenFunction &CGF,
       isOpenMPLoopDirective(DKind) ? OMP_IDENT_WORK_LOOP
                                    : OMP_IDENT_WORK_SECTIONS);
   llvm::Value *ThreadId = getThreadID(CGF, Loc);
-  unsigned AutoID = getAutoModeCount(Loc.getRawEncoding(), ScheduleKind.Mode);
+  unsigned AutoID = ScheduleKind.AtID;
   llvm::Value *AutoIDValue = CGF.Builder.getInt32(AutoID);
   if (ScheduleKind.Mode == OMPC_SCHEDULE_CHUNK_MODE_auto) {
     llvm::GlobalVariable *GTotalAutoMode =
@@ -2733,14 +2712,14 @@ void CGOpenMPRuntime::emitDistributeStaticInit(
 
 void CGOpenMPRuntime::emitForStaticFinish(CodeGenFunction &CGF,
                                           SourceLocation Loc,
-                                          OpenMPDirectiveKind DKind) {
+                                          OpenMPDirectiveKind DKind,
+                                          unsigned AutoID) {
   assert((DKind == OMPD_distribute || DKind == OMPD_for ||
           DKind == OMPD_sections) &&
          "Expected distribute, for, or sections directive kind");
   if (!CGF.HaveInsertPoint())
     return;
-  unsigned AutoID = getAutoModeCount(Loc.getRawEncoding());
-  // Call __kmpc_for_static_fini(ident_t *loc, kmp_int32 tid);
+  // Call __kmpc_for_static_fini(ident_t *loc, kmp_int32 tid, kmp_uint32 atid);
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc,
                          isOpenMPDistributeDirective(DKind) ||
@@ -12148,7 +12127,8 @@ void CGOpenMPSIMDRuntime::emitForOrderedIterationEnd(CodeGenFunction &CGF,
 
 void CGOpenMPSIMDRuntime::emitForStaticFinish(CodeGenFunction &CGF,
                                               SourceLocation Loc,
-                                              OpenMPDirectiveKind DKind) {
+                                              OpenMPDirectiveKind DKind,
+                                              unsigned AutoID) {
   llvm_unreachable("Not supported in SIMD-only mode");
 }
 

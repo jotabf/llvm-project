@@ -44,8 +44,8 @@ extern "C" {
 #endif
   int __kmpc_global_thread_num(id*);
   void __kmpc_barrier(id*, int gtid);
-  void __kmpc_dispatch_init_4(id*, int, enum sched, int, int, int, int);
-  void __kmpc_dispatch_init_8(id*, int, enum sched, i64, i64, i64, i64);
+  void __kmpc_dispatch_init_4(id*, int, unsigned, enum sched, int, int, int, int);
+  void __kmpc_dispatch_init_8(id*, int, unsigned, enum sched, i64, i64, i64, i64);
   int __kmpc_dispatch_next_4(id*, int, void*, void*, void*, void*);
   int __kmpc_dispatch_next_8(id*, int, void*, void*, void*, void*);
 #ifdef __cplusplus
@@ -89,7 +89,7 @@ run_loop(
     return;
   if (loop_st > 0 ? loop_lb > loop_ub : loop_lb < loop_ub)
     return;
-  __kmpc_dispatch_init_4(&loc, gtid, kmp_sch_runtime_simd,
+  __kmpc_dispatch_init_4(&loc, gtid, 0, kmp_sch_runtime_simd,
                          loop_lb, loop_ub, loop_st, SIMD_LEN);
   {
     // Let the master thread handle the chunks alone.

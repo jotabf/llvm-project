@@ -99,7 +99,7 @@ void loop_with_counter_collapse() {
   // CHECK: store i64 [[NUM_ITERS_VAL]], ptr [[UB:%.+]],
   // CHECK: store i64 1, ptr [[STRIDE:%.+]],
   // CHECK: store i32 0, ptr [[IS_LAST:%.+]],
-  // CHECK: call void @__kmpc_for_static_init_8(ptr @{{.+}}, i32 %{{.+}}, i32 34, ptr [[IS_LAST]], ptr [[LB]], ptr [[UB]], ptr [[STRIDE]], i64 1, i64 1)
+  // CHECK: call void @__kmpc_for_static_init_8(ptr @{{.+}}, i32 %{{.+}}, i32 0, i32 34, ptr [[IS_LAST]], ptr [[LB]], ptr [[UB]], ptr [[STRIDE]], i64 1, i64 1)
   // CHECK: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
   // CHECK: [[NUM_ITERS_VAL:%.+]] = load i64, ptr [[NUM_ITERS]],
   // CHECK: [[CMP:%.+]] = icmp sgt i64 [[UB_VAL]], [[NUM_ITERS_VAL]]
@@ -186,7 +186,7 @@ void loop_with_counter_collapse() {
   // CHECK: [[CLEANUP]]:
   // CHECK: br label %[[EXIT:[^,]+]]
   // CHECK: [[EXIT]]:
-  // CHECK: call void @__kmpc_for_static_fini(ptr @{{.+}}, i32 %{{.+}})
+  // CHECK: call void @__kmpc_for_static_fini(ptr @{{.+}}, i32 %{{.+}}, i32 0)
   // LIFETIME: call void @llvm.lifetime.end
   // LIFETIME: call void @llvm.lifetime.end
   // LIFETIME: call void @llvm.lifetime.end
@@ -228,7 +228,7 @@ void loop_with_counter_collapse4() {
 void without_schedule_clause(float *a, float *b, float *c, float *d) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for nowait
-// CHECK: call void @__kmpc_for_static_init_4(ptr [[LOOP_LOC]], i32 [[GTID]], i32 34, ptr [[IS_LAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4(ptr [[LOOP_LOC]], i32 [[GTID]], i32 0, i32 34, ptr [[IS_LAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]], i32 1, i32 1)
 // UB = min(UB, GlobalUB)
 // CHECK-NEXT: [[UB:%.+]] = load i32, ptr [[OMP_UB]]
 // CHECK-NEXT: [[UBCMP:%.+]] = icmp sgt i32 [[UB]], 4571423
@@ -260,7 +260,7 @@ void without_schedule_clause(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: br label %{{.+}}
   }
 // CHECK: [[LOOP1_END]]
-// CHECK: call void @__kmpc_for_static_fini(ptr [[LOOP_LOC]], i32 [[GTID]])
+// CHECK: call void @__kmpc_for_static_fini(ptr [[LOOP_LOC]], i32 [[GTID]], i32 0)
 // CHECK-NOT: __kmpc_barrier
 // CHECK: ret void
 }
@@ -269,7 +269,7 @@ void without_schedule_clause(float *a, float *b, float *c, float *d) {
 void static_not_chunked(float *a, float *b, float *c, float *d) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for schedule(static)
-// CHECK: call void @__kmpc_for_static_init_4(ptr [[LOOP_LOC]], i32 [[GTID]], i32 34, ptr [[IS_LAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4(ptr [[LOOP_LOC]], i32 [[GTID]], i32 0, i32 34, ptr [[IS_LAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]], i32 1, i32 1)
 // UB = min(UB, GlobalUB)
 // CHECK-NEXT: [[UB:%.+]] = load i32, ptr [[OMP_UB]]
 // CHECK-NEXT: [[UBCMP:%.+]] = icmp sgt i32 [[UB]], 4571423
@@ -301,7 +301,7 @@ void static_not_chunked(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: br label %{{.+}}
   }
 // CHECK: [[LOOP1_END]]
-// CHECK: call void @__kmpc_for_static_fini(ptr [[LOOP_LOC]], i32 [[GTID]])
+// CHECK: call void @__kmpc_for_static_fini(ptr [[LOOP_LOC]], i32 [[GTID]], i32 0)
 // CHECK: call {{.+}} @__kmpc_barrier(ptr [[IMPLICIT_BARRIER_LOC]], i32 [[GTID]])
 // CHECK: ret void
 }
@@ -310,7 +310,7 @@ void static_not_chunked(float *a, float *b, float *c, float *d) {
 void static_chunked(float *a, float *b, float *c, float *d) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for schedule(monotonic: static, 5)
-// CHECK: call void @__kmpc_for_static_init_4u(ptr [[LOOP_LOC]], i32 [[GTID]], i32 536870945, ptr [[IS_LAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]], i32 1, i32 5)
+// CHECK: call void @__kmpc_for_static_init_4u(ptr [[LOOP_LOC]], i32 [[GTID]], i32 0, i32 536870945, ptr [[IS_LAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]], i32 1, i32 5)
 // UB = min(UB, GlobalUB)
 // CHECK: [[UB:%.+]] = load i32, ptr [[OMP_UB]]
 // CHECK-NEXT: [[UBCMP:%.+]] = icmp ugt i32 [[UB]], 16908288
@@ -361,7 +361,7 @@ void static_chunked(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: store i32 [[ADD_UB]], ptr [[OMP_UB]]
 
 // CHECK: [[O_LOOP1_END]]
-// CHECK: call void @__kmpc_for_static_fini(ptr [[LOOP_LOC]], i32 [[GTID]])
+// CHECK: call void @__kmpc_for_static_fini(ptr [[LOOP_LOC]], i32 [[GTID]], i32 0)
 // CHECK: call {{.+}} @__kmpc_barrier(ptr [[IMPLICIT_BARRIER_LOC]], i32 [[GTID]])
 // CHECK: ret void
 }
@@ -370,7 +370,7 @@ void static_chunked(float *a, float *b, float *c, float *d) {
 void dynamic1(float *a, float *b, float *c, float *d) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for schedule(nonmonotonic: dynamic)
-// CHECK: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741859, i64 0, i64 16908287, i64 1, i64 1)
+// CHECK: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741859, i64 0, i64 16908287, i64 1, i64 1)
 //
 // CHECK: [[HASWORK:%.+]] = call i32 @__kmpc_dispatch_next_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], ptr [[OMP_ISLAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]])
 // CHECK-NEXT: [[O_CMP:%.+]] = icmp ne i32 [[HASWORK]], 0
@@ -412,9 +412,9 @@ void dynamic1(float *a, float *b, float *c, float *d) {
 void guided7(float *a, float *b, float *c, float *d) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for schedule(guided, 7)
-// OMP45: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 36, i64 0, i64 16908287, i64 1, i64 7)
-// OMP5: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
-// OMP51: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
+// OMP45: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 36, i64 0, i64 16908287, i64 1, i64 7)
+// OMP5: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
+// OMP51: call void @__kmpc_dispatch_init_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
 //
 // CHECK: [[HASWORK:%.+]] = call i32 @__kmpc_dispatch_next_8u(ptr [[DEFAULT_LOC]], i32 [[GTID]], ptr [[OMP_ISLAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]])
 // CHECK-NEXT: [[O_CMP:%.+]] = icmp ne i32 [[HASWORK]], 0
@@ -458,9 +458,9 @@ void test_auto(float *a, float *b, float *c, float *d) {
   unsigned int y = 0;
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for schedule(auto) collapse(2)
-// OMP45: call void @__kmpc_dispatch_init_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 38, i64 0, i64 [[LAST_ITER:%[^,]+]], i64 1, i64 1)
-// OMP5: call void @__kmpc_dispatch_init_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741862, i64 0, i64 [[LAST_ITER:%[^,]+]], i64 1, i64 1)
-// OMP51: call void @__kmpc_dispatch_init_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741862, i64 0, i64 [[LAST_ITER:%[^,]+]], i64 1, i64 1)
+// OMP45: call void @__kmpc_dispatch_init_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 38, i64 0, i64 [[LAST_ITER:%[^,]+]], i64 1, i64 1)
+// OMP5: call void @__kmpc_dispatch_init_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741862, i64 0, i64 [[LAST_ITER:%[^,]+]], i64 1, i64 1)
+// OMP51: call void @__kmpc_dispatch_init_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741862, i64 0, i64 [[LAST_ITER:%[^,]+]], i64 1, i64 1)
 //
 // CHECK: [[HASWORK:%.+]] = call i32 @__kmpc_dispatch_next_8(ptr [[DEFAULT_LOC]], i32 [[GTID]], ptr [[OMP_ISLAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]])
 // CHECK-NEXT: [[O_CMP:%.+]] = icmp ne i32 [[HASWORK]], 0
@@ -505,9 +505,9 @@ void runtime(float *a, float *b, float *c, float *d) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(ptr [[DEFAULT_LOC:[@%].+]])
   #pragma omp for collapse(2) schedule(runtime)
 
-// OMP45: call void @__kmpc_dispatch_init_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 37, i32 0, i32 199, i32 1, i32 1)
-// OMP5: call void @__kmpc_dispatch_init_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741861, i32 0, i32 199, i32 1, i32 1)
-// OMP51: call void @__kmpc_dispatch_init_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 1073741861, i32 0, i32 199, i32 1, i32 1)
+// OMP45: call void @__kmpc_dispatch_init_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 37, i32 0, i32 199, i32 1, i32 1)
+// OMP5: call void @__kmpc_dispatch_init_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741861, i32 0, i32 199, i32 1, i32 1)
+// OMP51: call void @__kmpc_dispatch_init_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], i32 0, i32 1073741861, i32 0, i32 199, i32 1, i32 1)
 //
 // CHECK: [[HASWORK:%.+]] = call i32 @__kmpc_dispatch_next_4(ptr [[DEFAULT_LOC]], i32 [[GTID]], ptr [[OMP_ISLAST:%[^,]+]], ptr [[OMP_LB:%[^,]+]], ptr [[OMP_UB:%[^,]+]], ptr [[OMP_ST:%[^,]+]])
 // CHECK-NEXT: [[O_CMP:%.+]] = icmp ne i32 [[HASWORK]], 0
