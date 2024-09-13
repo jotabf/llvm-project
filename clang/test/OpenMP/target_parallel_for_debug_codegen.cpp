@@ -217,7 +217,7 @@ int main() {
 // CHECK1-NEXT:      #dbg_declare(ptr [[I]], [[META100:![0-9]+]], !DIExpression(), [[META82]])
 // CHECK1-NEXT:    [[TMP8:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG92]]
 // CHECK1-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP8]], align 4, !dbg [[DBG92]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB3:[0-9]+]], i32 [[TMP9]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG101:![0-9]+]]
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB3:[0-9]+]], i32 [[TMP9]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG101:![0-9]+]]
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG92]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP10:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG95]]
@@ -318,7 +318,7 @@ int main() {
 // CHECK1-NEXT:    store i32 [[ADD29]], ptr [[DOTOMP_UB]], align 4, !dbg [[DBG92]]
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG101]], !llvm.loop [[LOOP133:![0-9]+]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB5:[0-9]+]], i32 [[TMP9]]), !dbg [[DBG132:![0-9]+]]
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB5:[0-9]+]], i32 [[TMP9]], i32 0), !dbg [[DBG132:![0-9]+]]
 // CHECK1-NEXT:    ret void, !dbg [[DBG134:![0-9]+]]
 //
 //
@@ -509,7 +509,7 @@ int main() {
 // CHECK1-NEXT:      #dbg_declare(ptr [[I]], [[META198:![0-9]+]], !DIExpression(), [[META181]])
 // CHECK1-NEXT:    [[TMP9:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG191]]
 // CHECK1-NEXT:    [[TMP10:%.*]] = load i32, ptr [[TMP9]], align 4, !dbg [[DBG191]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB10:[0-9]+]], i32 [[TMP10]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG199:![0-9]+]]
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB10:[0-9]+]], i32 [[TMP10]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG199:![0-9]+]]
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG191]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP11:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG194]]
@@ -602,7 +602,7 @@ int main() {
 // CHECK1-NEXT:    store i32 [[ADD25]], ptr [[DOTOMP_UB]], align 4, !dbg [[DBG191]]
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG199]], !llvm.loop [[LOOP229:![0-9]+]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB12:[0-9]+]], i32 [[TMP10]]), !dbg [[DBG228:![0-9]+]]
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB12:[0-9]+]], i32 [[TMP10]], i32 0), !dbg [[DBG228:![0-9]+]]
 // CHECK1-NEXT:    ret void, !dbg [[DBG230:![0-9]+]]
 //
 //
@@ -801,7 +801,7 @@ int main() {
 // CHECK1-NEXT:      #dbg_declare(ptr [[I]], [[META292:![0-9]+]], !DIExpression(), [[META275]])
 // CHECK1-NEXT:    [[TMP12:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG285]]
 // CHECK1-NEXT:    [[TMP13:%.*]] = load i32, ptr [[TMP12]], align 4, !dbg [[DBG285]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB17:[0-9]+]], i32 [[TMP13]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG293:![0-9]+]]
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB17:[0-9]+]], i32 [[TMP13]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG293:![0-9]+]]
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG285]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP14:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG288]]
@@ -898,7 +898,7 @@ int main() {
 // CHECK1-NEXT:    store i32 [[ADD29]], ptr [[DOTOMP_UB]], align 4, !dbg [[DBG285]]
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG293]], !llvm.loop [[LOOP324:![0-9]+]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB19:[0-9]+]], i32 [[TMP13]]), !dbg [[DBG323:![0-9]+]]
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB19:[0-9]+]], i32 [[TMP13]], i32 0), !dbg [[DBG323:![0-9]+]]
 // CHECK1-NEXT:    ret void, !dbg [[DBG325:![0-9]+]]
 //
 //

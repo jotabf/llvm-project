@@ -77,7 +77,7 @@ void unroll_partial_heuristic_for(int m, float *a, float *b, float *c, float *d,
 // CHECK-NEXT:    store i64 1, ptr [[DOTOMP_STRIDE]], align 8
 // CHECK-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK-NEXT:    [[OMP_GLOBAL_THREAD_NUM:%.*]] = call i32 @__kmpc_global_thread_num(ptr @[[GLOB3:[0-9]+]])
-// CHECK-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1:[0-9]+]], i32 [[OMP_GLOBAL_THREAD_NUM]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
+// CHECK-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1:[0-9]+]], i32 [[OMP_GLOBAL_THREAD_NUM]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
 // CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
 // CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_2]], align 8
 // CHECK-NEXT:    [[CMP8:%.*]] = icmp sgt i64 [[TMP4]], [[TMP5]]
@@ -195,7 +195,7 @@ void unroll_partial_heuristic_for(int m, float *a, float *b, float *c, float *d,
 // CHECK-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK:       omp.loop.exit:
 // CHECK-NEXT:    [[OMP_GLOBAL_THREAD_NUM49:%.*]] = call i32 @__kmpc_global_thread_num(ptr @[[GLOB5:[0-9]+]])
-// CHECK-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[OMP_GLOBAL_THREAD_NUM49]])
+// CHECK-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[OMP_GLOBAL_THREAD_NUM49]], i32 0)
 // CHECK-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK:       omp.precond.end:
 // CHECK-NEXT:    [[OMP_GLOBAL_THREAD_NUM50:%.*]] = call i32 @__kmpc_global_thread_num(ptr @[[GLOB7:[0-9]+]])

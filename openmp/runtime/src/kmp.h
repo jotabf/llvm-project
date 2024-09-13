@@ -3811,17 +3811,17 @@ extern void __kmp_push_num_teams_51(ident_t *loc, int gtid, int num_teams_lb,
 
 extern void __kmp_yield();
 
-extern void __kmpc_dispatch_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 cid,
+extern void __kmpc_dispatch_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                    enum sched_type schedule, kmp_int32 lb,
                                    kmp_int32 ub, kmp_int32 st, kmp_int32 chunk);
-extern void __kmpc_dispatch_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 cid,
+extern void __kmpc_dispatch_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                     enum sched_type schedule, kmp_uint32 lb,
                                     kmp_uint32 ub, kmp_int32 st,
                                     kmp_int32 chunk);
-extern void __kmpc_dispatch_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 cid,
+extern void __kmpc_dispatch_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                    enum sched_type schedule, kmp_int64 lb,
                                    kmp_int64 ub, kmp_int64 st, kmp_int64 chunk);
-extern void __kmpc_dispatch_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 cid,
+extern void __kmpc_dispatch_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                     enum sched_type schedule, kmp_uint64 lb,
                                     kmp_uint64 ub, kmp_int64 st,
                                     kmp_int64 chunk);
@@ -3845,7 +3845,7 @@ extern void __kmpc_dispatch_fini_4u(ident_t *loc, kmp_int32 gtid);
 extern void __kmpc_dispatch_fini_8u(ident_t *loc, kmp_int32 gtid);
 
 extern void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid, 
-                                   kmp_uint32 cid,
+                                   kmp_uint32 atid,
                                    enum sched_type schedule);
 
 #ifdef KMP_GOMP_COMPAT

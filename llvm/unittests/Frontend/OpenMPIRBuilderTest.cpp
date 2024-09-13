@@ -2257,7 +2257,7 @@ TEST_F(OpenMPIRBuilderTest, StaticWorkshareLoopTarget) {
 
   IRBuilder<>::InsertPoint AfterIP = OMPBuilder.applyWorkshareLoop(
       DL, CLI, AllocaIP, true, OMP_SCHEDULE_Static, nullptr, false, false,
-      false, false, WorksharingLoopType::ForStaticLoop);
+      false, false, 0, WorksharingLoopType::ForStaticLoop);
   Builder.restoreIP(AfterIP);
   Builder.CreateRetVoid();
 

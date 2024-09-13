@@ -1722,6 +1722,12 @@ class OMPScheduleClause : public OMPClause, public OMPClauseWithPreInit {
   /// Chunk size.
   Expr *ChunkSize = nullptr;
 
+  /// Auto Chunk ID
+  unsigned AutoChunkID = 0;
+
+  /// Counter for the number of auto chunk modes.
+  inline static unsigned AutoChunkCounter = 0;
+
   /// Set schedule kind.
   ///
   /// \param K Schedule kind.
@@ -1815,6 +1821,11 @@ public:
     Modifiers[SECOND] = M2;
     ModifiersLoc[FIRST] = M1Loc;
     ModifiersLoc[SECOND] = M2Loc;
+
+    AutoChunkID = 0;
+    if(Mode == OMPC_SCHEDULE_CHUNK_MODE_auto)
+      AutoChunkID = ++AutoChunkCounter;
+    printf("OMPScheduleClause: %d\n", AutoChunkCounter);
   }
 
   /// Build an empty clause.
@@ -1865,6 +1876,9 @@ public:
 
   /// Get chunk size.
   const Expr *getChunkSize() const { return ChunkSize; }
+
+  /// Get auto chunk ID
+  unsigned getAutoChunkID() const { return AutoChunkID; }
 
   child_range children() {
     return child_range(reinterpret_cast<Stmt **>(&ChunkSize),

@@ -75,7 +75,7 @@ int foo() {
 // IR-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // IR-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP4]], i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP4]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_COMB_UB]], align 4
 // IR-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP5]], 99
 // IR-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -132,7 +132,7 @@ int foo() {
 // IR:       omp.loop.exit:
 // IR-NEXT:    [[TMP18:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    [[TMP19:%.*]] = load i32, ptr [[TMP18]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP19]])
+// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP19]], i32 0)
 // IR-NEXT:    [[TMP20:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // IR-NEXT:    [[TMP21:%.*]] = icmp ne i32 [[TMP20]], 0
 // IR-NEXT:    br i1 [[TMP21]], label [[DOTOMP_LASTPRIVATE_THEN:%.*]], label [[DOTOMP_LASTPRIVATE_DONE:%.*]]
@@ -271,7 +271,7 @@ int foo() {
 // IR-PCH-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // IR-PCH-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-PCH-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4
-// IR-PCH-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP4]], i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-PCH-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP4]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-PCH-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_COMB_UB]], align 4
 // IR-PCH-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP5]], 99
 // IR-PCH-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -328,7 +328,7 @@ int foo() {
 // IR-PCH:       omp.loop.exit:
 // IR-PCH-NEXT:    [[TMP18:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-PCH-NEXT:    [[TMP19:%.*]] = load i32, ptr [[TMP18]], align 4
-// IR-PCH-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP19]])
+// IR-PCH-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP19]], i32 0)
 // IR-PCH-NEXT:    [[TMP20:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // IR-PCH-NEXT:    [[TMP21:%.*]] = icmp ne i32 [[TMP20]], 0
 // IR-PCH-NEXT:    br i1 [[TMP21]], label [[DOTOMP_LASTPRIVATE_THEN:%.*]], label [[DOTOMP_LASTPRIVATE_DONE:%.*]]

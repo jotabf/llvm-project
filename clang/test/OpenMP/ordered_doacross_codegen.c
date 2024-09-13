@@ -43,7 +43,7 @@ int main(void) {
 // CHECK: store i64 1, ptr %
 // CHECK: [[DIM:%.+]] = getelementptr inbounds [1 x [[KMP_DIM]]], ptr [[DIMS]], i64 0, i64 0
 // CHECK-NORMAL: call void @__kmpc_doacross_init(ptr [[IDENT]], i32 [[GTID]], i32 1, ptr [[DIM]])
-// CHECK-NORMAL: call void @__kmpc_for_static_init_4(ptr @{{.+}}, i32 [[GTID]], i32 33, ptr %{{.+}}, ptr %{{.+}}, ptr %{{.+}}, ptr %{{.+}}, i32 1, i32 1)
+// CHECK-NORMAL: call void @__kmpc_for_static_init_4(ptr @{{.+}}, i32 [[GTID]], i32 0, i32 33, ptr %{{.+}}, ptr %{{.+}}, ptr %{{.+}}, ptr %{{.+}}, i32 1, i32 1)
 #pragma omp for ordered(1)
   for (i = 0; i < n; ++i) {
     a[i] = b[i] + 1;

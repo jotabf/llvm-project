@@ -62,7 +62,7 @@ int foo() {
 // IR-NEXT:    [[TMP1:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    [[TMP2:%.*]] = load i32, ptr [[TMP1]], align 4
 // IR-NEXT:    [[DOTX__VOID_ADDR:%.*]] = call ptr @__kmpc_alloc(i32 [[TMP2]], i64 4, ptr null)
-// IR-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP2]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP2]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-NEXT:    [[TMP3:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // IR-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP3]], 4095
 // IR-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -118,7 +118,7 @@ int foo() {
 // IR:       omp.inner.for.end:
 // IR-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // IR:       omp.loop.exit:
-// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP2]])
+// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP2]], i32 0)
 // IR-NEXT:    call void @__kmpc_free(i32 [[TMP2]], ptr [[DOTX__VOID_ADDR]], ptr null)
 // IR-NEXT:    ret void
 //
@@ -162,7 +162,7 @@ int foo() {
 // IR-PCH-NEXT:    [[TMP1:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-PCH-NEXT:    [[TMP2:%.*]] = load i32, ptr [[TMP1]], align 4
 // IR-PCH-NEXT:    [[DOTX__VOID_ADDR:%.*]] = call ptr @__kmpc_alloc(i32 [[TMP2]], i64 4, ptr null)
-// IR-PCH-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP2]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-PCH-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP2]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-PCH-NEXT:    [[TMP3:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // IR-PCH-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP3]], 4095
 // IR-PCH-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -218,7 +218,7 @@ int foo() {
 // IR-PCH:       omp.inner.for.end:
 // IR-PCH-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // IR-PCH:       omp.loop.exit:
-// IR-PCH-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP2]])
+// IR-PCH-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP2]], i32 0)
 // IR-PCH-NEXT:    call void @__kmpc_free(i32 [[TMP2]], ptr [[DOTX__VOID_ADDR]], ptr null)
 // IR-PCH-NEXT:    ret void
 //

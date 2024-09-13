@@ -83,7 +83,7 @@ void test() {
 // CHECK1-NEXT:    call void @llvm.lifetime.start.p0(i64 4, ptr [[IB]]) #[[ATTR4]]
 // CHECK1-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP1:%.*]] = load i32, ptr [[TMP0]], align 4, !tbaa [[TBAA15]]
-// CHECK1-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP1]], i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP1]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK1-NEXT:    [[TMP2:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !tbaa [[TBAA15]]
 // CHECK1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP2]], 99
 // CHECK1-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -142,7 +142,7 @@ void test() {
 // CHECK1:       omp.inner.for.end:
 // CHECK1-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK1:       omp.loop.exit:
-// CHECK1-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP1]])
+// CHECK1-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP1]], i32 0)
 // CHECK1-NEXT:    call void @llvm.lifetime.end.p0(i64 4, ptr [[IB]]) #[[ATTR4]]
 // CHECK1-NEXT:    call void @llvm.lifetime.end.p0(i64 4, ptr [[DOTOMP_IS_LAST]]) #[[ATTR4]]
 // CHECK1-NEXT:    call void @llvm.lifetime.end.p0(i64 4, ptr [[DOTOMP_STRIDE]]) #[[ATTR4]]
@@ -250,7 +250,7 @@ void test() {
 // CHECK1-NEXT:    call void @llvm.lifetime.start.p0(i64 4, ptr [[I7]]) #[[ATTR4]]
 // CHECK1-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4, !tbaa [[TBAA15]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB3:[0-9]+]], i32 [[TMP12]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB3:[0-9]+]], i32 [[TMP12]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP13:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !tbaa [[TBAA15]]
@@ -328,7 +328,7 @@ void test() {
 // CHECK1:       omp.dispatch.end:
 // CHECK1-NEXT:    [[TMP31:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP32:%.*]] = load i32, ptr [[TMP31]], align 4, !tbaa [[TBAA15]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP32]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP32]], i32 0)
 // CHECK1-NEXT:    [[TMP33:%.*]] = getelementptr inbounds [1 x ptr], ptr [[DOTOMP_REDUCTION_RED_LIST]], i64 0, i64 0
 // CHECK1-NEXT:    store ptr [[PARTIAL_SUM5]], ptr [[TMP33]], align 8
 // CHECK1-NEXT:    [[TMP34:%.*]] = call i32 @__kmpc_nvptx_parallel_reduce_nowait_v2(ptr @[[GLOB1]], i64 8, ptr [[DOTOMP_REDUCTION_RED_LIST]], ptr @_omp_reduction_shuffle_and_reduce_func, ptr @_omp_reduction_inter_warp_copy_func)
@@ -575,7 +575,7 @@ void test() {
 // CHECK1-NEXT:    call void @llvm.lifetime.start.p0(i64 4, ptr [[IB]]) #[[ATTR4]]
 // CHECK1-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP1:%.*]] = load i32, ptr [[TMP0]], align 4, !tbaa [[TBAA15]]
-// CHECK1-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2]], i32 [[TMP1]], i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2]], i32 [[TMP1]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK1-NEXT:    [[TMP2:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !tbaa [[TBAA15]]
 // CHECK1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP2]], 99
 // CHECK1-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -634,7 +634,7 @@ void test() {
 // CHECK1:       omp.inner.for.end:
 // CHECK1-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK1:       omp.loop.exit:
-// CHECK1-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP1]])
+// CHECK1-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP1]], i32 0)
 // CHECK1-NEXT:    call void @llvm.lifetime.end.p0(i64 4, ptr [[IB]]) #[[ATTR4]]
 // CHECK1-NEXT:    call void @llvm.lifetime.end.p0(i64 4, ptr [[DOTOMP_IS_LAST]]) #[[ATTR4]]
 // CHECK1-NEXT:    call void @llvm.lifetime.end.p0(i64 4, ptr [[DOTOMP_STRIDE]]) #[[ATTR4]]
@@ -742,7 +742,7 @@ void test() {
 // CHECK1-NEXT:    call void @llvm.lifetime.start.p0(i64 4, ptr [[I7]]) #[[ATTR4]]
 // CHECK1-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4, !tbaa [[TBAA15]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB3]], i32 [[TMP12]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB3]], i32 [[TMP12]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP13:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !tbaa [[TBAA15]]
@@ -820,7 +820,7 @@ void test() {
 // CHECK1:       omp.dispatch.end:
 // CHECK1-NEXT:    [[TMP31:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP32:%.*]] = load i32, ptr [[TMP31]], align 4, !tbaa [[TBAA15]]
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP32]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP32]], i32 0)
 // CHECK1-NEXT:    [[TMP33:%.*]] = getelementptr inbounds [1 x ptr], ptr [[DOTOMP_REDUCTION_RED_LIST]], i64 0, i64 0
 // CHECK1-NEXT:    store ptr [[PARTIAL_SUM5]], ptr [[TMP33]], align 8
 // CHECK1-NEXT:    [[TMP34:%.*]] = call i32 @__kmpc_nvptx_parallel_reduce_nowait_v2(ptr @[[GLOB1]], i64 16, ptr [[DOTOMP_REDUCTION_RED_LIST]], ptr @_omp_reduction_shuffle_and_reduce_func1, ptr @_omp_reduction_inter_warp_copy_func2)

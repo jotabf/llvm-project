@@ -305,7 +305,7 @@ int main() {
 // CHECK1-NEXT:    call void @_ZN2StD1Ev(ptr noundef nonnull align 4 dereferenceable(8) [[AGG_TMP2]]) #[[ATTR2]]
 // CHECK1-NEXT:    [[TMP3:%.*]] = load i32, ptr @_ZZ4mainE5sivar, align 4
 // CHECK1-NEXT:    store i32 [[TMP3]], ptr [[SIVAR]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP0]], i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP0]], i32 0, i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
 // CHECK1-NEXT:    [[TMP4:%.*]] = load i32, ptr [[DOTOMP_SECTIONS_UB_]], align 4
 // CHECK1-NEXT:    [[TMP5:%.*]] = icmp slt i32 [[TMP4]], 0
 // CHECK1-NEXT:    [[TMP6:%.*]] = select i1 [[TMP5]], i32 [[TMP4]], i32 0
@@ -339,7 +339,7 @@ int main() {
 // CHECK1-NEXT:    store i32 [[INC]], ptr [[DOTOMP_SECTIONS_IV_]], align 4
 // CHECK1-NEXT:    br label [[OMP_INNER_FOR_COND]]
 // CHECK1:       omp.inner.for.end:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]], i32 0)
 // CHECK1-NEXT:    call void @_ZN1SIfED1Ev(ptr noundef nonnull align 4 dereferenceable(4) [[VAR]]) #[[ATTR2]]
 // CHECK1-NEXT:    [[ARRAY_BEGIN4:%.*]] = getelementptr inbounds [2 x %struct.S], ptr [[S_ARR]], i32 0, i32 0
 // CHECK1-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [[STRUCT_S]], ptr [[ARRAY_BEGIN4]], i64 2
@@ -548,7 +548,7 @@ int main() {
 // CHECK1-NEXT:    call void @_ZN2StD1Ev(ptr noundef nonnull align 4 dereferenceable(8) [[AGG_TMP6]]) #[[ATTR2]]
 // CHECK1-NEXT:    [[TMP6:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP7:%.*]] = load i32, ptr [[TMP6]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP7]], i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP7]], i32 0, i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
 // CHECK1-NEXT:    [[TMP8:%.*]] = load i32, ptr [[DOTOMP_SECTIONS_UB_]], align 4
 // CHECK1-NEXT:    [[TMP9:%.*]] = icmp slt i32 [[TMP8]], 1
 // CHECK1-NEXT:    [[TMP10:%.*]] = select i1 [[TMP9]], i32 [[TMP8]], i32 1
@@ -586,7 +586,7 @@ int main() {
 // CHECK1:       omp.inner.for.end:
 // CHECK1-NEXT:    [[TMP17:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP18:%.*]] = load i32, ptr [[TMP17]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP18]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP18]], i32 0)
 // CHECK1-NEXT:    call void @_ZN1SIiED1Ev(ptr noundef nonnull align 4 dereferenceable(4) [[VAR5]]) #[[ATTR2]]
 // CHECK1-NEXT:    [[ARRAY_BEGIN9:%.*]] = getelementptr inbounds [2 x %struct.S.0], ptr [[S_ARR3]], i32 0, i32 0
 // CHECK1-NEXT:    [[TMP19:%.*]] = getelementptr inbounds [[STRUCT_S_0]], ptr [[ARRAY_BEGIN9]], i64 2
@@ -1007,7 +1007,7 @@ int main() {
 // CHECK4-NEXT:    store i32 [[TMP2]], ptr [[SIVAR1]], align 4
 // CHECK4-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK4-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4
-// CHECK4-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP4]], i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
+// CHECK4-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP4]], i32 0, i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
 // CHECK4-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_SECTIONS_UB_]], align 4
 // CHECK4-NEXT:    [[TMP6:%.*]] = icmp slt i32 [[TMP5]], 1
 // CHECK4-NEXT:    [[TMP7:%.*]] = select i1 [[TMP6]], i32 [[TMP5]], i32 1
@@ -1059,7 +1059,7 @@ int main() {
 // CHECK4-NEXT:    store i32 [[INC]], ptr [[DOTOMP_SECTIONS_IV_]], align 4
 // CHECK4-NEXT:    br label [[OMP_INNER_FOR_COND]]
 // CHECK4:       omp.inner.for.end:
-// CHECK4-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]])
+// CHECK4-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]], i32 0)
 // CHECK4-NEXT:    call void @__kmpc_barrier(ptr @[[GLOB2:[0-9]+]], i32 [[TMP4]])
 // CHECK4-NEXT:    ret void
 //

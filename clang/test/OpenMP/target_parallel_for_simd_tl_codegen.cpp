@@ -58,7 +58,7 @@ int thread_limit_target_parallel_for_simd() {
 // OMP51-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // OMP51-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // OMP51-NEXT:    [[TMP1:%.*]] = load i32, ptr [[TMP0]], align 4
-// OMP51-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP1]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// OMP51-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP1]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // OMP51-NEXT:    [[TMP2:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // OMP51-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP2]], 1
 // OMP51-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -94,7 +94,7 @@ int thread_limit_target_parallel_for_simd() {
 // OMP51:       omp.inner.for.end:
 // OMP51-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // OMP51:       omp.loop.exit:
-// OMP51-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP1]])
+// OMP51-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP1]], i32 0)
 // OMP51-NEXT:    [[TMP9:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // OMP51-NEXT:    [[TMP10:%.*]] = icmp ne i32 [[TMP9]], 0
 // OMP51-NEXT:    br i1 [[TMP10]], label [[DOTOMP_FINAL_THEN:%.*]], label [[DOTOMP_FINAL_DONE:%.*]]

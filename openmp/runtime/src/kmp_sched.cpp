@@ -73,7 +73,7 @@ static inline void check_loc(ident_t *&loc) {
 
 template <typename T>
 static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
-                                  kmp_uint32 auto_id, kmp_int32 schedtype,
+                                  kmp_uint32 atid, kmp_int32 schedtype,
                                   kmp_int32 *plastiter, T *plower, T *pupper,
                                   typename traits_t<T>::signed_t *pstride,
                                   typename traits_t<T>::signed_t incr,
@@ -86,7 +86,7 @@ static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
 
   if (schedtype & kmp_sch_chunk_mode_auto) {
     T result =
-        __kmp_start_autotuning<T>(global_tid, auto_id, (*plower), (*pupper));
+        __kmp_start_autotuning<T>(global_tid, atid, (*plower), (*pupper));
     schedtype = SCHEDULE_WITHOUT_MODE(schedtype);
     chunk = static_cast<typename traits_t<T>::signed_t>(result);
   }
@@ -895,12 +895,12 @@ increment and chunk size.
 
 @{
 */
-void __kmpc_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
+void __kmpc_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                               kmp_int32 schedtype, kmp_int32 *plastiter,
                               kmp_int32 *plower, kmp_int32 *pupper,
                               kmp_int32 *pstride, kmp_int32 incr,
                               kmp_int32 chunk) {
-  __kmp_for_static_init<kmp_int32>(loc, gtid, auto_id, schedtype, plastiter,
+  __kmp_for_static_init<kmp_int32>(loc, gtid, atid, schedtype, plastiter,
                                    plower, pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                    ,
@@ -912,12 +912,12 @@ void __kmpc_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
 /*!
  See @ref __kmpc_for_static_init_4
  */
-void __kmpc_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
+void __kmpc_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                kmp_int32 schedtype, kmp_int32 *plastiter,
                                kmp_uint32 *plower, kmp_uint32 *pupper,
                                kmp_int32 *pstride, kmp_int32 incr,
                                kmp_int32 chunk) {
-  __kmp_for_static_init<kmp_uint32>(loc, gtid, auto_id, schedtype, plastiter,
+  __kmp_for_static_init<kmp_uint32>(loc, gtid, atid, schedtype, plastiter,
                                     plower, pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                     ,
@@ -929,12 +929,12 @@ void __kmpc_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
 /*!
  See @ref __kmpc_for_static_init_4
  */
-void __kmpc_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
+void __kmpc_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                               kmp_int32 schedtype, kmp_int32 *plastiter,
                               kmp_int64 *plower, kmp_int64 *pupper,
                               kmp_int64 *pstride, kmp_int64 incr,
                               kmp_int64 chunk) {
-  __kmp_for_static_init<kmp_int64>(loc, gtid, auto_id, schedtype, plastiter,
+  __kmp_for_static_init<kmp_int64>(loc, gtid, atid, schedtype, plastiter,
                                    plower, pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                    ,
@@ -946,12 +946,12 @@ void __kmpc_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
 /*!
  See @ref __kmpc_for_static_init_4
  */
-void __kmpc_for_static_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 auto_id,
+void __kmpc_for_static_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                kmp_int32 schedtype, kmp_int32 *plastiter,
                                kmp_uint64 *plower, kmp_uint64 *pupper,
                                kmp_int64 *pstride, kmp_int64 incr,
                                kmp_int64 chunk) {
-  __kmp_for_static_init<kmp_uint64>(loc, gtid, auto_id, schedtype, plastiter,
+  __kmp_for_static_init<kmp_uint64>(loc, gtid, atid, schedtype, plastiter,
                                     plower, pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                     ,
@@ -991,7 +991,7 @@ increment and chunks for parallel loop and distribute constructs.
 
 @{
 */
-void __kmpc_dist_for_static_init_4(ident_t *loc, kmp_int32 gtid,
+void __kmpc_dist_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                    kmp_int32 schedule, kmp_int32 *plastiter,
                                    kmp_int32 *plower, kmp_int32 *pupper,
                                    kmp_int32 *pupperD, kmp_int32 *pstride,
@@ -1004,7 +1004,7 @@ void __kmpc_dist_for_static_init_4(ident_t *loc, kmp_int32 gtid,
 /*!
  See @ref __kmpc_dist_for_static_init_4
  */
-void __kmpc_dist_for_static_init_4u(ident_t *loc, kmp_int32 gtid,
+void __kmpc_dist_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                     kmp_int32 schedule, kmp_int32 *plastiter,
                                     kmp_uint32 *plower, kmp_uint32 *pupper,
                                     kmp_uint32 *pupperD, kmp_int32 *pstride,
@@ -1017,7 +1017,7 @@ void __kmpc_dist_for_static_init_4u(ident_t *loc, kmp_int32 gtid,
 /*!
  See @ref __kmpc_dist_for_static_init_4
  */
-void __kmpc_dist_for_static_init_8(ident_t *loc, kmp_int32 gtid,
+void __kmpc_dist_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                    kmp_int32 schedule, kmp_int32 *plastiter,
                                    kmp_int64 *plower, kmp_int64 *pupper,
                                    kmp_int64 *pupperD, kmp_int64 *pstride,
@@ -1030,7 +1030,7 @@ void __kmpc_dist_for_static_init_8(ident_t *loc, kmp_int32 gtid,
 /*!
  See @ref __kmpc_dist_for_static_init_4
  */
-void __kmpc_dist_for_static_init_8u(ident_t *loc, kmp_int32 gtid,
+void __kmpc_dist_for_static_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                                     kmp_int32 schedule, kmp_int32 *plastiter,
                                     kmp_uint64 *plower, kmp_uint64 *pupper,
                                     kmp_uint64 *pupperD, kmp_int64 *pstride,

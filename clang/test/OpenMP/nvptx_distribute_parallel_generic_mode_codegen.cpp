@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
 // CHECK4-NEXT:    [[NVPTX_NUM_THREADS:%.*]] = call i32 @__kmpc_get_hardware_num_threads_in_block()
 // CHECK4-NEXT:    [[TMP8:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK4-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP8]], align 4
-// CHECK4-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP9]], i32 91, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 [[NVPTX_NUM_THREADS]])
+// CHECK4-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP9]], i32 0, i32 91, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 [[NVPTX_NUM_THREADS]])
 // CHECK4-NEXT:    [[TMP10:%.*]] = load i32, ptr [[DOTOMP_COMB_UB]], align 4
 // CHECK4-NEXT:    [[TMP11:%.*]] = load i32, ptr [[DOTCAPTURE_EXPR_2]], align 4
 // CHECK4-NEXT:    [[CMP6:%.*]] = icmp sgt i32 [[TMP10]], [[TMP11]]
@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
 // CHECK4:       omp.loop.exit:
 // CHECK4-NEXT:    [[TMP45:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK4-NEXT:    [[TMP46:%.*]] = load i32, ptr [[TMP45]], align 4
-// CHECK4-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP46]])
+// CHECK4-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP46]], i32 0)
 // CHECK4-NEXT:    [[TMP47:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK4-NEXT:    [[TMP48:%.*]] = icmp ne i32 [[TMP47]], 0
 // CHECK4-NEXT:    br i1 [[TMP48]], label [[DOTOMP_LASTPRIVATE_THEN:%.*]], label [[DOTOMP_LASTPRIVATE_DONE:%.*]]
@@ -281,7 +281,7 @@ int main(int argc, char **argv) {
 // CHECK4-NEXT:    call void @llvm.memcpy.p0.p0.i64(ptr align 4 [[B4]], ptr align 4 [[TMP2]], i64 40, i1 false)
 // CHECK4-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK4-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
-// CHECK4-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB3:[0-9]+]], i32 [[TMP12]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK4-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB3:[0-9]+]], i32 [[TMP12]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK4-NEXT:    [[TMP13:%.*]] = load i32, ptr [[DOTOMP_LB]], align 4
 // CHECK4-NEXT:    store i32 [[TMP13]], ptr [[DOTOMP_IV]], align 4
 // CHECK4-NEXT:    br label [[OMP_INNER_FOR_COND:%.*]]
@@ -329,7 +329,7 @@ int main(int argc, char **argv) {
 // CHECK4:       omp.loop.exit:
 // CHECK4-NEXT:    [[TMP22:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK4-NEXT:    [[TMP23:%.*]] = load i32, ptr [[TMP22]], align 4
-// CHECK4-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP23]])
+// CHECK4-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP23]], i32 0)
 // CHECK4-NEXT:    [[TMP24:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK4-NEXT:    [[TMP25:%.*]] = icmp ne i32 [[TMP24]], 0
 // CHECK4-NEXT:    br i1 [[TMP25]], label [[DOTOMP_LASTPRIVATE_THEN:%.*]], label [[DOTOMP_LASTPRIVATE_DONE:%.*]]
@@ -436,7 +436,7 @@ int main(int argc, char **argv) {
 // CHECK5-NEXT:    [[NVPTX_NUM_THREADS:%.*]] = call i32 @__kmpc_get_hardware_num_threads_in_block()
 // CHECK5-NEXT:    [[TMP8:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 4
 // CHECK5-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP8]], align 4
-// CHECK5-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP9]], i32 91, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 [[NVPTX_NUM_THREADS]])
+// CHECK5-NEXT:    call void @__kmpc_distribute_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP9]], i32 0, i32 91, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 [[NVPTX_NUM_THREADS]])
 // CHECK5-NEXT:    [[TMP10:%.*]] = load i32, ptr [[DOTOMP_COMB_UB]], align 4
 // CHECK5-NEXT:    [[TMP11:%.*]] = load i32, ptr [[DOTCAPTURE_EXPR_2]], align 4
 // CHECK5-NEXT:    [[CMP6:%.*]] = icmp sgt i32 [[TMP10]], [[TMP11]]
@@ -519,7 +519,7 @@ int main(int argc, char **argv) {
 // CHECK5:       omp.loop.exit:
 // CHECK5-NEXT:    [[TMP43:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 4
 // CHECK5-NEXT:    [[TMP44:%.*]] = load i32, ptr [[TMP43]], align 4
-// CHECK5-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP44]])
+// CHECK5-NEXT:    call void @__kmpc_distribute_static_fini(ptr @[[GLOB2]], i32 [[TMP44]], i32 0)
 // CHECK5-NEXT:    [[TMP45:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK5-NEXT:    [[TMP46:%.*]] = icmp ne i32 [[TMP45]], 0
 // CHECK5-NEXT:    br i1 [[TMP46]], label [[DOTOMP_LASTPRIVATE_THEN:%.*]], label [[DOTOMP_LASTPRIVATE_DONE:%.*]]
@@ -595,7 +595,7 @@ int main(int argc, char **argv) {
 // CHECK5-NEXT:    call void @llvm.memcpy.p0.p0.i32(ptr align 4 [[B3]], ptr align 4 [[TMP2]], i32 40, i1 false)
 // CHECK5-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 4
 // CHECK5-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
-// CHECK5-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB3:[0-9]+]], i32 [[TMP12]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK5-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB3:[0-9]+]], i32 [[TMP12]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK5-NEXT:    [[TMP13:%.*]] = load i32, ptr [[DOTOMP_LB]], align 4
 // CHECK5-NEXT:    store i32 [[TMP13]], ptr [[DOTOMP_IV]], align 4
 // CHECK5-NEXT:    br label [[OMP_INNER_FOR_COND:%.*]]
@@ -639,7 +639,7 @@ int main(int argc, char **argv) {
 // CHECK5:       omp.loop.exit:
 // CHECK5-NEXT:    [[TMP22:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 4
 // CHECK5-NEXT:    [[TMP23:%.*]] = load i32, ptr [[TMP22]], align 4
-// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP23]])
+// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3]], i32 [[TMP23]], i32 0)
 // CHECK5-NEXT:    [[TMP24:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK5-NEXT:    [[TMP25:%.*]] = icmp ne i32 [[TMP24]], 0
 // CHECK5-NEXT:    br i1 [[TMP25]], label [[DOTOMP_LASTPRIVATE_THEN:%.*]], label [[DOTOMP_LASTPRIVATE_DONE:%.*]]

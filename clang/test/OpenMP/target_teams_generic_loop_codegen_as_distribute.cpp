@@ -150,7 +150,7 @@ int main()
 // IR-GPU-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST_ASCAST]], align 4
 // IR-GPU-NEXT:    [[TMP8:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR_ASCAST]], align 8
 // IR-GPU-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP8]], align 4
-// IR-GPU-NEXT:    call void @__kmpc_distribute_static_init_4(ptr addrspacecast (ptr addrspace(1) @[[GLOB2:[0-9]+]] to ptr), i32 [[TMP9]], i32 92, ptr [[DOTOMP_IS_LAST_ASCAST]], ptr [[DOTOMP_COMB_LB_ASCAST]], ptr [[DOTOMP_COMB_UB_ASCAST]], ptr [[DOTOMP_STRIDE_ASCAST]], i32 1, i32 1)
+// IR-GPU-NEXT:    call void @__kmpc_distribute_static_init_4(ptr addrspacecast (ptr addrspace(1) @[[GLOB2:[0-9]+]] to ptr), i32 [[TMP9]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST_ASCAST]], ptr [[DOTOMP_COMB_LB_ASCAST]], ptr [[DOTOMP_COMB_UB_ASCAST]], ptr [[DOTOMP_STRIDE_ASCAST]], i32 1, i32 1)
 // IR-GPU-NEXT:    [[TMP10:%.*]] = load i32, ptr [[DOTOMP_COMB_UB_ASCAST]], align 4
 // IR-GPU-NEXT:    [[TMP11:%.*]] = load i32, ptr [[DOTCAPTURE_EXPR_3_ASCAST]], align 4
 // IR-GPU-NEXT:    [[CMP6:%.*]] = icmp sgt i32 [[TMP10]], [[TMP11]]
@@ -218,7 +218,7 @@ int main()
 // IR-GPU:       omp.loop.exit:
 // IR-GPU-NEXT:    [[TMP27:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR_ASCAST]], align 8
 // IR-GPU-NEXT:    [[TMP28:%.*]] = load i32, ptr [[TMP27]], align 4
-// IR-GPU-NEXT:    call void @__kmpc_distribute_static_fini(ptr addrspacecast (ptr addrspace(1) @[[GLOB2]] to ptr), i32 [[TMP28]])
+// IR-GPU-NEXT:    call void @__kmpc_distribute_static_fini(ptr addrspacecast (ptr addrspace(1) @[[GLOB2]] to ptr), i32 [[TMP28]], i32 0)
 // IR-GPU-NEXT:    br label [[OMP_PRECOND_END]]
 // IR-GPU:       omp.precond.end:
 // IR-GPU-NEXT:    ret void
@@ -331,7 +331,7 @@ int main()
 // IR-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // IR-NEXT:    [[TMP8:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP8]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP9]], i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP9]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-NEXT:    [[TMP10:%.*]] = load i32, ptr [[DOTOMP_COMB_UB]], align 4
 // IR-NEXT:    [[TMP11:%.*]] = load i32, ptr [[DOTCAPTURE_EXPR_3]], align 4
 // IR-NEXT:    [[CMP6:%.*]] = icmp sgt i32 [[TMP10]], [[TMP11]]
@@ -399,7 +399,7 @@ int main()
 // IR:       omp.loop.exit:
 // IR-NEXT:    [[TMP27:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-NEXT:    [[TMP28:%.*]] = load i32, ptr [[TMP27]], align 4
-// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP28]])
+// IR-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP28]], i32 0)
 // IR-NEXT:    br label [[OMP_PRECOND_END]]
 // IR:       omp.precond.end:
 // IR-NEXT:    ret void
@@ -512,7 +512,7 @@ int main()
 // IR-PCH-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // IR-PCH-NEXT:    [[TMP8:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-PCH-NEXT:    [[TMP9:%.*]] = load i32, ptr [[TMP8]], align 4
-// IR-PCH-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP9]], i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// IR-PCH-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP9]], i32 0, i32 92, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_COMB_LB]], ptr [[DOTOMP_COMB_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // IR-PCH-NEXT:    [[TMP10:%.*]] = load i32, ptr [[DOTOMP_COMB_UB]], align 4
 // IR-PCH-NEXT:    [[TMP11:%.*]] = load i32, ptr [[DOTCAPTURE_EXPR_3]], align 4
 // IR-PCH-NEXT:    [[CMP6:%.*]] = icmp sgt i32 [[TMP10]], [[TMP11]]
@@ -580,7 +580,7 @@ int main()
 // IR-PCH:       omp.loop.exit:
 // IR-PCH-NEXT:    [[TMP27:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // IR-PCH-NEXT:    [[TMP28:%.*]] = load i32, ptr [[TMP27]], align 4
-// IR-PCH-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP28]])
+// IR-PCH-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP28]], i32 0)
 // IR-PCH-NEXT:    br label [[OMP_PRECOND_END]]
 // IR-PCH:       omp.precond.end:
 // IR-PCH-NEXT:    ret void

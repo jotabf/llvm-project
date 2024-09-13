@@ -41,8 +41,8 @@ typedef struct {
 
 extern int __kmpc_global_thread_num(id*);
 extern void __kmpc_barrier(id*, int gtid);
-extern void __kmpc_dispatch_init_4(id*, int, enum sched, int, int, int, int);
-extern void __kmpc_dispatch_init_8(id*, int, enum sched, i64, i64, i64, i64);
+extern void __kmpc_dispatch_init_4(id*, int, unsigned, enum sched, int, int, int, int);
+extern void __kmpc_dispatch_init_8(id*, int, unsigned, enum sched, i64, i64, i64, i64);
 extern int __kmpc_dispatch_next_4(id*, int, void*, void*, void*, void*);
 extern int __kmpc_dispatch_next_8(id*, int, void*, void*, void*, void*);
 // End of definitions copied from OpenMP RTL.
@@ -77,7 +77,7 @@ int run_loop_64(i64 loop_lb, i64 loop_ub, i64 loop_st, int loop_chunk) {
   if (loop_st > 0 ? loop_lb > loop_ub : loop_lb < loop_ub)
     return 0;
 
-  __kmpc_dispatch_init_8(&loc, gtid, kmp_sch_guided_simd,
+  __kmpc_dispatch_init_8(&loc, gtid, 0, kmp_sch_guided_simd,
                          loop_lb, loop_ub, loop_st, loop_chunk);
   if (tid == 0) {
     // Let the master thread handle the chunks alone
@@ -232,7 +232,7 @@ int run_loop_32(int loop_lb, int loop_ub, int loop_st, int loop_chunk) {
   if (loop_st > 0 ? loop_lb > loop_ub : loop_lb < loop_ub)
     return 0;
 
-  __kmpc_dispatch_init_4(&loc, gtid, kmp_sch_guided_simd,
+  __kmpc_dispatch_init_4(&loc, gtid, 0, kmp_sch_guided_simd,
                          loop_lb, loop_ub, loop_st, loop_chunk);
   if (tid == 0) {
     // Let the master thread handle the chunks alone

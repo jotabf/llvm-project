@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
 // CHECK1-NEXT:    store ptr [[TMP50]], ptr [[DOTTASK_RED_]], align 8
 // CHECK1-NEXT:    [[TMP51:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP52:%.*]] = load i32, ptr [[TMP51]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB2:[0-9]+]], i32 [[TMP52]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB2:[0-9]+]], i32 [[TMP52]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
 // CHECK1-NEXT:    [[TMP53:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
 // CHECK1-NEXT:    [[CMP:%.*]] = icmp sgt i64 [[TMP53]], 9
 // CHECK1-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -236,7 +236,7 @@ int main(int argc, char **argv) {
 // CHECK1:       omp.loop.exit:
 // CHECK1-NEXT:    [[TMP76:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP77:%.*]] = load i32, ptr [[TMP76]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP77]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP77]], i32 0)
 // CHECK1-NEXT:    [[TMP78:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP79:%.*]] = load i32, ptr [[TMP78]], align 4
 // CHECK1-NEXT:    call void @__kmpc_task_reduction_modifier_fini(ptr @[[GLOB1]], i32 [[TMP79]], i32 1)

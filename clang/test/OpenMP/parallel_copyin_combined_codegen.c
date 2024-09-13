@@ -102,7 +102,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK-NEXT:   store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK-NEXT:   [[TMP9:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP10:%.*]] = load i32, ptr [[TMP9]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP10]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP10]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK-NEXT:   [[TMP11:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK-NEXT:   [[CMP:%.*]] = icmp sgt i32 [[TMP11]], 99
 // CHECK-NEXT:   br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -149,7 +149,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK:      omp.loop.exit:
 // CHECK-NEXT:   [[TMP23:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP24:%.*]] = load i32, ptr [[TMP23]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP24]])
+// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP24]], i32 0)
 // CHECK-NEXT:   [[TMP25:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP26:%.*]] = load i32, ptr [[TMP25]], align 4
 // CHECK-NEXT:   call void @__kmpc_barrier(ptr @[[GLOB1]], i32 [[TMP26]])
@@ -205,7 +205,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK-NEXT:   store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK-NEXT:   [[TMP9:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP10:%.*]] = load i32, ptr [[TMP9]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP10]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP10]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK-NEXT:   [[TMP11:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK-NEXT:   [[CMP:%.*]] = icmp sgt i32 [[TMP11]], 99
 // CHECK-NEXT:   br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -252,7 +252,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK:      omp.loop.exit:
 // CHECK-NEXT:   [[TMP23:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP24:%.*]] = load i32, ptr [[TMP23]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP24]])
+// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP24]], i32 0)
 // CHECK-NEXT:   ret void
 //
 // CHECK-LABEL: define {{[^@]+}}@test_omp_parallel_for_simd_copyin
@@ -305,7 +305,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK-NEXT:   store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK-NEXT:   [[TMP9:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP10:%.*]] = load i32, ptr [[TMP9]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP10]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB2:[0-9]+]], i32 [[TMP10]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK-NEXT:   [[TMP11:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK-NEXT:   [[CMP:%.*]] = icmp sgt i32 [[TMP11]], 99
 // CHECK-NEXT:   br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -352,7 +352,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK:      omp.loop.exit:
 // CHECK-NEXT:   [[TMP23:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP24:%.*]] = load i32, ptr [[TMP23]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP24]])
+// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB2]], i32 [[TMP24]], i32 0)
 // CHECK-NEXT:   [[TMP25:%.*]] = load i32, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK-NEXT:   [[TMP26:%.*]] = icmp ne i32 [[TMP25]], 0
 // CHECK-NEXT:   br i1 [[TMP26]], label [[DOTOMP_FINAL_THEN:%.*]], label [[DOTOMP_FINAL_DONE:%.*]]
@@ -415,7 +415,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK-NEXT:   store i32 0, ptr [[DOTOMP_SECTIONS_IL_]], align 4
 // CHECK-NEXT:   [[TMP10:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP11:%.*]] = load i32, ptr [[TMP10]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB4:[0-9]+]], i32 [[TMP11]], i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
+// CHECK-NEXT:   call void @__kmpc_for_static_init_4(ptr @[[GLOB4:[0-9]+]], i32 [[TMP11]], i32 0, i32 34, ptr [[DOTOMP_SECTIONS_IL_]], ptr [[DOTOMP_SECTIONS_LB_]], ptr [[DOTOMP_SECTIONS_UB_]], ptr [[DOTOMP_SECTIONS_ST_]], i32 1, i32 1)
 // CHECK-NEXT:   [[TMP12:%.*]] = load i32, ptr [[DOTOMP_SECTIONS_UB_]], align 4
 // CHECK-NEXT:   [[TMP13:%.*]] = icmp slt i32 [[TMP12]], 1
 // CHECK-NEXT:   [[TMP14:%.*]] = select i1 [[TMP13]], i32 [[TMP12]], i32 1
@@ -456,7 +456,7 @@ void test_omp_parallel_master_copyin(int *a) {
 // CHECK:      omp.inner.for.end:
 // CHECK-NEXT:   [[TMP26:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK-NEXT:   [[TMP27:%.*]] = load i32, ptr [[TMP26]], align 4
-// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB4:[0-9]+]], i32 [[TMP27]])
+// CHECK-NEXT:   call void @__kmpc_for_static_fini(ptr @[[GLOB4:[0-9]+]], i32 [[TMP27]], i32 0)
 // CHECK-NEXT:   ret void
 //
 // CHECK-LABEL: define {{[^@]+}}@test_omp_parallel_master_copyin

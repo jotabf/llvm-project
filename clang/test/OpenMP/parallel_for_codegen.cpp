@@ -300,7 +300,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    [[CONV5:%.*]] = sext i8 [[TMP4]] to i64
 // CHECK1-NEXT:    [[TMP5:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP6:%.*]] = load i32, ptr [[TMP5]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]])
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP7:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
@@ -359,7 +359,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.dispatch.end:
 // CHECK1-NEXT:    [[TMP22:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP23:%.*]] = load i32, ptr [[TMP22]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP23]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP23]], i32 0)
 // CHECK1-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK1:       omp.precond.end:
 // CHECK1-NEXT:    ret void
@@ -412,7 +412,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK1-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK1-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423
 // CHECK1-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -470,7 +470,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.inner.for.end:
 // CHECK1-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK1:       omp.loop.exit:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK1-NEXT:    ret void
 //
 //
@@ -521,7 +521,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK1-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK1-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423
 // CHECK1-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -579,7 +579,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.inner.for.end:
 // CHECK1-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK1:       omp.loop.exit:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK1-NEXT:    ret void
 //
 //
@@ -630,7 +630,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK1-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP5]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
@@ -705,7 +705,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 [[ADD13]], ptr [[DOTOMP_UB]], align 4
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK1-NEXT:    ret void
 //
 //
@@ -756,7 +756,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK1-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK1-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 1073741859, i64 0, i64 16908287, i64 1, i64 1)
+// CHECK1-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 1073741859, i64 0, i64 16908287, i64 1, i64 1)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -808,7 +808,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.dispatch.inc:
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK1-NEXT:    ret void
 //
 //
@@ -859,7 +859,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK1-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK1-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
+// CHECK1-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -911,7 +911,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.dispatch.inc:
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK1-NEXT:    ret void
 //
 //
@@ -997,7 +997,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    [[TMP10:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_2]], align 8
 // CHECK1-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
-// CHECK1-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB2]], i32 [[TMP12]], i32 1073741862, i64 0, i64 [[TMP10]], i64 1, i64 1)
+// CHECK1-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB2]], i32 [[TMP12]], i32 0, i32 1073741862, i64 0, i64 [[TMP10]], i64 1, i64 1)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP13:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
@@ -1069,7 +1069,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.dispatch.end:
 // CHECK1-NEXT:    [[TMP35:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP36:%.*]] = load i32, ptr [[TMP35]], align 4
-// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP36]])
+// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP36]], i32 0, i32 0)
 // CHECK1-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK1:       omp.precond.end:
 // CHECK1-NEXT:    ret void
@@ -1126,7 +1126,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK1-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK1-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB2]], i32 [[TMP5]], i32 1073741861, i32 0, i32 199, i32 1, i32 1)
+// CHECK1-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 1073741861, i32 0, i32 199, i32 1, i32 1)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_4(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -1191,7 +1191,7 @@ void range_for_collapsed() {
 // CHECK1:       omp.dispatch.inc:
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK1-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK1-NEXT:    ret void
 //
 //
@@ -1261,7 +1261,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i64 [[TMP1]], ptr [[__VLA_EXPR0]], align 8
 // CHECK1-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK1-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4
-// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP4]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
+// CHECK1-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP4]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK1:       omp.dispatch.cond:
 // CHECK1-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
@@ -1337,7 +1337,7 @@ void range_for_collapsed() {
 // CHECK1-NEXT:    store i32 [[ADD12]], ptr [[DOTOMP_UB]], align 4
 // CHECK1-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK1:       omp.dispatch.end:
-// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]])
+// CHECK1-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]], i32 0)
 // CHECK1-NEXT:    [[TMP24:%.*]] = load ptr, ptr [[SAVED_STACK]], align 8
 // CHECK1-NEXT:    call void @llvm.stackrestore.p0(ptr [[TMP24]])
 // CHECK1-NEXT:    ret void
@@ -1416,7 +1416,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    [[CONV5:%.*]] = sext i8 [[TMP4]] to i64
 // CHECK2-NEXT:    [[TMP5:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP6:%.*]] = load i32, ptr [[TMP5]], align 4
-// CHECK2-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]])
+// CHECK2-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]])
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP7:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
@@ -1475,7 +1475,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.dispatch.end:
 // CHECK2-NEXT:    [[TMP22:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP23:%.*]] = load i32, ptr [[TMP22]], align 4
-// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP23]])
+// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP23]], i32 0)
 // CHECK2-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK2:       omp.precond.end:
 // CHECK2-NEXT:    ret void
@@ -1528,7 +1528,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK2-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK2-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK2-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK2-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK2-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423
 // CHECK2-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -1586,7 +1586,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.inner.for.end:
 // CHECK2-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK2:       omp.loop.exit:
-// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK2-NEXT:    ret void
 //
 //
@@ -1637,7 +1637,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK2-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK2-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK2-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK2-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK2-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423
 // CHECK2-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -1695,7 +1695,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.inner.for.end:
 // CHECK2-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK2:       omp.loop.exit:
-// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK2-NEXT:    ret void
 //
 //
@@ -1746,7 +1746,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK2-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK2-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP5]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
+// CHECK2-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
@@ -1821,7 +1821,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 [[ADD13]], ptr [[DOTOMP_UB]], align 4
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK2:       omp.dispatch.end:
-// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK2-NEXT:    ret void
 //
 //
@@ -1872,7 +1872,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK2-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK2-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 35, i64 0, i64 16908287, i64 1, i64 1)
+// CHECK2-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 35, i64 0, i64 16908287, i64 1, i64 1)
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -1924,7 +1924,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.dispatch.inc:
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK2:       omp.dispatch.end:
-// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK2-NEXT:    ret void
 //
 //
@@ -1975,7 +1975,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK2-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK2-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 36, i64 0, i64 16908287, i64 1, i64 7)
+// CHECK2-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 36, i64 0, i64 16908287, i64 1, i64 7)
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -2027,7 +2027,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.dispatch.inc:
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK2:       omp.dispatch.end:
-// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK2-NEXT:    ret void
 //
 //
@@ -2113,7 +2113,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    [[TMP10:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_2]], align 8
 // CHECK2-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
-// CHECK2-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB2]], i32 [[TMP12]], i32 38, i64 0, i64 [[TMP10]], i64 1, i64 1)
+// CHECK2-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB2]], i32 [[TMP12]], i32 0, i32 38, i64 0, i64 [[TMP10]], i64 1, i64 1)
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP13:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
@@ -2185,7 +2185,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.dispatch.end:
 // CHECK2-NEXT:    [[TMP35:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP36:%.*]] = load i32, ptr [[TMP35]], align 4
-// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP36]])
+// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP36]], i32 0, i32 0)
 // CHECK2-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK2:       omp.precond.end:
 // CHECK2-NEXT:    ret void
@@ -2242,7 +2242,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK2-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK2-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB2]], i32 [[TMP5]], i32 37, i32 0, i32 199, i32 1, i32 1)
+// CHECK2-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 37, i32 0, i32 199, i32 1, i32 1)
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_4(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -2307,7 +2307,7 @@ void range_for_collapsed() {
 // CHECK2:       omp.dispatch.inc:
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK2:       omp.dispatch.end:
-// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK2-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK2-NEXT:    ret void
 //
 //
@@ -2377,7 +2377,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i64 [[TMP1]], ptr [[__VLA_EXPR0]], align 8
 // CHECK2-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK2-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4
-// CHECK2-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP4]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
+// CHECK2-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP4]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK2:       omp.dispatch.cond:
 // CHECK2-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
@@ -2453,7 +2453,7 @@ void range_for_collapsed() {
 // CHECK2-NEXT:    store i32 [[ADD12]], ptr [[DOTOMP_UB]], align 4
 // CHECK2-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK2:       omp.dispatch.end:
-// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]])
+// CHECK2-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]], i32 0)
 // CHECK2-NEXT:    [[TMP24:%.*]] = load ptr, ptr [[SAVED_STACK]], align 8
 // CHECK2-NEXT:    call void @llvm.stackrestore.p0(ptr [[TMP24]])
 // CHECK2-NEXT:    ret void
@@ -2532,7 +2532,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    [[CONV5:%.*]] = sext i8 [[TMP4]] to i64, !dbg [[DBG15]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG15]]
 // CHECK5-NEXT:    [[TMP6:%.*]] = load i32, ptr [[TMP5]], align 4, !dbg [[DBG15]]
-// CHECK5-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]]), !dbg [[DBG15]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]]), !dbg [[DBG15]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG15]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP7:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8, !dbg [[DBG14]]
@@ -2591,7 +2591,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.dispatch.end:
 // CHECK5-NEXT:    [[TMP22:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG15]]
 // CHECK5-NEXT:    [[TMP23:%.*]] = load i32, ptr [[TMP22]], align 4, !dbg [[DBG15]]
-// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3:[0-9]+]], i32 [[TMP23]]), !dbg [[DBG15]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB3:[0-9]+]], i32 [[TMP23]], i32 0), !dbg [[DBG15]]
 // CHECK5-NEXT:    br label [[OMP_PRECOND_END]], !dbg [[DBG15]]
 // CHECK5:       omp.precond.end:
 // CHECK5-NEXT:    ret void, !dbg [[DBG16]]
@@ -2644,7 +2644,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4, !dbg [[DBG26]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG25]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4, !dbg [[DBG25]]
-// CHECK5-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB6:[0-9]+]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG25]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB6:[0-9]+]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG25]]
 // CHECK5-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG26]]
 // CHECK5-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423, !dbg [[DBG26]]
 // CHECK5-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]], !dbg [[DBG26]]
@@ -2702,7 +2702,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.inner.for.end:
 // CHECK5-NEXT:    br label [[OMP_LOOP_EXIT:%.*]], !dbg [[DBG25]]
 // CHECK5:       omp.loop.exit:
-// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB8:[0-9]+]], i32 [[TMP5]]), !dbg [[DBG25]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB8:[0-9]+]], i32 [[TMP5]], i32 0), !dbg [[DBG25]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG28]]
 //
 //
@@ -2753,7 +2753,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4, !dbg [[DBG35]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG34]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4, !dbg [[DBG34]]
-// CHECK5-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB11:[0-9]+]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG34]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB11:[0-9]+]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1), !dbg [[DBG34]]
 // CHECK5-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG35]]
 // CHECK5-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423, !dbg [[DBG35]]
 // CHECK5-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]], !dbg [[DBG35]]
@@ -2811,7 +2811,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.inner.for.end:
 // CHECK5-NEXT:    br label [[OMP_LOOP_EXIT:%.*]], !dbg [[DBG34]]
 // CHECK5:       omp.loop.exit:
-// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB13:[0-9]+]], i32 [[TMP5]]), !dbg [[DBG34]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB13:[0-9]+]], i32 [[TMP5]], i32 0), !dbg [[DBG34]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG37]]
 //
 //
@@ -2862,7 +2862,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4, !dbg [[DBG44]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG43]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4, !dbg [[DBG43]]
-// CHECK5-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB16:[0-9]+]], i32 [[TMP5]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5), !dbg [[DBG43]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB16:[0-9]+]], i32 [[TMP5]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5), !dbg [[DBG43]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG43]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG44]]
@@ -2937,7 +2937,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 [[ADD13]], ptr [[DOTOMP_UB]], align 4, !dbg [[DBG44]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG43]], !llvm.loop [[LOOP48:![0-9]+]]
 // CHECK5:       omp.dispatch.end:
-// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB18:[0-9]+]], i32 [[TMP5]]), !dbg [[DBG43]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB18:[0-9]+]], i32 [[TMP5]], i32 0), !dbg [[DBG43]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG46]]
 //
 //
@@ -2988,7 +2988,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4, !dbg [[DBG54]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG53]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4, !dbg [[DBG53]]
-// CHECK5-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB21]], i32 [[TMP5]], i32 1073741859, i64 0, i64 16908287, i64 1, i64 1), !dbg [[DBG53]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB21]], i32 [[TMP5]], i32 0, i32 1073741859, i64 0, i64 16908287, i64 1, i64 1), !dbg [[DBG53]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG53]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB21]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]]), !dbg [[DBG53]]
@@ -3040,7 +3040,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.dispatch.inc:
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG53]], !llvm.loop [[LOOP60:![0-9]+]]
 // CHECK5:       omp.dispatch.end:
-// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB21]], i32 [[TMP5]]), !dbg [[DBG53]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB21]], i32 [[TMP5]], i32 0, i32 0), !dbg [[DBG53]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG57]]
 //
 //
@@ -3091,7 +3091,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4, !dbg [[DBG66]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG65]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4, !dbg [[DBG65]]
-// CHECK5-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB23]], i32 [[TMP5]], i32 1073741860, i64 0, i64 16908287, i64 1, i64 7), !dbg [[DBG65]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB23]], i32 [[TMP5]], i32 0, i32 1073741860, i64 0, i64 16908287, i64 1, i64 7), !dbg [[DBG65]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG65]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB23]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]]), !dbg [[DBG65]]
@@ -3143,7 +3143,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.dispatch.inc:
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG65]], !llvm.loop [[LOOP72:![0-9]+]]
 // CHECK5:       omp.dispatch.end:
-// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB23]], i32 [[TMP5]]), !dbg [[DBG65]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB23]], i32 [[TMP5]], i32 0, i32 0), !dbg [[DBG65]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG69]]
 //
 //
@@ -3229,7 +3229,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    [[TMP10:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_2]], align 8, !dbg [[DBG81]]
 // CHECK5-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG79]]
 // CHECK5-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4, !dbg [[DBG79]]
-// CHECK5-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB25]], i32 [[TMP12]], i32 1073741862, i64 0, i64 [[TMP10]], i64 1, i64 1), !dbg [[DBG79]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB25]], i32 [[TMP12]], i32 0, i32 1073741862, i64 0, i64 [[TMP10]], i64 1, i64 1), !dbg [[DBG79]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG79]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP13:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG79]]
@@ -3301,7 +3301,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.dispatch.end:
 // CHECK5-NEXT:    [[TMP35:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG79]]
 // CHECK5-NEXT:    [[TMP36:%.*]] = load i32, ptr [[TMP35]], align 4, !dbg [[DBG79]]
-// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB25]], i32 [[TMP36]]), !dbg [[DBG79]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB25]], i32 [[TMP36]], i32 0, i32 0), !dbg [[DBG79]]
 // CHECK5-NEXT:    br label [[OMP_PRECOND_END]], !dbg [[DBG79]]
 // CHECK5:       omp.precond.end:
 // CHECK5-NEXT:    ret void, !dbg [[DBG84]]
@@ -3358,7 +3358,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4, !dbg [[DBG94]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG93]]
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4, !dbg [[DBG93]]
-// CHECK5-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB27]], i32 [[TMP5]], i32 1073741861, i32 0, i32 199, i32 1, i32 1), !dbg [[DBG93]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB27]], i32 [[TMP5]], i32 0, i32 1073741861, i32 0, i32 199, i32 1, i32 1), !dbg [[DBG93]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG93]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_4(ptr @[[GLOB27]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]]), !dbg [[DBG93]]
@@ -3423,7 +3423,7 @@ void range_for_collapsed() {
 // CHECK5:       omp.dispatch.inc:
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG93]], !llvm.loop [[LOOP101:![0-9]+]]
 // CHECK5:       omp.dispatch.end:
-// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB27]], i32 [[TMP5]]), !dbg [[DBG93]]
+// CHECK5-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB27]], i32 [[TMP5]], i32 0, i32 0), !dbg [[DBG93]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG98]]
 //
 //
@@ -3493,7 +3493,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i64 [[TMP1]], ptr [[__VLA_EXPR0]], align 8, !dbg [[DBG109]]
 // CHECK5-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8, !dbg [[DBG109]]
 // CHECK5-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4, !dbg [[DBG109]]
-// CHECK5-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB29:[0-9]+]], i32 [[TMP4]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5), !dbg [[DBG109]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB29:[0-9]+]], i32 [[TMP4]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5), !dbg [[DBG109]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND:%.*]], !dbg [[DBG109]]
 // CHECK5:       omp.dispatch.cond:
 // CHECK5-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4, !dbg [[DBG110]]
@@ -3569,7 +3569,7 @@ void range_for_collapsed() {
 // CHECK5-NEXT:    store i32 [[ADD12]], ptr [[DOTOMP_UB]], align 4, !dbg [[DBG110]]
 // CHECK5-NEXT:    br label [[OMP_DISPATCH_COND]], !dbg [[DBG109]], !llvm.loop [[LOOP113:![0-9]+]]
 // CHECK5:       omp.dispatch.end:
-// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB31:[0-9]+]], i32 [[TMP4]]), !dbg [[DBG109]]
+// CHECK5-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB31:[0-9]+]], i32 [[TMP4]], i32 0), !dbg [[DBG109]]
 // CHECK5-NEXT:    [[TMP24:%.*]] = load ptr, ptr [[SAVED_STACK]], align 8, !dbg [[DBG109]]
 // CHECK5-NEXT:    call void @llvm.stackrestore.p0(ptr [[TMP24]]), !dbg [[DBG109]]
 // CHECK5-NEXT:    ret void, !dbg [[DBG111]]
@@ -3648,7 +3648,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    [[CONV5:%.*]] = sext i8 [[TMP4]] to i64
 // CHECK6-NEXT:    [[TMP5:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP6:%.*]] = load i32, ptr [[TMP5]], align 4
-// CHECK6-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]])
+// CHECK6-NEXT:    call void @__kmpc_for_static_init_8u(ptr @[[GLOB1:[0-9]+]], i32 [[TMP6]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 [[CONV5]])
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP7:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
@@ -3707,7 +3707,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.dispatch.end:
 // CHECK6-NEXT:    [[TMP22:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP23:%.*]] = load i32, ptr [[TMP22]], align 4
-// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP23]])
+// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP23]], i32 0)
 // CHECK6-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK6:       omp.precond.end:
 // CHECK6-NEXT:    ret void
@@ -3760,7 +3760,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK6-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK6-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK6-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK6-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK6-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423
 // CHECK6-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -3818,7 +3818,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.inner.for.end:
 // CHECK6-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK6:       omp.loop.exit:
-// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK6-NEXT:    ret void
 //
 //
@@ -3869,7 +3869,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK6-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK6-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK6-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK6-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK6-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP6]], 4571423
 // CHECK6-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -3927,7 +3927,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.inner.for.end:
 // CHECK6-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK6:       omp.loop.exit:
-// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK6-NEXT:    ret void
 //
 //
@@ -3978,7 +3978,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK6-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK6-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP5]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
+// CHECK6-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP5]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
@@ -4053,7 +4053,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 [[ADD13]], ptr [[DOTOMP_UB]], align 4
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK6:       omp.dispatch.end:
-// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]])
+// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP5]], i32 0)
 // CHECK6-NEXT:    ret void
 //
 //
@@ -4104,7 +4104,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK6-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK6-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 1073741859, i64 0, i64 16908287, i64 1, i64 1)
+// CHECK6-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 1073741859, i64 0, i64 16908287, i64 1, i64 1)
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -4156,7 +4156,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.dispatch.inc:
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK6:       omp.dispatch.end:
-// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK6-NEXT:    ret void
 //
 //
@@ -4207,7 +4207,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK6-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK6-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
+// CHECK6-NEXT:    call void @__kmpc_dispatch_init_8u(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 1073741860, i64 0, i64 16908287, i64 1, i64 7)
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_8u(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -4259,7 +4259,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.dispatch.inc:
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK6:       omp.dispatch.end:
-// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK6-NEXT:    ret void
 //
 //
@@ -4345,7 +4345,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    [[TMP10:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_2]], align 8
 // CHECK6-NEXT:    [[TMP11:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP12:%.*]] = load i32, ptr [[TMP11]], align 4
-// CHECK6-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB2]], i32 [[TMP12]], i32 1073741862, i64 0, i64 [[TMP10]], i64 1, i64 1)
+// CHECK6-NEXT:    call void @__kmpc_dispatch_init_8(ptr @[[GLOB2]], i32 [[TMP12]], i32 0, i32 1073741862, i64 0, i64 [[TMP10]], i64 1, i64 1)
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP13:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
@@ -4417,7 +4417,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.dispatch.end:
 // CHECK6-NEXT:    [[TMP35:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP36:%.*]] = load i32, ptr [[TMP35]], align 4
-// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP36]])
+// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP36]], i32 0, i32 0)
 // CHECK6-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK6:       omp.precond.end:
 // CHECK6-NEXT:    ret void
@@ -4474,7 +4474,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK6-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK6-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB2]], i32 [[TMP5]], i32 1073741861, i32 0, i32 199, i32 1, i32 1)
+// CHECK6-NEXT:    call void @__kmpc_dispatch_init_4(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 1073741861, i32 0, i32 199, i32 1, i32 1)
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP6:%.*]] = call i32 @__kmpc_dispatch_next_4(ptr @[[GLOB2]], i32 [[TMP5]], ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]])
@@ -4539,7 +4539,7 @@ void range_for_collapsed() {
 // CHECK6:       omp.dispatch.inc:
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK6:       omp.dispatch.end:
-// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]])
+// CHECK6-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB2]], i32 [[TMP5]], i32 0, i32 0)
 // CHECK6-NEXT:    ret void
 //
 //
@@ -4609,7 +4609,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i64 [[TMP1]], ptr [[__VLA_EXPR0]], align 8
 // CHECK6-NEXT:    [[TMP3:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK6-NEXT:    [[TMP4:%.*]] = load i32, ptr [[TMP3]], align 4
-// CHECK6-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP4]], i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
+// CHECK6-NEXT:    call void @__kmpc_for_static_init_4u(ptr @[[GLOB1]], i32 [[TMP4]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 5)
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND:%.*]]
 // CHECK6:       omp.dispatch.cond:
 // CHECK6-NEXT:    [[TMP5:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
@@ -4683,7 +4683,7 @@ void range_for_collapsed() {
 // CHECK6-NEXT:    store i32 [[ADD12]], ptr [[DOTOMP_UB]], align 4
 // CHECK6-NEXT:    br label [[OMP_DISPATCH_COND]]
 // CHECK6:       omp.dispatch.end:
-// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]])
+// CHECK6-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP4]], i32 0)
 // CHECK6-NEXT:    [[TMP24:%.*]] = load ptr, ptr [[SAVED_STACK]], align 8
 // CHECK6-NEXT:    call void @llvm.stackrestore.p0(ptr [[TMP24]])
 // CHECK6-NEXT:    ret void
@@ -4704,7 +4704,7 @@ void range_for_collapsed() {
 // CHECK11-NEXT:    store i32 4, ptr [[DOTOMP_UB]], align 4
 // CHECK11-NEXT:    store i32 1, ptr [[DOTOMP_STRIDE]], align 4
 // CHECK11-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
-// CHECK11-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP0]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK11-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1:[0-9]+]], i32 [[TMP0]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK11-NEXT:    [[TMP1:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK11-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP1]], 4
 // CHECK11-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -4740,7 +4740,7 @@ void range_for_collapsed() {
 // CHECK11:       omp.inner.for.end:
 // CHECK11-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK11:       omp.loop.exit:
-// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]])
+// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]], i32 0)
 // CHECK11-NEXT:    call void @__kmpc_barrier(ptr @[[GLOB3:[0-9]+]], i32 [[TMP0]])
 // CHECK11-NEXT:    ret i32 0
 //
@@ -4760,7 +4760,7 @@ void range_for_collapsed() {
 // CHECK11-NEXT:    store i32 4, ptr [[DOTOMP_UB]], align 4
 // CHECK11-NEXT:    store i32 1, ptr [[DOTOMP_STRIDE]], align 4
 // CHECK11-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
-// CHECK11-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP0]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
+// CHECK11-NEXT:    call void @__kmpc_for_static_init_4(ptr @[[GLOB1]], i32 [[TMP0]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i32 1, i32 1)
 // CHECK11-NEXT:    [[TMP1:%.*]] = load i32, ptr [[DOTOMP_UB]], align 4
 // CHECK11-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP1]], 4
 // CHECK11-NEXT:    br i1 [[CMP]], label [[COND_TRUE:%.*]], label [[COND_FALSE:%.*]]
@@ -4796,7 +4796,7 @@ void range_for_collapsed() {
 // CHECK11:       omp.inner.for.end:
 // CHECK11-NEXT:    br label [[OMP_LOOP_EXIT:%.*]]
 // CHECK11:       omp.loop.exit:
-// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]])
+// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP0]], i32 0)
 // CHECK11-NEXT:    ret i32 0
 //
 //
@@ -4868,7 +4868,7 @@ void range_for_collapsed() {
 // CHECK11-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK11-NEXT:    [[TMP10:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK11-NEXT:    [[TMP11:%.*]] = load i32, ptr [[TMP10]], align 4
-// CHECK11-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1]], i32 [[TMP11]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
+// CHECK11-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1]], i32 [[TMP11]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
 // CHECK11-NEXT:    [[TMP12:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
 // CHECK11-NEXT:    [[TMP13:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_3]], align 8
 // CHECK11-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[TMP12]], [[TMP13]]
@@ -4912,7 +4912,7 @@ void range_for_collapsed() {
 // CHECK11:       omp.loop.exit:
 // CHECK11-NEXT:    [[TMP24:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK11-NEXT:    [[TMP25:%.*]] = load i32, ptr [[TMP24]], align 4
-// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP25]])
+// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP25]], i32 0)
 // CHECK11-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK11:       omp.precond.end:
 // CHECK11-NEXT:    ret void
@@ -5021,7 +5021,7 @@ void range_for_collapsed() {
 // CHECK11-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST]], align 4
 // CHECK11-NEXT:    [[TMP18:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK11-NEXT:    [[TMP19:%.*]] = load i32, ptr [[TMP18]], align 4
-// CHECK11-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1]], i32 [[TMP19]], i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
+// CHECK11-NEXT:    call void @__kmpc_for_static_init_8(ptr @[[GLOB1]], i32 [[TMP19]], i32 0, i32 34, ptr [[DOTOMP_IS_LAST]], ptr [[DOTOMP_LB]], ptr [[DOTOMP_UB]], ptr [[DOTOMP_STRIDE]], i64 1, i64 1)
 // CHECK11-NEXT:    [[TMP20:%.*]] = load i64, ptr [[DOTOMP_UB]], align 8
 // CHECK11-NEXT:    [[TMP21:%.*]] = load i64, ptr [[DOTCAPTURE_EXPR_9]], align 8
 // CHECK11-NEXT:    [[CMP21:%.*]] = icmp sgt i64 [[TMP20]], [[TMP21]]
@@ -5110,7 +5110,7 @@ void range_for_collapsed() {
 // CHECK11:       omp.loop.exit:
 // CHECK11-NEXT:    [[TMP44:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR]], align 8
 // CHECK11-NEXT:    [[TMP45:%.*]] = load i32, ptr [[TMP44]], align 4
-// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP45]])
+// CHECK11-NEXT:    call void @__kmpc_for_static_fini(ptr @[[GLOB1]], i32 [[TMP45]], i32 0)
 // CHECK11-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK11:       omp.precond.end:
 // CHECK11-NEXT:    ret void

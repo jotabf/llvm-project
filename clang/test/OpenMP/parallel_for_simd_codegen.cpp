@@ -41,7 +41,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK: store i32 -1, ptr [[R:%[^,]+]],
 // CHECK: call void (ptr, i32, ptr, ...) @__kmpc_fork_call(
   #pragma omp parallel for simd
-// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
 // CHECK: [[UB_VAL:%.+]] = load i32, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp sgt i32 [[UB_VAL]], 5
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -77,7 +77,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // br label %{{.+}}, !llvm.loop !{{.+}}
   }
 // CHECK: [[SIMPLE_LOOP1_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 
   long long k = get_val();
 
@@ -85,7 +85,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK: [[K0LOAD:%.+]] = load i64, ptr [[K_VAR:%[^,]+]]
 // CHECK-NEXT: store i64 [[K0LOAD]], ptr [[LIN0:%[^,]+]]
 
-// CHECK: call void @__kmpc_dispatch_init_4(ptr {{.+}}, i32 %{{.+}}, i32 {{35|1073741859}}, i32 0, i32 8, i32 1, i32 1)
+// CHECK: call void @__kmpc_dispatch_init_4(ptr {{.+}}, i32 %{{.+}}, i32 0, i32 {{35|1073741859}}, i32 0, i32 8, i32 1, i32 1)
 // CHECK: [[NEXT:%.+]] = call i32 @__kmpc_dispatch_next_4(ptr {{.+}}, i32 %{{.+}}, ptr %{{.+}}, ptr [[LB:%.+]], ptr [[UB:%.+]], ptr %{{.+}})
 // CHECK: [[COND:%.+]] = icmp ne i32 [[NEXT]], 0
 // CHECK: br i1 [[COND]], label %[[CONT:.+]], label %[[END:.+]]
@@ -141,7 +141,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK: [[GLIN_LOAD:%.+]] = load ptr, ptr [[GLIN_VAR:%.+]],
 // CHECK-NEXT: store ptr [[GLIN_LOAD]], ptr [[GLIN_START:%[^,]+]]
 
-// CHECK: call void @__kmpc_for_static_init_8u(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
+// CHECK: call void @__kmpc_for_static_init_8u(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
 // CHECK: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp ugt i64 [[UB_VAL]], 3
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -189,7 +189,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: store i64 [[ADD3_2]], ptr [[OMP_IV3]]
   }
 // CHECK: [[SIMPLE_LOOP3_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 //
 // Linear start and step are used to calculate final value of the linear variables.
 // CHECK: [[LIN:%.+]] = load i32, ptr [[LIN_PRIV]]
@@ -198,7 +198,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK: store ptr [[GLIN]], ptr [[GLIN_VAR]],
 
   #pragma omp parallel for simd
-// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
 // CHECK: [[UB_VAL:%.+]] = load i32, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp sgt i32 [[UB_VAL]], 3
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -231,10 +231,10 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: store i32 [[ADD4_2]], ptr [[OMP_IV4]]
   }
 // CHECK: [[SIMPLE_LOOP4_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 
   #pragma omp parallel for simd
-// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
 // CHECK: [[UB_VAL:%.+]] = load i32, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp sgt i32 [[UB_VAL]], 25
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -267,7 +267,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: store i32 [[ADD5_2]], ptr [[OMP_IV5]]
   }
 // CHECK: [[SIMPLE_LOOP5_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 
 // CHECK-NOT: mul i32 %{{.+}}, 10
   #pragma omp parallel for simd
@@ -278,7 +278,7 @@ void simple(float *a, float *b, float *c, float *d) {
   {
   A = -1;
   #pragma omp parallel for simd lastprivate(A)
-// CHECK: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
+// CHECK: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
 // CHECK: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp sgt i64 [[UB_VAL]], 6
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -315,7 +315,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: store i64 [[ADD7_2]], ptr [[OMP_IV7]]
   }
 // CHECK: [[SIMPLE_LOOP7_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 // CHECK: load i32, ptr
 // CHECK: icmp ne i32 %{{.+}}, 0
 // CHECK: br i1 %{{.+}}, label
@@ -328,7 +328,7 @@ void simple(float *a, float *b, float *c, float *d) {
   R = -1;
 // CHECK: store i32 1, ptr [[R_PRIV:%[^,]+]],
   #pragma omp parallel for simd reduction(*:R)
-// CHECK: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
+// CHECK: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
 // CHECK: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp sgt i64 [[UB_VAL]], 6
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -364,7 +364,7 @@ void simple(float *a, float *b, float *c, float *d) {
 // CHECK-NEXT: store i64 [[ADD8_2]], ptr [[OMP_IV8]]
   }
 // CHECK: [[SIMPLE_LOOP8_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 // CHECK: call i32 @__kmpc_reduce_nowait(
 // CHECK: [[R_PRIV_VAL:%.+]] = load i32, ptr [[R_PRIV]],
 // CHECK: [[RED:%.+]] = mul nsw i32 %{{.+}}, [[R_PRIV_VAL]]
@@ -395,7 +395,7 @@ void inst_templ1() {
   templ1<float,2> (a, z);
 }
 
-// OMP50: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
+// OMP50: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
 // OMP50: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
 // OMP50: [[CMP:%.+]] = icmp sgt i64 [[UB_VAL]], 15
 // OMP50: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -437,7 +437,7 @@ void inst_templ1() {
 // OMP50-NEXT: store i64 [[INC]], ptr
 // OMP50-NEXT: br label {{%.+}}
 // OMP50: [[T1_END]]:
-// OMP50: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// OMP50: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 // OMP50: ret void
 //
 
@@ -481,7 +481,7 @@ void iter_simple(IterDouble ia, IterDouble ib, IterDouble ic) {
 // CHECK-NEXT: store i32 [[DIFF5]], ptr [[OMP_LAST_IT:%[^,]+]]{{.+}}
   #pragma omp parallel for simd
 
-// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
 // CHECK-DAG: [[UB_VAL:%.+]] = load i32, ptr [[UB]],
 // CHECK-DAG: [[OMP_LAST_IT_VAL:%.+]] = load i32, ptr [[OMP_LAST_IT]],
 // CHECK: [[CMP:%.+]] = icmp sgt i32 [[UB_VAL]], [[OMP_LAST_IT_VAL]]
@@ -522,7 +522,7 @@ void iter_simple(IterDouble ia, IterDouble ib, IterDouble ic) {
 // br label %{{.*}}, !llvm.loop ![[ITER_LOOP_ID]]
   }
 // CHECK: [[IT_END]]:
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 // CHECK: ret void
 }
 
@@ -533,7 +533,7 @@ void collapsed(float *a, float *b, float *c, float *d) {
   unsigned j; // middle loop couter, leads to unsigned icmp in loop header.
   // k declared in the loop init below
   short l; // inner loop counter
-// CHECK: call void @__kmpc_for_static_init_4u(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
+// CHECK: call void @__kmpc_for_static_init_4u(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i32 1, i32 1)
 // CHECK: [[UB_VAL:%.+]] = load i32, ptr [[UB]],
 // CHECK: [[CMP:%.+]] = icmp ugt i32 [[UB_VAL]], 119
 // CHECK: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -645,7 +645,7 @@ void collapsed(float *a, float *b, float *c, float *d) {
 // CHECK: [[COLL1_END]]:
   }
 // i,j,l are updated; k is not updated.
-// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// CHECK: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 // CHECK: store i32 3, ptr [[I:%[^,]+]]
 // CHECK: store i32 5, ptr [[I:%[^,]+]]
 // CHECK: store i16 9, ptr [[I:%[^,]+]]
@@ -666,7 +666,7 @@ void widened(float *a, float *b, float *c, float *d) {
 // CHECK:     [[MUL:%.+]] = mul nsw i64 2, %{{.+}}
 // CHECK-NEXT: [[SUB:%.+]] = sub nsw i64 [[MUL]], 1
 // CHECK-NEXT: store i64 [[SUB]], ptr [[OMP_LAST_IT:%[^,]+]],
-// CHECK: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
+// CHECK: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
 // CHECK-DAG: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
 // CHECK-DAG: [[OMP_LAST_IT_VAL:%.+]] = load i64, ptr [[OMP_LAST_IT]],
 // CHECK: [[CMP:%.+]] = icmp sgt i64 [[UB_VAL]], [[OMP_LAST_IT_VAL]]
@@ -744,7 +744,7 @@ for (int i = 0; i < 10; ++i);
 // OMP50: br label {{.+}}, !llvm.loop ![[NOVECT:.+]]
 // CHECK: call void @__kmpc_for_static_fini(
 
-// OMP45: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
+// OMP45: call void @__kmpc_for_static_init_8(ptr {{[^,]+}}, i32 %{{[^,]+}}, i32 0, i32 34, ptr %{{[^,]+}}, ptr [[LB:%[^,]+]], ptr [[UB:%[^,]+]], ptr [[STRIDE:%[^,]+]], i64 1, i64 1)
 // OMP45: [[UB_VAL:%.+]] = load i64, ptr [[UB]],
 // OMP45: [[CMP:%.+]] = icmp sgt i64 [[UB_VAL]], 15
 // OMP45: br i1 [[CMP]], label %[[TRUE:.+]], label %[[FALSE:[^,]+]]
@@ -786,7 +786,7 @@ for (int i = 0; i < 10; ++i);
 // OMP45-NEXT: store i64 [[INC]], ptr
 // OMP45-NEXT: br label {{%.+}}
 // OMP45: [[T1_END]]:
-// OMP45: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}})
+// OMP45: call void @__kmpc_for_static_fini(ptr {{.+}}, i32 %{{.+}}, i32 0)
 // OMP45: ret void
 
 // OMP50-LABEL: parallel_simd_atomic

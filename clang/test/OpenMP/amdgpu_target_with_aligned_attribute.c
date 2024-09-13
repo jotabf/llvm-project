@@ -113,7 +113,7 @@ void write_to_aligned_array(int *a, int N) {
 // CHECK-AMD-NEXT:    [[NVPTX_NUM_THREADS:%.*]] = call i32 @__kmpc_get_hardware_num_threads_in_block()
 // CHECK-AMD-NEXT:    [[TMP4:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR_ASCAST]], align 8
 // CHECK-AMD-NEXT:    [[TMP5:%.*]] = load i32, ptr [[TMP4]], align 4
-// CHECK-AMD-NEXT:    call void @__kmpc_distribute_static_init_4(ptr addrspacecast (ptr addrspace(1) @[[GLOB2:[0-9]+]] to ptr), i32 [[TMP5]], i32 91, ptr [[DOTOMP_IS_LAST_ASCAST]], ptr [[DOTOMP_COMB_LB_ASCAST]], ptr [[DOTOMP_COMB_UB_ASCAST]], ptr [[DOTOMP_STRIDE_ASCAST]], i32 1, i32 [[NVPTX_NUM_THREADS]])
+// CHECK-AMD-NEXT:    call void @__kmpc_distribute_static_init_4(ptr addrspacecast (ptr addrspace(1) @[[GLOB2:[0-9]+]] to ptr), i32 [[TMP5]], i32 0, i32 91, ptr [[DOTOMP_IS_LAST_ASCAST]], ptr [[DOTOMP_COMB_LB_ASCAST]], ptr [[DOTOMP_COMB_UB_ASCAST]], ptr [[DOTOMP_STRIDE_ASCAST]], i32 1, i32 [[NVPTX_NUM_THREADS]])
 // CHECK-AMD-NEXT:    [[TMP6:%.*]] = load i32, ptr [[DOTOMP_COMB_UB_ASCAST]], align 4
 // CHECK-AMD-NEXT:    [[TMP7:%.*]] = load i32, ptr [[DOTCAPTURE_EXPR_1_ASCAST]], align 4
 // CHECK-AMD-NEXT:    [[CMP4:%.*]] = icmp sgt i32 [[TMP6]], [[TMP7]]
@@ -194,7 +194,7 @@ void write_to_aligned_array(int *a, int N) {
 // CHECK-AMD:       omp.loop.exit:
 // CHECK-AMD-NEXT:    [[TMP40:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR_ASCAST]], align 8
 // CHECK-AMD-NEXT:    [[TMP41:%.*]] = load i32, ptr [[TMP40]], align 4
-// CHECK-AMD-NEXT:    call void @__kmpc_distribute_static_fini(ptr addrspacecast (ptr addrspace(1) @[[GLOB2]] to ptr), i32 [[TMP41]])
+// CHECK-AMD-NEXT:    call void @__kmpc_distribute_static_fini(ptr addrspacecast (ptr addrspace(1) @[[GLOB2]] to ptr), i32 [[TMP41]], i32 0)
 // CHECK-AMD-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK-AMD:       omp.precond.end:
 // CHECK-AMD-NEXT:    ret void
@@ -266,7 +266,7 @@ void write_to_aligned_array(int *a, int N) {
 // CHECK-AMD-NEXT:    store i32 0, ptr [[DOTOMP_IS_LAST_ASCAST]], align 4
 // CHECK-AMD-NEXT:    [[TMP6:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR_ASCAST]], align 8
 // CHECK-AMD-NEXT:    [[TMP7:%.*]] = load i32, ptr [[TMP6]], align 4
-// CHECK-AMD-NEXT:    call void @__kmpc_for_static_init_4(ptr addrspacecast (ptr addrspace(1) @[[GLOB3:[0-9]+]] to ptr), i32 [[TMP7]], i32 33, ptr [[DOTOMP_IS_LAST_ASCAST]], ptr [[DOTOMP_LB_ASCAST]], ptr [[DOTOMP_UB_ASCAST]], ptr [[DOTOMP_STRIDE_ASCAST]], i32 1, i32 1)
+// CHECK-AMD-NEXT:    call void @__kmpc_for_static_init_4(ptr addrspacecast (ptr addrspace(1) @[[GLOB3:[0-9]+]] to ptr), i32 [[TMP7]], i32 0, i32 33, ptr [[DOTOMP_IS_LAST_ASCAST]], ptr [[DOTOMP_LB_ASCAST]], ptr [[DOTOMP_UB_ASCAST]], ptr [[DOTOMP_STRIDE_ASCAST]], i32 1, i32 1)
 // CHECK-AMD-NEXT:    [[TMP8:%.*]] = load i32, ptr [[DOTOMP_LB_ASCAST]], align 4
 // CHECK-AMD-NEXT:    store i32 [[TMP8]], ptr [[DOTOMP_IV_ASCAST]], align 4
 // CHECK-AMD-NEXT:    br label [[OMP_INNER_FOR_COND:%.*]]
@@ -301,7 +301,7 @@ void write_to_aligned_array(int *a, int N) {
 // CHECK-AMD:       omp.loop.exit:
 // CHECK-AMD-NEXT:    [[TMP17:%.*]] = load ptr, ptr [[DOTGLOBAL_TID__ADDR_ASCAST]], align 8
 // CHECK-AMD-NEXT:    [[TMP18:%.*]] = load i32, ptr [[TMP17]], align 4
-// CHECK-AMD-NEXT:    call void @__kmpc_for_static_fini(ptr addrspacecast (ptr addrspace(1) @[[GLOB3]] to ptr), i32 [[TMP18]])
+// CHECK-AMD-NEXT:    call void @__kmpc_for_static_fini(ptr addrspacecast (ptr addrspace(1) @[[GLOB3]] to ptr), i32 [[TMP18]], i32 0)
 // CHECK-AMD-NEXT:    br label [[OMP_PRECOND_END]]
 // CHECK-AMD:       omp.precond.end:
 // CHECK-AMD-NEXT:    ret void
