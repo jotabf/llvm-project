@@ -1825,7 +1825,7 @@ public:
     AutoChunkID = 0;
     if(Mode == OMPC_SCHEDULE_CHUNK_MODE_auto)
       AutoChunkID = ++AutoChunkCounter;
-    printf("OMPScheduleClause: %d\n", AutoChunkCounter);
+    printf("OMPScheduleClause: %d\n", AutoChunkID);
   }
 
   /// Build an empty clause.
@@ -1834,6 +1834,8 @@ public:
         OMPClauseWithPreInit(this) {
     Modifiers[FIRST] = OMPC_SCHEDULE_MODIFIER_unknown;
     Modifiers[SECOND] = OMPC_SCHEDULE_MODIFIER_unknown;
+    Mode = OMPC_SCHEDULE_CHUNK_MODE_unknown;
+    AutoChunkID = 0;
   }
 
   /// Get kind of the clause.
@@ -1879,6 +1881,9 @@ public:
 
   /// Get auto chunk ID
   unsigned getAutoChunkID() const { return AutoChunkID; }
+
+  /// Get auto chunk counter
+  static unsigned getAutoChunkCounter() { return AutoChunkCounter; }
 
   child_range children() {
     return child_range(reinterpret_cast<Stmt **>(&ChunkSize),

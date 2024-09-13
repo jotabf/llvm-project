@@ -2561,13 +2561,14 @@ void CGOpenMPRuntime::emitForDispatchInit(
   unsigned AutoID = ScheduleKind.AtID;
   llvm::Value *AutoIDValue = CGF.Builder.getInt32(AutoID);
   if (ScheduleKind.Mode == OMPC_SCHEDULE_CHUNK_MODE_auto) {
+    unsigned AutoCounter = OMPScheduleClause::getAutoChunkCounter();
     llvm::GlobalVariable *GTotalAutoMode =
         OMPBuilder.getOrCreateInternalVariable(AutoIDValue->getType(),
                                                "__KMP_NUM_AUTO_MODE");
     GTotalAutoMode->setLinkage(llvm::GlobalValue::ExternalLinkage);
     GTotalAutoMode->setConstant(true);
     GTotalAutoMode->setInitializer(
-        llvm::ConstantInt::get(AutoIDValue->getType(), AutoID));
+        llvm::ConstantInt::get(AutoIDValue->getType(), AutoCounter));
   }
 
   llvm::Value *Args[] = {

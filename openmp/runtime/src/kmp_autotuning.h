@@ -145,6 +145,8 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
   KMP_MB(); // Flush initialized
 
   __kmp_release_bootstrap_lock(&info->start_lock);
+
+  // printf("Autotuning initialized\n");
 }
 
 // TO DO: TEST IF ALL THREADS ARE RETURNING THE SAME VALUE

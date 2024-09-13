@@ -11,8 +11,6 @@ Autotuning *Autotuning::Create(int64_t min, int64_t max, unsigned ignore) {
       static_cast<Autotuning *>(__kmp_allocate(sizeof(Autotuning)));
 
   at->p_point = NULL;
-  // at->p_min = min;
-  // at->p_max = max;
   at->m_ignore = ignore + 1;
   at->m_iter = 0;
   at->p_optimizer = NelderMead::Create(min, max, DIM, MIN_ERROR);
@@ -50,9 +48,6 @@ void Autotuning::end() {
 }
 
 void __kmp_autotuning_global_initialize() {
-
-  printf("Initializing %i autotunings\n", __KMP_NUM_AUTO_MODE );
-
   if (TCR_4(__kmp_global_auto_initialized))
     return;
   __kmp_acquire_bootstrap_lock(&__kmp_initz_lock);

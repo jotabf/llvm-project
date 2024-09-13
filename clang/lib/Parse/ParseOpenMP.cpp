@@ -3950,7 +3950,9 @@ OMPClause *Parser::ParseOpenMPSingleExprWithArgClause(OpenMPDirectiveKind DKind,
       KindModifier = getOpenMPSimpleClauseType(
           Kind, Tok.isAnnotation() ? "" : PP.getSpelling(Tok), getLangOpts());
     }
-    Arg[ScheduleKind] = KindModifier;
+    // Arg[ScheduleKind] = KindModifier;
+    Arg[ScheduleKind] = OMPC_SCHEDULE_dynamic; //#TEST: Always set to dynamic
+    Arg[ChunkMode] = OMPC_SCHEDULE_CHUNK_MODE_auto; //#TEST: Always set to auto
     KLoc[ScheduleKind] = Tok.getLocation();
     if (Tok.isNot(tok::r_paren) && Tok.isNot(tok::comma) &&
         Tok.isNot(tok::annot_pragma_openmp_end))
