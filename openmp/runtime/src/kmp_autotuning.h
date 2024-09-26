@@ -45,7 +45,7 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub);
 template <typename T>
 T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub);
 
-void __kmp_autotuning_global_initialize();
+void __kmp_autotuning_global_initialize(int gtid);
 
 void __kmp_end_autotuning(int gtid, unsigned id);
 
@@ -57,13 +57,13 @@ class Autotuning {
   // long long m_min; ///< Minimum value of the search interval
   // long long m_max; ///< Maximum value of the search interval
 
-  int64_t *p_point;  ///< Point in the search space
+  int64_t *p_point; ///< Point in the search space
   unsigned m_ignore; ///< Number of iterations to ignore
-  unsigned m_iter;   ///< Iteration number
+  unsigned m_iter; ///< Iteration number
 
   NelderMead *p_optimizer; ///< Numerical optimizer instance
 
-  clock_t m_t0;     ///< Starting time
+  clock_t m_t0; ///< Starting time
   double m_runtime; ///< Total time of a task
 
 public:
@@ -120,7 +120,7 @@ public:
 template <typename T>
 void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
 
-  __kmp_autotuning_global_initialize();
+  __kmp_autotuning_global_initialize(gtid);
 
   kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
@@ -144,6 +144,10 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
   TCW_SYNC_4(info->initialized, TRUE);
   KMP_MB(); // Flush initialized
 
+  KA_TRACE(20, ("__kmp_init_autotuning: T#%d initialized autotuning[%u] in a "
+                "range of (%lli,%lli).\n",
+                gtid, id, min, max));
+
   __kmp_release_bootstrap_lock(&info->start_lock);
 }
 
@@ -155,11 +159,16 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
 
   kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
-  KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
-  KMP_ASSERT2(info->at != NULL, "Autotuning was not initialized");
+  KMP_ASSERT(id > 0);
+  KMP_DEBUG_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
 
-  if (info->at->isEnd())
+  if (!TCR_4(info->initialized) || info->at->isEnd())
     return info->at->getPoint();
+
+  KMP_DEBUG_ASSERT2(info->at != NULL, "Autotuning was not initialized");
+
+  // __kmp_barrier(bs_plain_barrier, gtid, FALSE, 0, NULL, NULL); CHECK IF THIS
+  // IS NEEDED
 
   if (TCR_4(info->started))
     return info->at->getPoint();
@@ -181,6 +190,10 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
   KMP_MB();
 
   __kmp_release_bootstrap_lock(&info->start_lock);
+
+  KA_TRACE(50, ("__kmp_start_autotuning: T#%d started autotuning[%u] resulting "
+                "in the chunk %lli in a range of (%lli,%lli).\n",
+                gtid, id, info->at->getPoint(), min, max));
 
   return info->at->getPoint();
 }

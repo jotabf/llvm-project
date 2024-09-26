@@ -49,9 +49,7 @@ void Autotuning::end() {
   }
 }
 
-void __kmp_autotuning_global_initialize() {
-
-  printf("Initializing %i autotunings\n", __KMP_NUM_AUTO_MODE );
+void __kmp_autotuning_global_initialize(int gtid) {
 
   if (TCR_4(__kmp_global_auto_initialized))
     return;
@@ -78,17 +76,23 @@ void __kmp_autotuning_global_initialize() {
   TCW_SYNC_4(__kmp_global_auto_initialized, TRUE);
   KMP_MB(); // Flush initialized
 
+  KA_TRACE(10, ("__kmp_autotuning_global_initialize: "
+                "T#%d initialized %d autotunings.\n",
+                gtid, __KMP_NUM_AUTO_MODE));
+
   __kmp_release_bootstrap_lock(&__kmp_initz_lock);
 }
 
 void __kmp_end_autotuning(int gtid, unsigned id) {
   kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
 
-  if (info == NULL || info->at->isEnd())
+  if (info == NULL || !TCR_4(info->initialized) || info->at->isEnd())
     return;
 
-  int count = KMP_ATOMIC_ADD(&info->count, 1);
+  KMP_ASSERT(id > 0);
+  KMP_DEBUG_ASSERT(info->at != NULL);
 
+  int count = KMP_ATOMIC_ADD(&info->count, 1);
   if (count == TCR_4(__kmp_nth - 1)) {
     info->at->end();
 
@@ -97,16 +101,16 @@ void __kmp_end_autotuning(int gtid, unsigned id) {
     KMP_ATOMIC_ST_REL(&info->count, 0);
     KMP_MB();
 
-    __kmp_release_bootstrap_lock(&info->end_lock);
+    // __kmp_release_bootstrap_lock(&info->end_lock);
   }
 
-  if (TCR_4(info->ended))
-    return;
-  __kmp_acquire_bootstrap_lock(&info->end_lock);
-  if (TCR_4(info->ended)) {
-    __kmp_release_bootstrap_lock(&info->end_lock);
-    return;
-  }
+  // if (TCR_4(info->ended))
+  //   return;
+  // __kmp_acquire_bootstrap_lock(&info->end_lock);
+  // if (TCR_4(info->ended)) {
+  //   __kmp_release_bootstrap_lock(&info->end_lock);
+  //   return;
+  // }
 }
 
 kmp_autotuning_info *__kmp_find_autotuning_info(unsigned id) {

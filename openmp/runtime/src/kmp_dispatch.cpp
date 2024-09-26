@@ -968,9 +968,8 @@ static void __kmp_dispatch_init(ident_t *loc, int gtid, unsigned atid,
 
   if (schedule & kmp_sch_chunk_mode_auto) {
     T result = __kmp_start_autotuning<T>(gtid, atid, lb, ub);
-    schedule = SCHEDULE_WITHOUT_MODE(schedule);
     chunk = static_cast<typename traits_t<T>::signed_t>(result);
-    // printf("chunk: %d\n", result);
+    schedule = SCHEDULE_WITHOUT_MODE(schedule);
   }
 
   int active;
