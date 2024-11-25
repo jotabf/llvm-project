@@ -93,7 +93,15 @@ public:
 
   int64_t getMax() const { return m_max; }
 
+  void setPoint(int64_t v, unsigned id, unsigned dim = 0) {
+    p_points[id][dim] = v;
+  }
+
   void setLimits(int64_t min, int64_t max) {
+    if (min != m_min || max != m_max) {
+      printf("CHANGED Autotuning: Min = %ld -> %ld, Max = %ld -> %ld \n", m_min,
+             min, m_max, max);
+    }
     m_min = min;
     m_max = max;
   }

@@ -1707,9 +1707,6 @@ class OMPScheduleClause : public OMPClause, public OMPClauseWithPreInit {
   enum {FIRST, SECOND, NUM_MODIFIERS};
   OpenMPScheduleClauseModifier Modifiers[NUM_MODIFIERS];
 
-  /// Chunk size mode for 'schedule' clause.
-  OpenMPScheduleChunkMode Mode = OMPC_SCHEDULE_CHUNK_MODE_unknown;
-
   /// Locations of modifiers.
   SourceLocation ModifiersLoc[NUM_MODIFIERS];
 
@@ -1721,12 +1718,6 @@ class OMPScheduleClause : public OMPClause, public OMPClauseWithPreInit {
 
   /// Chunk size.
   Expr *ChunkSize = nullptr;
-
-  /// Auto Chunk ID
-  unsigned AutoChunkID = 0;
-
-  /// Counter for the number of auto chunk modes.
-  inline static unsigned AutoChunkCounter = 0;
 
   /// Set schedule kind.
   ///
@@ -1805,27 +1796,20 @@ public:
   /// \param M1Loc Location of the first modifier
   /// \param M2 The second modifier applied to 'schedule' clause.
   /// \param M2Loc Location of the second modifier
-  /// \param Mode Chunk size mode.
   OMPScheduleClause(SourceLocation StartLoc, SourceLocation LParenLoc,
                     SourceLocation KLoc, SourceLocation CommaLoc,
                     SourceLocation EndLoc, OpenMPScheduleClauseKind Kind,
                     Expr *ChunkSize, Stmt *HelperChunkSize,
                     OpenMPScheduleClauseModifier M1, SourceLocation M1Loc,
-                    OpenMPScheduleClauseModifier M2, SourceLocation M2Loc,
-                    OpenMPScheduleChunkMode Mode)
+                    OpenMPScheduleClauseModifier M2, SourceLocation M2Loc)
       : OMPClause(llvm::omp::OMPC_schedule, StartLoc, EndLoc),
-        OMPClauseWithPreInit(this), LParenLoc(LParenLoc), Kind(Kind), Mode(Mode),
+        OMPClauseWithPreInit(this), LParenLoc(LParenLoc), Kind(Kind),
         KindLoc(KLoc), CommaLoc(CommaLoc), ChunkSize(ChunkSize) {
     setPreInitStmt(HelperChunkSize);
     Modifiers[FIRST] = M1;
     Modifiers[SECOND] = M2;
     ModifiersLoc[FIRST] = M1Loc;
     ModifiersLoc[SECOND] = M2Loc;
-
-    AutoChunkID = 0;
-    if(Mode == OMPC_SCHEDULE_CHUNK_MODE_auto)
-      AutoChunkID = ++AutoChunkCounter;
-    printf("OMPScheduleClause: %d\n", AutoChunkID);
   }
 
   /// Build an empty clause.
@@ -1834,8 +1818,6 @@ public:
         OMPClauseWithPreInit(this) {
     Modifiers[FIRST] = OMPC_SCHEDULE_MODIFIER_unknown;
     Modifiers[SECOND] = OMPC_SCHEDULE_MODIFIER_unknown;
-    Mode = OMPC_SCHEDULE_CHUNK_MODE_unknown;
-    AutoChunkID = 0;
   }
 
   /// Get kind of the clause.
@@ -1850,9 +1832,6 @@ public:
   OpenMPScheduleClauseModifier getSecondScheduleModifier() const {
     return Modifiers[SECOND];
   }
-
-  /// Get chunk size mode.
-  OpenMPScheduleChunkMode getChunkSizeMode() const { return Mode; }
 
   /// Get location of '('.
   SourceLocation getLParenLoc() { return LParenLoc; }
@@ -1878,12 +1857,6 @@ public:
 
   /// Get chunk size.
   const Expr *getChunkSize() const { return ChunkSize; }
-
-  /// Get auto chunk ID
-  unsigned getAutoChunkID() const { return AutoChunkID; }
-
-  /// Get auto chunk counter
-  static unsigned getAutoChunkCounter() { return AutoChunkCounter; }
 
   child_range children() {
     return child_range(reinterpret_cast<Stmt **>(&ChunkSize),

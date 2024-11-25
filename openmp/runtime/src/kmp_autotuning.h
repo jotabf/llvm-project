@@ -25,13 +25,14 @@
 
 class Autotuning;
 
-extern __attribute__((weak)) const unsigned __KMP_NUM_AUTO_MODE;
+// extern __attribute__((weak)) const unsigned __KMP_NUM_AUTO_MODE;
+extern int64_t __kmp_end_max[256];
 
 struct kmp_autotuning_info {
   KMP_ALIGN_CACHE
   volatile int initialized = FALSE;
   volatile int started = FALSE;
-  volatile int ended = FALSE;
+  volatile kmp_uint32 ended = TRUE;
   KMP_ALIGN_CACHE
   kmp_lock_t start_lock;
   kmp_lock_t end_lock;
@@ -40,16 +41,18 @@ struct kmp_autotuning_info {
 };
 
 template <typename T>
-void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub);
+void __kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub);
 
 template <typename T>
-T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub);
+T __kmp_start_autotuning(int gtid, ident_t *loc, T lb, T ub);
 
 void __kmp_autotuning_global_initialize();
 
-void __kmp_end_autotuning(int gtid, unsigned id);
+void __kmp_end_autotuning(int gtid, ident_t *loc);
 
-kmp_autotuning_info *__kmp_find_autotuning_info(unsigned id);
+kmp_autotuning_info *__kmp_find_autotuning_info(ident_t *loc, int64_t max);
+
+kmp_autotuning_info *__kmp_create_autotuning_info(ident_t *loc, int64_t max);
 
 ///@brief Class for Autotuning
 class Autotuning {
@@ -107,6 +110,14 @@ public:
   ///@brief Check if the optimization has reached the end
   bool isEnd() const { return p_optimizer->isEnd(); }
 
+  ///@brief Set the point in the search space
+  ///@param v Value of the point
+  ///@param id Index of the point
+  ///@param dim Dimension index of the point
+  void setPoint(int64_t v, unsigned id, unsigned dim = 0) {
+    p_optimizer->setPoint(v, id, dim);
+  }
+
   ///@brief Set the limits of the search interval
   ///@param min Minimum value of the search interval
   ///@param max Maximum value of the search interval
@@ -118,11 +129,21 @@ public:
 };
 
 template <typename T>
-void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
+void __kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub) {
 
   __kmp_autotuning_global_initialize();
 
-  kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
+  kmp_autotuning_info *info =
+      __kmp_find_autotuning_info(loc, static_cast<int64_t>(ub));
+  if (info == NULL) {
+    __kmp_barrier(bs_plain_barrier, gtid, FALSE, 0, NULL, NULL);
+    if (__kmpc_single(loc, gtid)) {
+      __kmp_create_autotuning_info(loc, static_cast<int64_t>(ub));
+      __kmpc_end_single(loc, gtid);
+    }
+    __kmp_barrier(bs_plain_barrier, gtid, FALSE, 0, NULL, NULL);
+    info = __kmp_find_autotuning_info(loc, static_cast<int64_t>(ub));
+  }
 
   KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
 
@@ -134,34 +155,59 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
     return;
   }
 
-  int64_t min = static_cast<int64_t>(lb + 1);
-  int64_t max =
-      static_cast<int64_t>((ub + 1) / static_cast<T>(TCR_4(__kmp_nth) * 2));
+  int nth = TCR_4(__kmp_nth);
+  int64_t min = static_cast<int64_t>(lb);
+  int64_t max = static_cast<int64_t>((ub) / static_cast<T>(nth * 2));
+
+  if (min >= max) {
+    __kmp_release_bootstrap_lock(&info->start_lock);
+    return;
+  }
 
   info->at = Autotuning::Create(min, max);
+
+  int64_t ninter = static_cast<int64_t>(ub - lb);
+  double factor = log2(static_cast<double>(ninter) / nth) * (1.0 / 1.618);
+  int64_t point = static_cast<int64_t>(ninter / (pow(2.0, factor) * 2.0 * nth));
+  if (point < min)
+    point = min;
+  if (point > max)
+    point = max;
+
+  info->at->setPoint(point, 0);
+
+  printf("__kmp_init_autotuning: %s min=%li max=%li point=%li\n", loc->psource,
+         min, max, point);
+
   TCW_SYNC_4(info->started, FALSE);
 
   TCW_SYNC_4(info->initialized, TRUE);
   KMP_MB(); // Flush initialized
 
   __kmp_release_bootstrap_lock(&info->start_lock);
-
-  // printf("Autotuning initialized\n");
 }
 
 // TO DO: TEST IF ALL THREADS ARE RETURNING THE SAME VALUE
 template <typename T>
-T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
+T __kmp_start_autotuning(int gtid, ident_t *loc, T lb, T ub) {
 
-  __kmp_init_autotuning(gtid, id, lb, ub);
+  __kmp_init_autotuning(gtid, loc, lb, ub);
 
-  kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
+  kmp_autotuning_info *info =
+      __kmp_find_autotuning_info(loc, static_cast<int64_t>(ub));
 
-  KMP_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
-  KMP_ASSERT2(info->at != NULL, "Autotuning was not initialized");
+  // KMP_ASSERT(id > 0);
+  KMP_DEBUG_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
+
+  if (!TCR_4(info->initialized))
+    return 1;
 
   if (info->at->isEnd())
     return info->at->getPoint();
+
+  KMP_ASSERT2(info->at != NULL, "Autotuning was not initialized");
+
+  __kmp_barrier(bs_plain_barrier, gtid, FALSE, 0, NULL, NULL);
 
   if (TCR_4(info->started))
     return info->at->getPoint();
@@ -171,9 +217,13 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
     return info->at->getPoint();
   }
 
-  int64_t min = static_cast<int64_t>(lb + 1);
+  // KMP_WAIT(&info->ended, TRUE, KMP_EQ, NULL);
+
+  __kmp_end_max[gtid] = static_cast<int64_t>(ub);
+
+  int64_t min = static_cast<int64_t>(lb);
   int64_t max =
-      static_cast<int64_t>((ub + 1) / static_cast<T>(TCR_4(__kmp_nth) * 2));
+      static_cast<int64_t>((ub) / static_cast<T>(TCR_4(__kmp_nth) * 2));
 
   info->at->setLimits(min, max);
   info->at->start();
@@ -183,6 +233,10 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
   KMP_MB();
 
   __kmp_release_bootstrap_lock(&info->start_lock);
+
+  if (info->at->isEnd())
+    printf("__kmp_start_autotuning: %s final chunk %li min=%li max=%li\n",
+           loc->psource, info->at->getPoint(), min, max);
 
   return info->at->getPoint();
 }

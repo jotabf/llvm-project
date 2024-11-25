@@ -39,8 +39,8 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/MDBuilder.h"
 #include "llvm/IR/Metadata.h"
-#include "llvm/IR/PassInstrumentation.h"
 #include "llvm/IR/PassManager.h"
+#include "llvm/IR/PassInstrumentation.h"
 #include "llvm/IR/ReplaceConstant.h"
 #include "llvm/IR/Value.h"
 #include "llvm/MC/TargetRegistry.h"
@@ -165,13 +165,13 @@ static const omp::GV &getGridValue(const Triple &T, Function *Kernel) {
 /// arguments.
 static OMPScheduleType
 getOpenMPBaseScheduleType(llvm::omp::ScheduleKind ClauseKind, bool HasChunks,
-                          bool HasSimdModifier, bool HasAutoID) {
+                          bool HasSimdModifier) {
   // Currently, the default schedule it static.
   switch (ClauseKind) {
   case OMP_SCHEDULE_Default:
   case OMP_SCHEDULE_Static:
-    return HasChunks || HasAutoID ? OMPScheduleType::BaseStaticChunked
-                                  : OMPScheduleType::BaseStatic;
+    return HasChunks ? OMPScheduleType::BaseStaticChunked
+                     : OMPScheduleType::BaseStatic;
   case OMP_SCHEDULE_Dynamic:
     return OMPScheduleType::BaseDynamicChunked;
   case OMP_SCHEDULE_Guided:
@@ -250,10 +250,9 @@ getOpenMPMonotonicityScheduleType(OMPScheduleType ScheduleType,
 static OMPScheduleType
 computeOpenMPScheduleType(ScheduleKind ClauseKind, bool HasChunks,
                           bool HasSimdModifier, bool HasMonotonicModifier,
-                          bool HasNonmonotonicModifier, bool HasOrderedClause,
-                          bool HasAutoID) {
-  OMPScheduleType BaseSchedule = getOpenMPBaseScheduleType(
-      ClauseKind, HasChunks, HasSimdModifier, HasAutoID);
+                          bool HasNonmonotonicModifier, bool HasOrderedClause) {
+  OMPScheduleType BaseSchedule =
+      getOpenMPBaseScheduleType(ClauseKind, HasChunks, HasSimdModifier);
   OMPScheduleType OrderedSchedule =
       getOpenMPOrderingScheduleType(BaseSchedule, HasOrderedClause);
   OMPScheduleType Result = getOpenMPMonotonicityScheduleType(
@@ -898,9 +897,11 @@ Constant *OpenMPIRBuilder::getOrCreateSrcLocStr(StringRef FunctionName,
   return getOrCreateSrcLocStr(Buffer.str(), SrcLocStrSize);
 }
 
+static int LOC_COUNTER = 0;
+
 Constant *
 OpenMPIRBuilder::getOrCreateDefaultSrcLocStr(uint32_t &SrcLocStrSize) {
-  StringRef UnknownLoc = ";unknown;unknown;0;0;;";
+  StringRef UnknownLoc = std::to_string(LOC_COUNTER++);
   return getOrCreateSrcLocStr(UnknownLoc, SrcLocStrSize);
 }
 
@@ -4026,15 +4027,14 @@ OpenMPIRBuilder::applyStaticWorkshareLoop(DebugLoc DL, CanonicalLoopInfo *CLI,
 
   Value *ThreadNum = getOrCreateThreadID(SrcLoc);
 
-  Constant *AutoID = ConstantInt::get(I32Type, /*Auto disable*/0);
   Constant *SchedulingType = ConstantInt::get(
       I32Type, static_cast<int>(OMPScheduleType::UnorderedStatic));
 
   // Call the "init" function and update the trip count of the loop with the
   // value it produced.
   Builder.CreateCall(StaticInit,
-                     {SrcLoc, ThreadNum, AutoID, SchedulingType, PLastIter,
-                      PLowerBound, PUpperBound, PStride, One, Zero});
+                     {SrcLoc, ThreadNum, SchedulingType, PLastIter, PLowerBound,
+                      PUpperBound, PStride, One, Zero});
   Value *LowerBound = Builder.CreateLoad(IVTy, PLowerBound);
   Value *InclusiveUpperBound = Builder.CreateLoad(IVTy, PUpperBound);
   Value *TripCountMinusOne = Builder.CreateSub(InclusiveUpperBound, LowerBound);
@@ -4055,7 +4055,7 @@ OpenMPIRBuilder::applyStaticWorkshareLoop(DebugLoc DL, CanonicalLoopInfo *CLI,
   // In the "exit" block, call the "fini" function.
   Builder.SetInsertPoint(CLI->getExit(),
                          CLI->getExit()->getTerminator()->getIterator());
-  Builder.CreateCall(StaticFini, {SrcLoc, ThreadNum, AutoID});
+  Builder.CreateCall(StaticFini, {SrcLoc, ThreadNum});
 
   // Add the barrier if requested.
   if (NeedsBarrier)
@@ -4071,7 +4071,7 @@ OpenMPIRBuilder::applyStaticWorkshareLoop(DebugLoc DL, CanonicalLoopInfo *CLI,
 
 OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyStaticChunkedWorkshareLoop(
     DebugLoc DL, CanonicalLoopInfo *CLI, InsertPointTy AllocaIP,
-    bool NeedsBarrier, Value *ChunkSize, unsigned AutoID) {
+    bool NeedsBarrier, Value *ChunkSize) {
   assert(CLI->isValid() && "Requires a valid canonical loop");
   assert(ChunkSize && "Chunk size is required");
 
@@ -4113,7 +4113,6 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyStaticChunkedWorkshareLoop(
   Value *CastedTripCount =
       Builder.CreateZExt(OrigTripCount, InternalIVTy, "tripcount");
 
-  Constant *CAutoID = ConstantInt::get(I32Type, AutoID);
   Constant *SchedulingType = ConstantInt::get(
       I32Type, static_cast<int>(OMPScheduleType::UnorderedStaticChunked));
   Builder.CreateStore(Zero, PLowerBound);
@@ -4127,12 +4126,12 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyStaticChunkedWorkshareLoop(
   Constant *SrcLocStr = getOrCreateSrcLocStr(DL, SrcLocStrSize);
   Value *SrcLoc = getOrCreateIdent(SrcLocStr, SrcLocStrSize);
   Value *ThreadNum = getOrCreateThreadID(SrcLoc);
-  Builder.CreateCall(
-      StaticInit, {/*loc=*/SrcLoc, /*global_tid=*/ThreadNum, /*atid=*/CAutoID,
-                   /*schedtype=*/SchedulingType, /*plastiter=*/PLastIter,
-                   /*plower=*/PLowerBound, /*pupper=*/PUpperBound,
-                   /*pstride=*/PStride, /*incr=*/One,
-                   /*chunk=*/CastedChunkSize});
+  Builder.CreateCall(StaticInit,
+                     {/*loc=*/SrcLoc, /*global_tid=*/ThreadNum,
+                      /*schedtype=*/SchedulingType, /*plastiter=*/PLastIter,
+                      /*plower=*/PLowerBound, /*pupper=*/PUpperBound,
+                      /*pstride=*/PStride, /*incr=*/One,
+                      /*chunk=*/CastedChunkSize});
 
   // Load values written by the "init" function.
   Value *FirstChunkStart =
@@ -4197,7 +4196,7 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyStaticChunkedWorkshareLoop(
 
   // In the "exit" block, call the "fini" function.
   Builder.SetInsertPoint(DispatchExit, DispatchExit->getFirstInsertionPt());
-  Builder.CreateCall(StaticFini, {SrcLoc, ThreadNum, CAutoID});
+  Builder.CreateCall(StaticFini, {SrcLoc, ThreadNum});
 
   // Add the barrier if requested.
   if (NeedsBarrier)
@@ -4446,13 +4445,13 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyWorkshareLoop(
     DebugLoc DL, CanonicalLoopInfo *CLI, InsertPointTy AllocaIP,
     bool NeedsBarrier, omp::ScheduleKind SchedKind, Value *ChunkSize,
     bool HasSimdModifier, bool HasMonotonicModifier,
-    bool HasNonmonotonicModifier, bool HasOrderedClause, unsigned AutoID,
+    bool HasNonmonotonicModifier, bool HasOrderedClause,
     WorksharingLoopType LoopType) {
   if (Config.isTargetDevice())
     return applyWorkshareLoopTarget(DL, CLI, AllocaIP, LoopType);
   OMPScheduleType EffectiveScheduleType = computeOpenMPScheduleType(
       SchedKind, ChunkSize, HasSimdModifier, HasMonotonicModifier,
-      HasNonmonotonicModifier, HasOrderedClause, AutoID > 0);
+      HasNonmonotonicModifier, HasOrderedClause);
 
   bool IsOrdered = (EffectiveScheduleType & OMPScheduleType::ModifierOrdered) ==
                    OMPScheduleType::ModifierOrdered;
@@ -4461,17 +4460,17 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyWorkshareLoop(
     assert(!ChunkSize && "No chunk size with static-chunked schedule");
     if (IsOrdered)
       return applyDynamicWorkshareLoop(DL, CLI, AllocaIP, EffectiveScheduleType,
-                                       NeedsBarrier, ChunkSize, AutoID);
+                                       NeedsBarrier, ChunkSize);
     // FIXME: Monotonicity ignored?
     return applyStaticWorkshareLoop(DL, CLI, AllocaIP, NeedsBarrier);
 
   case OMPScheduleType::BaseStaticChunked:
     if (IsOrdered)
       return applyDynamicWorkshareLoop(DL, CLI, AllocaIP, EffectiveScheduleType,
-                                       NeedsBarrier, ChunkSize, AutoID);
+                                       NeedsBarrier, ChunkSize);
     // FIXME: Monotonicity ignored?
     return applyStaticChunkedWorkshareLoop(DL, CLI, AllocaIP, NeedsBarrier,
-                                           ChunkSize, AutoID);
+                                           ChunkSize);
 
   case OMPScheduleType::BaseRuntime:
   case OMPScheduleType::BaseAuto:
@@ -4489,7 +4488,7 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyWorkshareLoop(
   case OMPScheduleType::BaseGuidedAnalyticalChunked:
   case OMPScheduleType::BaseStaticBalancedChunked:
     return applyDynamicWorkshareLoop(DL, CLI, AllocaIP, EffectiveScheduleType,
-                                     NeedsBarrier, ChunkSize, AutoID);
+                                     NeedsBarrier, ChunkSize);
 
   default:
     llvm_unreachable("Unknown/unimplemented schedule kind");
@@ -4545,8 +4544,7 @@ getKmpcForDynamicFiniForType(Type *Ty, Module &M, OpenMPIRBuilder &OMPBuilder) {
 
 OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
     DebugLoc DL, CanonicalLoopInfo *CLI, InsertPointTy AllocaIP,
-    OMPScheduleType SchedType, bool NeedsBarrier, Value *Chunk,
-    unsigned AutoID) {
+    OMPScheduleType SchedType, bool NeedsBarrier, Value *Chunk) {
   assert(CLI->isValid() && "Requires a valid canonical loop");
   assert(!isConflictIP(AllocaIP, CLI->getPreheaderIP()) &&
          "Require dedicated allocate IP");
@@ -4602,14 +4600,14 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
     Chunk = One;
 
   Value *ThreadNum = getOrCreateThreadID(SrcLoc);
-  Constant *CAutoID = ConstantInt::get(I32Type, AutoID);
+
   Constant *SchedulingType =
       ConstantInt::get(I32Type, static_cast<int>(SchedType));
 
   // Call the "init" function.
   Builder.CreateCall(DynamicInit,
-                     {SrcLoc, ThreadNum, CAutoID, SchedulingType,
-                      /* LowerBound */ One, UpperBound, /* step */ One, Chunk});
+                     {SrcLoc, ThreadNum, SchedulingType, /* LowerBound */ One,
+                      UpperBound, /* step */ One, Chunk});
 
   // An outer loop around the existing one.
   BasicBlock *OuterCond = BasicBlock::Create(
@@ -4656,7 +4654,7 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
   if (Ordered) {
     Builder.SetInsertPoint(&Latch->back());
     FunctionCallee DynamicFini = getKmpcForDynamicFiniForType(IVTy, M, *this);
-    Builder.CreateCall(DynamicFini, {SrcLoc, ThreadNum, CAutoID});
+    Builder.CreateCall(DynamicFini, {SrcLoc, ThreadNum});
   }
 
   // Add the barrier if requested.
@@ -4666,6 +4664,10 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
                   omp::Directive::OMPD_for, /* ForceSimpleCall */ false,
                   /* CheckCancelFlag */ false);
   }
+  
+  Builder.SetInsertPoint(&Exit->back());
+  FunctionCallee DynamicDeInit = createDispatchDeinitFunction();
+  Builder.CreateCall(DynamicDeInit, {SrcLoc, ThreadNum});
 
   CLI->invalidate();
   return AfterIP;
@@ -5191,8 +5193,8 @@ void OpenMPIRBuilder::applySimd(CanonicalLoopInfo *CanonicalLoop,
     for (auto &AlignedItem : AlignedVars) {
       Value *AlignedPtr = AlignedItem.first;
       Value *Alignment = AlignedItem.second;
-      Builder.CreateAlignmentAssumption(F->getDataLayout(), AlignedPtr,
-                                        Alignment);
+      Builder.CreateAlignmentAssumption(F->getDataLayout(),
+                                        AlignedPtr, Alignment);
     }
     Builder.restoreIP(IP);
   }
@@ -5340,16 +5342,16 @@ static int32_t computeHeuristicUnrollFactor(CanonicalLoopInfo *CLI) {
   Loop *L = LI.getLoopFor(CLI->getHeader());
   assert(L && "Expecting CanonicalLoopInfo to be recognized as a loop");
 
-  TargetTransformInfo::UnrollingPreferences UP = gatherUnrollingPreferences(
-      L, SE, TTI,
-      /*BlockFrequencyInfo=*/nullptr,
-      /*ProfileSummaryInfo=*/nullptr, ORE, static_cast<int>(OptLevel),
-      /*UserThreshold=*/std::nullopt,
-      /*UserCount=*/std::nullopt,
-      /*UserAllowPartial=*/true,
-      /*UserAllowRuntime=*/true,
-      /*UserUpperBound=*/std::nullopt,
-      /*UserFullUnrollMaxCount=*/std::nullopt);
+  TargetTransformInfo::UnrollingPreferences UP =
+      gatherUnrollingPreferences(L, SE, TTI,
+                                 /*BlockFrequencyInfo=*/nullptr,
+                                 /*ProfileSummaryInfo=*/nullptr, ORE, static_cast<int>(OptLevel),
+                                 /*UserThreshold=*/std::nullopt,
+                                 /*UserCount=*/std::nullopt,
+                                 /*UserAllowPartial=*/true,
+                                 /*UserAllowRuntime=*/true,
+                                 /*UserUpperBound=*/std::nullopt,
+                                 /*UserFullUnrollMaxCount=*/std::nullopt);
 
   UP.Force = true;
 
@@ -6497,6 +6499,7 @@ OpenMPIRBuilder::createForStaticInitFunction(unsigned IVSize, bool IVSigned,
                                     : omp::OMPRTL___kmpc_for_static_init_4u)
                         : (IVSigned ? omp::OMPRTL___kmpc_for_static_init_8
                                     : omp::OMPRTL___kmpc_for_static_init_8u);
+
   return getOrCreateRuntimeFunction(M, Name);
 }
 
@@ -8341,6 +8344,7 @@ OpenMPIRBuilder::createTeams(const LocationDescription &Loc,
 
     llvm::for_each(llvm::reverse(ToBeDeleted),
                    [](Instruction *I) { I->eraseFromParent(); });
+
   };
 
   if (!Config.isTargetDevice())

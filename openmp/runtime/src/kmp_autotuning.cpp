@@ -1,7 +1,13 @@
 #include "kmp_autotuning.h"
+#include <map>
 
 volatile int __kmp_global_auto_initialized = FALSE;
+ident_t **__kmp_sched_autotunig_locations;
+int64_t *__kmp_sched_autotunig_locations_max; 
 kmp_autotuning_info *__kmp_sched_autotunig_vector;
+unsigned __KMP_NUM_AUTO_MODE = 100;
+
+int64_t __kmp_end_max[256];
 
 Autotuning *Autotuning::Create(int64_t min, int64_t max, unsigned ignore) {
   const int DIM = 1;
@@ -56,15 +62,26 @@ void __kmp_autotuning_global_initialize() {
     return;
   }
 
-  KMP_ASSERT(__KMP_NUM_AUTO_MODE > 0);
+  // KMP_ASSERT(__KMP_NUM_AUTO_MODE > 0);
 
+  __kmp_sched_autotunig_locations = static_cast<ident_t **>(
+      __kmp_allocate(sizeof(ident_t *) * __KMP_NUM_AUTO_MODE));
+  __kmp_sched_autotunig_locations_max = static_cast<int64_t *>(
+      __kmp_allocate(sizeof(int64_t) * __KMP_NUM_AUTO_MODE));
   __kmp_sched_autotunig_vector = static_cast<kmp_autotuning_info *>(
       __kmp_allocate(sizeof(kmp_autotuning_info) * __KMP_NUM_AUTO_MODE));
+
+  for (unsigned i = 0; i < __KMP_NUM_AUTO_MODE; i++) {
+    __kmp_sched_autotunig_locations[i] = NULL;
+  }
+  for (unsigned i = 0; i < __KMP_NUM_AUTO_MODE; i++) {
+    __kmp_sched_autotunig_locations_max[i] = 0;
+  }
 
   for (unsigned i = 0; i < __KMP_NUM_AUTO_MODE; ++i) {
     TCW_SYNC_4(__kmp_sched_autotunig_vector[i].initialized, FALSE);
     TCW_SYNC_4(__kmp_sched_autotunig_vector[i].started, FALSE);
-    TCW_SYNC_4(__kmp_sched_autotunig_vector[i].ended, FALSE);
+    TCW_SYNC_4(__kmp_sched_autotunig_vector[i].ended, TRUE);
     KMP_ATOMIC_ST_REL(&__kmp_sched_autotunig_vector[i].count, 0);
     __kmp_init_bootstrap_lock(&__kmp_sched_autotunig_vector[i].end_lock);
     __kmp_init_bootstrap_lock(&__kmp_sched_autotunig_vector[i].start_lock);
@@ -76,36 +93,58 @@ void __kmp_autotuning_global_initialize() {
   __kmp_release_bootstrap_lock(&__kmp_initz_lock);
 }
 
-void __kmp_end_autotuning(int gtid, unsigned id) {
-  kmp_autotuning_info *info = __kmp_find_autotuning_info(id);
+void __kmp_end_autotuning(int gtid, ident_t *loc) {
+  kmp_autotuning_info *info = __kmp_find_autotuning_info(loc, __kmp_end_max[gtid]);
 
-  if (info == NULL || info->at->isEnd())
+  // printf("Ending autotuning in %p = %s\n", loc, loc->psource);
+
+  if (info == NULL || !TCR_4(info->initialized) || info->at->isEnd())
     return;
 
-  int count = KMP_ATOMIC_ADD(&info->count, 1);
+  KMP_ASSERT2(info->at != NULL, "Autotuning was not initialized");
 
+  int count = KMP_ATOMIC_ADD(&info->count, 1);
   if (count == TCR_4(__kmp_nth - 1)) {
     info->at->end();
 
-    TCW_SYNC_4(info->started, FALSE);
-    TCW_SYNC_4(info->ended, TRUE);
     KMP_ATOMIC_ST_REL(&info->count, 0);
+    TCW_SYNC_4(info->started, FALSE);
+    TCW_SYNC_4(info->ended, TRUE);    
     KMP_MB();
 
-    __kmp_release_bootstrap_lock(&info->end_lock);
+    // __kmp_release_bootstrap_lock(&info->end_lock);
   }
 
-  if (TCR_4(info->ended))
-    return;
-  __kmp_acquire_bootstrap_lock(&info->end_lock);
-  if (TCR_4(info->ended)) {
-    __kmp_release_bootstrap_lock(&info->end_lock);
-    return;
-  }
+  // if (TCR_4(info->ended))
+  //   return;
+  // __kmp_acquire_bootstrap_lock(&info->end_lock);
+  // if (TCR_4(info->ended)) {
+  //   __kmp_release_bootstrap_lock(&info->end_lock);
+  //   return;
+  // }
 }
 
-kmp_autotuning_info *__kmp_find_autotuning_info(unsigned id) {
-  if (id == 0)
-    return NULL;
-  return __kmp_sched_autotunig_vector + id - 1;
+kmp_autotuning_info *__kmp_find_autotuning_info(ident_t *loc, int64_t max) {
+  for (unsigned i = 0; i < __KMP_NUM_AUTO_MODE; i++) {
+    if (__kmp_sched_autotunig_locations[i] == loc && __kmp_sched_autotunig_locations_max[i] == max)
+      return __kmp_sched_autotunig_vector + i;
+    else if (__kmp_sched_autotunig_locations[i] == NULL) {
+      return NULL;
+    }
+  }
+  return NULL;
+}
+
+kmp_autotuning_info *__kmp_create_autotuning_info(ident_t *loc, int64_t max) {
+  
+  printf("Creating new autotuning info in %p\n", loc);
+  unsigned i = 0;
+  for (; i < __KMP_NUM_AUTO_MODE; i++) {
+    if (__kmp_sched_autotunig_locations[i] == NULL) {
+      __kmp_sched_autotunig_locations[i] = loc;
+      __kmp_sched_autotunig_locations_max[i] = max;
+      return __kmp_sched_autotunig_vector + i;
+    }
+  }
+  return NULL;
 }

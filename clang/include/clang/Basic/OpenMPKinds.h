@@ -43,15 +43,6 @@ enum OpenMPScheduleClauseModifier {
   OMPC_SCHEDULE_MODIFIER_last
 };
 
-/// OpenMP mode for 'chunk size' of 'schedule' clause.
-enum OpenMPScheduleChunkMode {
-  OMPC_SCHEDULE_CHUNK_MODE_unknown = OMPC_SCHEDULE_unknown,
-#define OPENMP_SCHEDULE_CHUNK_MODE(Name) \
-  OMPC_SCHEDULE_CHUNK_MODE_##Name,
-#include "clang/Basic/OpenMPKinds.def"
-  OMPC_SCHEDULE_CHUNK_MODE_last
-};
-
 /// OpenMP modifiers for 'device' clause.
 enum OpenMPDeviceClauseModifier {
 #define OPENMP_DEVICE_MODIFIER(Name) OMPC_DEVICE_##Name,
@@ -189,8 +180,6 @@ struct OpenMPScheduleTy final {
   OpenMPScheduleClauseKind Schedule = OMPC_SCHEDULE_unknown;
   OpenMPScheduleClauseModifier M1 = OMPC_SCHEDULE_MODIFIER_unknown;
   OpenMPScheduleClauseModifier M2 = OMPC_SCHEDULE_MODIFIER_unknown;
-  OpenMPScheduleChunkMode Mode = OMPC_SCHEDULE_CHUNK_MODE_unknown;
-  unsigned AtID = 0u;
 };
 
 /// OpenMP modifiers for 'reduction' clause.

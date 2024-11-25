@@ -548,8 +548,6 @@ enum OpenMPSchedType {
   /// dist_schedule types
   OMP_dist_sch_static_chunked = 91,
   OMP_dist_sch_static = 92,
-  /// Set if chunk was specified as auto.
-  OMP_sch_chunk_mode_auto = (1 << 28),
   /// Support for OpenMP 4.5 monotonic and nonmonotonic schedule modifiers.
   /// Set if the monotonic schedule modifier was present.
   OMP_sch_modifier_monotonic = (1 << 29),
@@ -2472,17 +2470,6 @@ bool CGOpenMPRuntime::isDynamic(OpenMPScheduleClauseKind ScheduleKind) const {
   return Schedule != OMP_sch_static;
 }
 
-static int addChunkMode(int previous, OpenMPScheduleChunkMode mode) {
-  switch (mode) {
-  case OMPC_SCHEDULE_CHUNK_MODE_auto:
-    return previous | OMP_sch_chunk_mode_auto;
-  case OMPC_SCHEDULE_CHUNK_MODE_unknown:
-  case OMPC_SCHEDULE_CHUNK_MODE_last:
-    return previous;
-  }
-  return previous;
-}
-
 static int addMonoNonMonoModifier(CodeGenModule &CGM, OpenMPSchedType Schedule,
                                   OpenMPScheduleClauseModifier M1,
                                   OpenMPScheduleClauseModifier M2) {
@@ -2554,58 +2541,34 @@ void CGOpenMPRuntime::emitForDispatchInit(
   // If the Chunk was not specified in the clause - use default value 1.
   llvm::Value *Chunk = DispatchValues.Chunk ? DispatchValues.Chunk
                                             : CGF.Builder.getIntN(IVSize, 1);
-
-  int ScheduleType =
-      addMonoNonMonoModifier(CGM, Schedule, ScheduleKind.M1, ScheduleKind.M2);
-  ScheduleType = addChunkMode(ScheduleType, ScheduleKind.Mode);
-  unsigned AutoID = ScheduleKind.AtID;
-  llvm::Value *AutoIDValue = CGF.Builder.getInt32(AutoID);
-  if (ScheduleKind.Mode == OMPC_SCHEDULE_CHUNK_MODE_auto) {
-    unsigned AutoCounter = OMPScheduleClause::getAutoChunkCounter();
-    llvm::GlobalVariable *GTotalAutoMode =
-        OMPBuilder.getOrCreateInternalVariable(AutoIDValue->getType(),
-                                               "__KMP_NUM_AUTO_MODE");
-    GTotalAutoMode->setLinkage(llvm::GlobalValue::ExternalLinkage);
-    GTotalAutoMode->setConstant(true);
-    GTotalAutoMode->setInitializer(
-        llvm::ConstantInt::get(AutoIDValue->getType(), AutoCounter));
-  }
-
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc),
       getThreadID(CGF, Loc),
-      AutoIDValue,                        // Scheduler Auto Chunk ID
-      CGF.Builder.getInt32(ScheduleType), // Schedule type
-      DispatchValues.LB,                  // Lower
-      DispatchValues.UB,                  // Upper
-      CGF.Builder.getIntN(IVSize, 1),     // Stride
-      Chunk,                              // Chunk
+      CGF.Builder.getInt32(addMonoNonMonoModifier(
+          CGM, Schedule, ScheduleKind.M1, ScheduleKind.M2)), // Schedule type
+      DispatchValues.LB,                                     // Lower
+      DispatchValues.UB,                                     // Upper
+      CGF.Builder.getIntN(IVSize, 1),                        // Stride
+      Chunk                                                  // Chunk
   };
   CGF.EmitRuntimeCall(OMPBuilder.createDispatchInitFunction(IVSize, IVSigned),
                       Args);
 }
 
-void CGOpenMPRuntime::emitForDispatchDeinit(
-    CodeGenFunction &CGF, SourceLocation Loc,
-    const OpenMPScheduleTy &ScheduleKind) {
+void CGOpenMPRuntime::emitForDispatchDeinit(CodeGenFunction &CGF,
+                                            SourceLocation Loc) {
   if (!CGF.HaveInsertPoint())
     return;
-
-  int ScheduleType = addChunkMode(0, ScheduleKind.Mode);
-  unsigned AutoID = ScheduleKind.AtID;
   // Call __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 tid);
-  llvm::Value *Args[] = {emitUpdateLocation(CGF, Loc), getThreadID(CGF, Loc),
-                         CGF.Builder.getInt32(AutoID),
-                         CGF.Builder.getInt32(ScheduleType)};
+  llvm::Value *Args[] = {emitUpdateLocation(CGF, Loc), getThreadID(CGF, Loc)};
   CGF.EmitRuntimeCall(OMPBuilder.createDispatchDeinitFunction(), Args);
 }
 
 static void emitForStaticInitCall(
     CodeGenFunction &CGF, llvm::Value *UpdateLocation, llvm::Value *ThreadId,
-    llvm::Value *AutoIDValue, llvm::FunctionCallee ForStaticInitFunction,
-    OpenMPSchedType Schedule, OpenMPScheduleClauseModifier M1,
-    OpenMPScheduleClauseModifier M2, const CGOpenMPRuntime::StaticRTInput &Values,
-    OpenMPScheduleChunkMode Mode) {
+    llvm::FunctionCallee ForStaticInitFunction, OpenMPSchedType Schedule,
+    OpenMPScheduleClauseModifier M1, OpenMPScheduleClauseModifier M2,
+    const CGOpenMPRuntime::StaticRTInput &Values) {
   if (!CGF.HaveInsertPoint())
     return;
 
@@ -2635,20 +2598,17 @@ static void emitForStaticInitCall(
             Schedule == OMP_dist_sch_static_chunked) &&
            "expected static chunked schedule");
   }
-  int ScheduleType = addChunkMode(
-    addMonoNonMonoModifier(CGF.CGM, Schedule, M1, M2), Mode);
-
   llvm::Value *Args[] = {
       UpdateLocation,
       ThreadId,
-      AutoIDValue,                          // Scheduler Auto Chunk ID
-      CGF.Builder.getInt32(ScheduleType),   // Schedule type
-      Values.IL.emitRawPointer(CGF),        // &isLastIter
-      Values.LB.emitRawPointer(CGF),        // &LB
-      Values.UB.emitRawPointer(CGF),        // &UB
-      Values.ST.emitRawPointer(CGF),        // &Stride
-      CGF.Builder.getIntN(Values.IVSize, 1),// Incr
-      Chunk                                 // Chunk
+      CGF.Builder.getInt32(addMonoNonMonoModifier(CGF.CGM, Schedule, M1,
+                                                  M2)), // Schedule type
+      Values.IL.emitRawPointer(CGF),                    // &isLastIter
+      Values.LB.emitRawPointer(CGF),                    // &LB
+      Values.UB.emitRawPointer(CGF),                    // &UB
+      Values.ST.emitRawPointer(CGF),                    // &Stride
+      CGF.Builder.getIntN(Values.IVSize, 1),            // Incr
+      Chunk                                             // Chunk
   };
   CGF.EmitRuntimeCall(ForStaticInitFunction, Args);
 }
@@ -2662,30 +2622,17 @@ void CGOpenMPRuntime::emitForStaticInit(CodeGenFunction &CGF,
       ScheduleKind.Schedule, Values.Chunk != nullptr, Values.Ordered);
   assert((isOpenMPWorksharingDirective(DKind) || (DKind == OMPD_loop)) &&
          "Expected loop-based or sections-based directive.");
-  llvm::Value *UpdatedLocation = emitUpdateLocation(
-      CGF, Loc,
-      isOpenMPLoopDirective(DKind) ? OMP_IDENT_WORK_LOOP
-                                   : OMP_IDENT_WORK_SECTIONS);
+  llvm::Value *UpdatedLocation = emitUpdateLocation(CGF, Loc,
+                                             isOpenMPLoopDirective(DKind)
+                                                 ? OMP_IDENT_WORK_LOOP
+                                                 : OMP_IDENT_WORK_SECTIONS);
   llvm::Value *ThreadId = getThreadID(CGF, Loc);
-  unsigned AutoID = ScheduleKind.AtID;
-  llvm::Value *AutoIDValue = CGF.Builder.getInt32(AutoID);
-  if (ScheduleKind.Mode == OMPC_SCHEDULE_CHUNK_MODE_auto) {
-    llvm::GlobalVariable *GTotalAutoMode =
-        OMPBuilder.getOrCreateInternalVariable(AutoIDValue->getType(),
-                                               "__KMP_NUM_AUTO_MODE");
-    GTotalAutoMode->setLinkage(llvm::GlobalValue::ExternalLinkage);
-    GTotalAutoMode->setConstant(true);
-    GTotalAutoMode->setInitializer(
-        llvm::ConstantInt::get(AutoIDValue->getType(), AutoID));
-  }
-
   llvm::FunctionCallee StaticInitFunction =
       OMPBuilder.createForStaticInitFunction(Values.IVSize, Values.IVSigned,
                                              false);
   auto DL = ApplyDebugLocation::CreateDefaultArtificial(CGF, Loc);
-  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, AutoIDValue,
-                        StaticInitFunction, ScheduleNum, ScheduleKind.M1,
-                        ScheduleKind.M2, Values, ScheduleKind.Mode);
+  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, StaticInitFunction,
+                        ScheduleNum, ScheduleKind.M1, ScheduleKind.M2, Values);
 }
 
 void CGOpenMPRuntime::emitDistributeStaticInit(
@@ -2697,7 +2644,6 @@ void CGOpenMPRuntime::emitDistributeStaticInit(
   llvm::Value *UpdatedLocation =
       emitUpdateLocation(CGF, Loc, OMP_IDENT_WORK_DISTRIBUTE);
   llvm::Value *ThreadId = getThreadID(CGF, Loc);
-  llvm::Value *AutoIDValue = CGF.Builder.getInt32(0);
   llvm::FunctionCallee StaticInitFunction;
   bool isGPUDistribute =
       CGM.getLangOpts().OpenMPIsTargetDevice &&
@@ -2705,22 +2651,20 @@ void CGOpenMPRuntime::emitDistributeStaticInit(
   StaticInitFunction = OMPBuilder.createForStaticInitFunction(
       Values.IVSize, Values.IVSigned, isGPUDistribute);
 
-  emitForStaticInitCall(
-      CGF, UpdatedLocation, ThreadId, AutoIDValue, StaticInitFunction,
-      ScheduleNum, OMPC_SCHEDULE_MODIFIER_unknown,
-      OMPC_SCHEDULE_MODIFIER_unknown, Values, OMPC_SCHEDULE_CHUNK_MODE_unknown);
+  emitForStaticInitCall(CGF, UpdatedLocation, ThreadId, StaticInitFunction,
+                        ScheduleNum, OMPC_SCHEDULE_MODIFIER_unknown,
+                        OMPC_SCHEDULE_MODIFIER_unknown, Values);
 }
 
 void CGOpenMPRuntime::emitForStaticFinish(CodeGenFunction &CGF,
                                           SourceLocation Loc,
-                                          OpenMPDirectiveKind DKind,
-                                          unsigned AutoID) {
+                                          OpenMPDirectiveKind DKind) {
   assert((DKind == OMPD_distribute || DKind == OMPD_for ||
           DKind == OMPD_sections) &&
          "Expected distribute, for, or sections directive kind");
   if (!CGF.HaveInsertPoint())
     return;
-  // Call __kmpc_for_static_fini(ident_t *loc, kmp_int32 tid, kmp_uint32 atid);
+  // Call __kmpc_for_static_fini(ident_t *loc, kmp_int32 tid);
   llvm::Value *Args[] = {
       emitUpdateLocation(CGF, Loc,
                          isOpenMPDistributeDirective(DKind) ||
@@ -2729,7 +2673,7 @@ void CGOpenMPRuntime::emitForStaticFinish(CodeGenFunction &CGF,
                          : isOpenMPLoopDirective(DKind)
                              ? OMP_IDENT_WORK_LOOP
                              : OMP_IDENT_WORK_SECTIONS),
-      getThreadID(CGF, Loc), CGF.Builder.getInt32(AutoID)};
+      getThreadID(CGF, Loc)};
   auto DL = ApplyDebugLocation::CreateDefaultArtificial(CGF, Loc);
   if (isOpenMPDistributeDirective(DKind) &&
       CGM.getLangOpts().OpenMPIsTargetDevice &&
@@ -3443,6 +3387,7 @@ static bool checkInitIsRequired(CodeGenFunction &CGF,
   }
   return InitRequired;
 }
+
 
 /// Emit task_dup function (for initialization of
 /// private/firstprivate/lastprivate vars and last_iter flag)
@@ -12101,9 +12046,8 @@ void CGOpenMPSIMDRuntime::emitForDispatchInit(
   llvm_unreachable("Not supported in SIMD-only mode");
 }
 
-void CGOpenMPSIMDRuntime::emitForDispatchDeinit(
-    CodeGenFunction &CGF, SourceLocation Loc,
-    const OpenMPScheduleTy &ScheduleKind) {
+void CGOpenMPSIMDRuntime::emitForDispatchDeinit(CodeGenFunction &CGF,
+                                                SourceLocation Loc) {
   llvm_unreachable("Not supported in SIMD-only mode");
 }
 
@@ -12128,8 +12072,7 @@ void CGOpenMPSIMDRuntime::emitForOrderedIterationEnd(CodeGenFunction &CGF,
 
 void CGOpenMPSIMDRuntime::emitForStaticFinish(CodeGenFunction &CGF,
                                               SourceLocation Loc,
-                                              OpenMPDirectiveKind DKind,
-                                              unsigned AutoID) {
+                                              OpenMPDirectiveKind DKind) {
   llvm_unreachable("Not supported in SIMD-only mode");
 }
 

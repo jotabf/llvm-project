@@ -2001,8 +2001,7 @@ void __kmpc_end_single(ident_t *loc, kmp_int32 global_tid) {
 
 Mark the end of a statically scheduled loop.
 */
-void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
-                            kmp_uint32 auto_id) {
+void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid) {
   KMP_POP_PARTITIONED_TIMER();
   KE_TRACE(10, ("__kmpc_for_static_fini called T#%d\n", global_tid));
 
@@ -2033,7 +2032,7 @@ void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
   if (__kmp_env_consistency_check)
     __kmp_pop_workshare(global_tid, ct_pdo, loc);
 
-  __kmp_end_autotuning(global_tid, auto_id);
+  // __kmp_end_autotuning(global_tid, loc);
 }
 
 // User routines which take C-style arguments (call by value)

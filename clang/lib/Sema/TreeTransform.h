@@ -1827,13 +1827,12 @@ public:
   /// Subclasses may override this routine to provide different behavior.
   OMPClause *RebuildOMPScheduleClause(
       OpenMPScheduleClauseModifier M1, OpenMPScheduleClauseModifier M2,
-      OpenMPScheduleClauseKind Kind, OpenMPScheduleChunkMode Mode,
-      Expr *ChunkSize, SourceLocation StartLoc, SourceLocation LParenLoc,
-      SourceLocation M1Loc, SourceLocation M2Loc, SourceLocation KindLoc,
-      SourceLocation CommaLoc, SourceLocation EndLoc) {
+      OpenMPScheduleClauseKind Kind, Expr *ChunkSize, SourceLocation StartLoc,
+      SourceLocation LParenLoc, SourceLocation M1Loc, SourceLocation M2Loc,
+      SourceLocation KindLoc, SourceLocation CommaLoc, SourceLocation EndLoc) {
     return getSema().OpenMP().ActOnOpenMPScheduleClause(
-        M1, M2, Kind, Mode, ChunkSize, StartLoc, LParenLoc, M1Loc, M2Loc,
-        KindLoc, CommaLoc, EndLoc);
+        M1, M2, Kind, ChunkSize, StartLoc, LParenLoc, M1Loc, M2Loc, KindLoc,
+        CommaLoc, EndLoc);
   }
 
   /// Build a new OpenMP 'ordered' clause.
@@ -10259,10 +10258,9 @@ TreeTransform<Derived>::TransformOMPScheduleClause(OMPScheduleClause *C) {
     return nullptr;
   return getDerived().RebuildOMPScheduleClause(
       C->getFirstScheduleModifier(), C->getSecondScheduleModifier(),
-      C->getScheduleKind(), C->getChunkSizeMode(), E.get(), C->getBeginLoc(),
-      C->getLParenLoc(), C->getFirstScheduleModifierLoc(),
-      C->getSecondScheduleModifierLoc(), C->getScheduleKindLoc(),
-      C->getCommaLoc(), C->getEndLoc());
+      C->getScheduleKind(), E.get(), C->getBeginLoc(), C->getLParenLoc(),
+      C->getFirstScheduleModifierLoc(), C->getSecondScheduleModifierLoc(),
+      C->getScheduleKindLoc(), C->getCommaLoc(), C->getEndLoc());
 }
 
 template <typename Derived>

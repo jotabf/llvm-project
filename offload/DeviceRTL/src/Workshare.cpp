@@ -521,7 +521,7 @@ void workshare::init(bool IsSPMD) {
 extern "C" {
 
 // init
-void __kmpc_dispatch_init_4(IdentTy *loc, int32_t tid, uint32_t atid,
+void __kmpc_dispatch_init_4(IdentTy *loc, int32_t tid,
                             int32_t schedule, int32_t lb, int32_t ub,
                             int32_t st, int32_t chunk) {
   DynamicScheduleTracker *DST = pushDST();
@@ -529,7 +529,7 @@ void __kmpc_dispatch_init_4(IdentTy *loc, int32_t tid, uint32_t atid,
       loc, tid, (kmp_sched_t)schedule, lb, ub, st, chunk, DST);
 }
 
-void __kmpc_dispatch_init_4u(IdentTy *loc, int32_t tid, uint32_t atid,
+void __kmpc_dispatch_init_4u(IdentTy *loc, int32_t tid,
                              int32_t schedule, uint32_t lb, uint32_t ub,
                              int32_t st, int32_t chunk) {
   DynamicScheduleTracker *DST = pushDST();
@@ -537,7 +537,7 @@ void __kmpc_dispatch_init_4u(IdentTy *loc, int32_t tid, uint32_t atid,
       loc, tid, (kmp_sched_t)schedule, lb, ub, st, chunk, DST);
 }
 
-void __kmpc_dispatch_init_8(IdentTy *loc, int32_t tid, uint32_t atid,
+void __kmpc_dispatch_init_8(IdentTy *loc, int32_t tid,
                             int32_t schedule, int64_t lb, int64_t ub,
                             int64_t st, int64_t chunk) {
   DynamicScheduleTracker *DST = pushDST();
@@ -545,7 +545,7 @@ void __kmpc_dispatch_init_8(IdentTy *loc, int32_t tid, uint32_t atid,
       loc, tid, (kmp_sched_t)schedule, lb, ub, st, chunk, DST);
 }
 
-void __kmpc_dispatch_init_8u(IdentTy *loc, int32_t tid, uint32_t atid,
+void __kmpc_dispatch_init_8u(IdentTy *loc, int32_t tid,
                              int32_t schedule, uint64_t lb, uint64_t ub,
                              int64_t st, int64_t chunk) {
   DynamicScheduleTracker *DST = pushDST();
@@ -575,7 +575,7 @@ int __kmpc_dispatch_next_8(IdentTy *loc, int32_t tid, int32_t *p_last,
       loc, tid, p_last, p_lb, p_ub, p_st, DST);
 }
 
-int __kmpc_dispatch_next_8u(IdentTy *loc, int32_t tid, uint32_t atid,
+int __kmpc_dispatch_next_8u(IdentTy *loc, int32_t tid,
                             int32_t *p_last, uint64_t *p_lb, uint64_t *p_ub,
                             int64_t *p_st) {
   DynamicScheduleTracker *DST = peekDST();
@@ -601,7 +601,7 @@ void __kmpc_dispatch_fini_8u(IdentTy *loc, int32_t tid) {
 }
 
 // deinit
-void __kmpc_dispatch_deinit(IdentTy *loc, int32_t tid, uint32_t atid,
+void __kmpc_dispatch_deinit(IdentTy *loc, int32_t tid,
                             int32_t schedule) {
   popDST();
 }
@@ -610,7 +610,7 @@ void __kmpc_dispatch_deinit(IdentTy *loc, int32_t tid, uint32_t atid,
 // KMP interface implementation (static loops)
 ////////////////////////////////////////////////////////////////////////////////
 
-void __kmpc_for_static_init_4(IdentTy *loc, int32_t global_tid, uint32_t atid,
+void __kmpc_for_static_init_4(IdentTy *loc, int32_t global_tid,
                               int32_t schedtype, int32_t *plastiter,
                               int32_t *plower, int32_t *pupper,
                               int32_t *pstride, int32_t incr, int32_t chunk) {
@@ -619,7 +619,7 @@ void __kmpc_for_static_init_4(IdentTy *loc, int32_t global_tid, uint32_t atid,
       mapping::isSPMDMode());
 }
 
-void __kmpc_for_static_init_4u(IdentTy *loc, int32_t global_tid, uint32_t atid,
+void __kmpc_for_static_init_4u(IdentTy *loc, int32_t global_tid,
                                int32_t schedtype, int32_t *plastiter,
                                uint32_t *plower, uint32_t *pupper,
                                int32_t *pstride, int32_t incr, int32_t chunk) {
@@ -628,7 +628,7 @@ void __kmpc_for_static_init_4u(IdentTy *loc, int32_t global_tid, uint32_t atid,
       mapping::isSPMDMode());
 }
 
-void __kmpc_for_static_init_8(IdentTy *loc, int32_t global_tid, uint32_t atid,
+void __kmpc_for_static_init_8(IdentTy *loc, int32_t global_tid,
                               int32_t schedtype, int32_t *plastiter,
                               int64_t *plower, int64_t *pupper,
                               int64_t *pstride, int64_t incr, int64_t chunk) {
@@ -637,7 +637,7 @@ void __kmpc_for_static_init_8(IdentTy *loc, int32_t global_tid, uint32_t atid,
       mapping::isSPMDMode());
 }
 
-void __kmpc_for_static_init_8u(IdentTy *loc, int32_t global_tid, uint32_t atid,
+void __kmpc_for_static_init_8u(IdentTy *loc, int32_t global_tid,
                                int32_t schedtype, int32_t *plastiter,
                                uint64_t *plower, uint64_t *pupper,
                                int64_t *pstride, int64_t incr, int64_t chunk) {
@@ -647,7 +647,7 @@ void __kmpc_for_static_init_8u(IdentTy *loc, int32_t global_tid, uint32_t atid,
 }
 
 void __kmpc_distribute_static_init_4(IdentTy *loc, int32_t global_tid,
-                                     uint32_t atid, int32_t schedtype,
+                                     int32_t schedtype,
                                      int32_t *plastiter, int32_t *plower,
                                      int32_t *pupper, int32_t *pstride,
                                      int32_t incr, int32_t chunk) {
@@ -657,7 +657,7 @@ void __kmpc_distribute_static_init_4(IdentTy *loc, int32_t global_tid,
 }
 
 void __kmpc_distribute_static_init_4u(IdentTy *loc, int32_t global_tid,
-                                      uint32_t atid, int32_t schedtype,
+                                      int32_t schedtype,
                                       int32_t *plastiter, uint32_t *plower,
                                       uint32_t *pupper, int32_t *pstride,
                                       int32_t incr, int32_t chunk) {
@@ -667,7 +667,7 @@ void __kmpc_distribute_static_init_4u(IdentTy *loc, int32_t global_tid,
 }
 
 void __kmpc_distribute_static_init_8(IdentTy *loc, int32_t global_tid,
-                                     uint32_t atid, int32_t schedtype,
+                                     int32_t schedtype,
                                      int32_t *plastiter, int64_t *plower,
                                      int64_t *pupper, int64_t *pstride,
                                      int64_t incr, int64_t chunk) {
@@ -677,7 +677,7 @@ void __kmpc_distribute_static_init_8(IdentTy *loc, int32_t global_tid,
 }
 
 void __kmpc_distribute_static_init_8u(IdentTy *loc, int32_t global_tid,
-                                      uint32_t atid, int32_t schedtype,
+                                      int32_t schedtype,
                                       int32_t *plastiter, uint64_t *plower,
                                       uint64_t *pupper, int64_t *pstride,
                                       int64_t incr, int64_t chunk) {
@@ -686,10 +686,9 @@ void __kmpc_distribute_static_init_8u(IdentTy *loc, int32_t global_tid,
       mapping::isSPMDMode());
 }
 
-void __kmpc_for_static_fini(IdentTy *loc, int32_t global_tid, uint32_t atid) {}
+void __kmpc_for_static_fini(IdentTy *loc, int32_t global_tid) {}
 
-void __kmpc_distribute_static_fini(IdentTy *loc, int32_t global_tid,
-                                   uint32_t auto_id) {}
+void __kmpc_distribute_static_fini(IdentTy *loc, int32_t global_tid) {}
 }
 
 namespace ompx {
