@@ -26,6 +26,7 @@
 #include <sys/times.h>
 #include <unistd.h>
 #endif
+#include <time.h>
 
 // CPU_TIME (Fortran 2018 16.9.57)
 // SYSTEM_CLOCK (Fortran 2018 16.9.168)

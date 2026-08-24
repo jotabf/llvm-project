@@ -3489,6 +3489,7 @@ struct OmpScheduleModifier {
 struct OmpScheduleClause {
   TUPLE_CLASS_BOILERPLATE(OmpScheduleClause);
   ENUM_CLASS(ScheduleType, Static, Dynamic, Guided, Auto, Runtime)
+  ENUM_CLASS(ChkType, Auto, Scalar)
   std::tuple<std::optional<OmpScheduleModifier>, ScheduleType,
       std::optional<ScalarIntExpr>>
       t;

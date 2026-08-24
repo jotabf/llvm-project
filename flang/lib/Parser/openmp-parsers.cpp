@@ -81,7 +81,7 @@ TYPE_PARSER(construct<OmpDefaultmapClause>(
 // 2.7.1 SCHEDULE ([modifier1 [, modifier2]:]kind[, chunk_size])
 //       Modifier ->  MONITONIC | NONMONOTONIC | SIMD
 //       kind -> STATIC | DYNAMIC | GUIDED | AUTO | RUNTIME
-//       chunk_size -> ScalarIntExpr
+//       chunk_size -> AUTO | ScalarIntExpr
 TYPE_PARSER(construct<OmpScheduleModifierType>(
     "MONOTONIC" >> pure(OmpScheduleModifierType::ModType::Monotonic) ||
     "NONMONOTONIC" >> pure(OmpScheduleModifierType::ModType::Nonmonotonic) ||

@@ -134,9 +134,16 @@ void __kmp_init_autotuning(int gtid, unsigned id, T lb, T ub) {
     return;
   }
 
+  printf("Initializing autotuning\n");
+
   int64_t min = static_cast<int64_t>(lb + 1);
   int64_t max =
       static_cast<int64_t>((ub + 1) / static_cast<T>(TCR_4(__kmp_nth) * 2));
+
+  if(min >= max) {
+    __kmp_release_bootstrap_lock(&info->start_lock);
+    return;
+  }
 
   info->at = Autotuning::Create(min, max);
   TCW_SYNC_4(info->started, FALSE);
@@ -162,7 +169,10 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
   KMP_ASSERT(id > 0);
   KMP_DEBUG_ASSERT2(info != NULL, "Sched Autotuning info was not initialized");
 
-  if (!TCR_4(info->initialized) || info->at->isEnd())
+  if(!TCR_4(info->initialized))
+    return 1;
+
+  if (info->at->isEnd())
     return info->at->getPoint();
 
   KMP_DEBUG_ASSERT2(info->at != NULL, "Autotuning was not initialized");
@@ -194,6 +204,10 @@ T __kmp_start_autotuning(int gtid, unsigned id, T lb, T ub) {
   KA_TRACE(50, ("__kmp_start_autotuning: T#%d started autotuning[%u] resulting "
                 "in the chunk %lli in a range of (%lli,%lli).\n",
                 gtid, id, info->at->getPoint(), min, max));
+
+  if (info->at->isEnd())
+    printf("Autotuning ended Chunk %li from %li %li\n", info->at->getPoint(), min, max);
+  
 
   return info->at->getPoint();
 }
