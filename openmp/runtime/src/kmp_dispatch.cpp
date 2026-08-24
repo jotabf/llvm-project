@@ -967,7 +967,7 @@ static void __kmp_dispatch_init(ident_t *loc, int gtid, unsigned atid,
   typedef typename traits_t<T>::unsigned_t UT;
 
   if (schedule & kmp_sch_chunk_mode_auto) {
-    T result = __kmp_start_autotuning<T>(gtid, atid, lb, ub);
+    T result = __kmp_start_autotuning<T>(gtid, loc, lb, ub);
     chunk = static_cast<typename traits_t<T>::signed_t>(result);
     schedule = SCHEDULE_WITHOUT_MODE(schedule);
   }
@@ -3033,7 +3033,7 @@ See @ref __kmpc_dispatch_deinit
 void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                             enum sched_type schedule) {
   if (schedule & kmp_sch_chunk_mode_auto)
-    __kmp_end_autotuning(gtid, atid);
+    __kmp_end_autotuning(gtid, loc);
 }
 /*! @} */
 

@@ -2033,7 +2033,11 @@ void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
   if (__kmp_env_consistency_check)
     __kmp_pop_workshare(global_tid, ct_pdo, loc);
 
-  __kmp_end_autotuning(global_tid, auto_id);
+  // auto_id != 0 é só um portão barato: o clang passa 0 em todo loop que não é
+  // "auto", e assim o caminho quente do for_static_fini comum não paga a busca
+  // na tabela. A identidade do loop vem de loc, não deste id.
+  if (auto_id != 0)
+    __kmp_end_autotuning(global_tid, loc);
 }
 
 // User routines which take C-style arguments (call by value)

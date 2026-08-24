@@ -2564,7 +2564,12 @@ void CGOpenMPRuntime::emitForDispatchInit(
     llvm::GlobalVariable *GTotalAutoMode =
         OMPBuilder.getOrCreateInternalVariable(AutoIDValue->getType(),
                                                "__KMP_NUM_AUTO_MODE");
-    GTotalAutoMode->setLinkage(llvm::GlobalValue::ExternalLinkage);
+    // WeakAny, nao External: cada TU com um loop 'auto' emite esta global, e
+    // com linkage forte duas TUs dao erro de simbolo duplicado no link -- o
+    // que quebra qualquer programa multi-arquivo. O runtime usa apenas o
+    // ENDERECO deste simbolo, como marcador de "este binario tem autotuning";
+    // a identidade de cada loop vem do ident_t, nao deste valor.
+    GTotalAutoMode->setLinkage(llvm::GlobalValue::WeakAnyLinkage);
     GTotalAutoMode->setConstant(true);
     GTotalAutoMode->setInitializer(
         llvm::ConstantInt::get(AutoIDValue->getType(), AutoID));
@@ -2672,7 +2677,12 @@ void CGOpenMPRuntime::emitForStaticInit(CodeGenFunction &CGF,
     llvm::GlobalVariable *GTotalAutoMode =
         OMPBuilder.getOrCreateInternalVariable(AutoIDValue->getType(),
                                                "__KMP_NUM_AUTO_MODE");
-    GTotalAutoMode->setLinkage(llvm::GlobalValue::ExternalLinkage);
+    // WeakAny, nao External: cada TU com um loop 'auto' emite esta global, e
+    // com linkage forte duas TUs dao erro de simbolo duplicado no link -- o
+    // que quebra qualquer programa multi-arquivo. O runtime usa apenas o
+    // ENDERECO deste simbolo, como marcador de "este binario tem autotuning";
+    // a identidade de cada loop vem do ident_t, nao deste valor.
+    GTotalAutoMode->setLinkage(llvm::GlobalValue::WeakAnyLinkage);
     GTotalAutoMode->setConstant(true);
     GTotalAutoMode->setInitializer(
         llvm::ConstantInt::get(AutoIDValue->getType(), AutoID));

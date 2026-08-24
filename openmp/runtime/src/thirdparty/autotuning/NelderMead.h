@@ -57,6 +57,11 @@ class NelderMead {
   int64_t m_min;
   int64_t m_max;
 
+  uint64_t m_rng; ///< Estado do PRNG deste otimizador (splitmix64).
+                  ///< Por-objeto de propósito: rand()/srand() são estado
+                  ///< global, não reentrantes, e davam o mesmo simplex
+                  ///< inicial a todos os loops criados no mesmo segundo.
+
   // Arrays to store points, costs, and centroid
   double *p_costs;     ///< Costs associated with each solution
   int64_t **p_points;  ///< Vector where each line will be a solution
@@ -78,7 +83,11 @@ class NelderMead {
   void
   calculate_point(int64_t *&p_out, double _const, int64_t *p_in1,
                   int64_t *p_in2); /// p_out = p_in2 + _const * (p_in1 - p_in2)
-  double volume() const;           ///< Calculate the volume of the solutions
+  /// @brief Tamanho do simplex: distância RMS dos pontos ao centroide deles.
+  /// É o critério de convergência (comparado contra m_error). O nome antigo,
+  /// volume(), não descrevia o que a função calcula -- não é um volume, e
+  /// para dim=1 nem faria sentido falar em volume.
+  double simplex_size() const;
 
 public:
   /// @brief Get the number of points used in the algorithm.
@@ -92,6 +101,20 @@ public:
   int64_t getMin() const { return m_min; }
 
   int64_t getMax() const { return m_max; }
+
+  /// @brief Refaz o simplex inicial a partir de uma semente explícita.
+  /// Útil para reproduzir um experimento; ver KMP_AUTOTUNING_SEED.
+  void setSeed(uint64_t seed);
+
+  /// @brief Semeia um vértice do simplex com um palpite, em vez de sorteá-lo.
+  /// @param v Valor do ponto.
+  /// @param id Índice do vértice (0 .. getNumPoints()-1).
+  /// @param dim Índice da dimensão.
+  void setPoint(int64_t v, unsigned id, unsigned dim = 0) {
+    if (id >= m_nPoints || dim >= m_dim)
+      return;
+    p_points[id][dim] = v;
+  }
 
   void setLimits(int64_t min, int64_t max) {
     m_min = min;

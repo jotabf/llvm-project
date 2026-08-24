@@ -14,6 +14,7 @@
 #include "kmp_affinity.h"
 #include "kmp_atomic.h"
 #include "kmp_environment.h"
+#include "kmp_autotuning.h"
 #include "kmp_error.h"
 #include "kmp_i18n.h"
 #include "kmp_io.h"
@@ -8361,6 +8362,10 @@ void __kmp_cleanup(void) {
     KMP_INTERNAL_FREE(__kmp_affinity_format);
     __kmp_affinity_format = NULL;
   }
+
+  // Antes do catclose: imprime o relatório final do autotuning e libera a
+  // tabela de loops "auto".
+  __kmp_autotuning_global_cleanup();
 
   __kmp_i18n_catclose();
 

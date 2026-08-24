@@ -4,12 +4,14 @@
 #include "kmp_debug.h"
 #include "kmp_os.h"
 
-#include <cmath>   // pow, sqrt, fmod
+#include <cmath> // pow, sqrt, fmod
+#include <cstdint> // uint64_t, uintptr_t
+#include <cstdlib> // getenv, strtoull
 #include <cstring> // memcpy
-#include <ctime>   // time
-#include <limits>  // std::numeric_limits
+#include <ctime> // time
+#include <limits> // std::numeric_limits
 #include <sstream> // std::stringstream
-#include <string>  // std::string
+#include <string> // std::string
 
 // Constants for algorithm parameters
 #ifndef NM_ALFA
@@ -25,9 +27,9 @@
 #define NM_SIGMA 0.5 ///< Default sigma value to shrink operation.
 #endif
 
-const double NelderMead::m_alpha = NM_ALFA;  // Used in reflection
-const double NelderMead::m_gamma = NM_GAMA;  // Used in expansion
-const double NelderMead::m_rho = NM_RHO;     // Used in contraction
+const double NelderMead::m_alpha = NM_ALFA; // Used in reflection
+const double NelderMead::m_gamma = NM_GAMA; // Used in expansion
+const double NelderMead::m_rho = NM_RHO; // Used in contraction
 const double NelderMead::m_sigma = NM_SIGMA; // Used in reduction
 
 template <typename T> inline double todouble(T x) {
@@ -39,15 +41,67 @@ template <typename T> inline int64_t toint64(T x) {
 }
 
 inline int64_t NelderMead::circ_mod(int64_t x) const {
+  const int64_t span = m_max - m_min;
+  // setLimits() é público e não tem pré-condição: __kmp_start_autotuning
+  // recalcula min/max a cada execução do loop, e basta o trip count encolher
+  // ou o número de threads crescer para span virar 0 (ou negativo). Sem esta
+  // guarda o "% span" abaixo é SIGFPE.
+  if (span <= 0)
+    return m_min;
   if (x < m_min)
-    return (x - m_min) % (m_max - m_min) + m_max;
+    return (x - m_min) % span + m_max;
   if (x > m_max)
-    return (x - m_max) % (m_max - m_min) + m_min;
+    return (x - m_max) % span + m_min;
   return x;
 }
 
+//===----------------------------------------------------------------------===//
+// PRNG
+//===----------------------------------------------------------------------===//
+//
+// splitmix64: 8 bytes de estado, sem alocação, sem estado global e sem
+// dependência da libc. Cabe direto no objeto, que é criado por __kmp_allocate
+// (memória crua, sem construtor), então tem de ser POD.
+
+static inline uint64_t nm_splitmix64(uint64_t &state) {
+  uint64_t z = (state += 0x9E3779B97F4A7C15ULL);
+  z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ULL;
+  z = (z ^ (z >> 27)) * 0x94D049BB133111EBULL;
+  return z ^ (z >> 31);
+}
+
+/// Semente base do processo e contador de otimizadores. Cada NelderMead recebe
+/// um fluxo distinto, de modo que dois loops "auto" nunca partem do mesmo
+/// simplex. Defina KMP_AUTOTUNING_SEED para tornar o experimento reprodutível.
+static uint64_t nm_seed_base = 0;
+static uint64_t nm_seed_count = 0;
+
+static uint64_t nm_next_seed() {
+  if (nm_seed_base == 0) {
+    const char *env = getenv("KMP_AUTOTUNING_SEED");
+    if (env && *env)
+      nm_seed_base = (uint64_t)strtoull(env, NULL, 0);
+    if (nm_seed_base == 0)
+      nm_seed_base = (uint64_t)time(NULL) ^
+                     ((uint64_t)(uintptr_t)&nm_seed_base << 16);
+  }
+  // Create() roda sob info->start_lock no caminho da libomp, então o
+  // incremento não precisa ser atômico aqui.
+  return nm_seed_base + (++nm_seed_count) * 0x9E3779B97F4A7C15ULL;
+}
+
 inline int64_t NelderMead::rand_gen() {
-  return rand() % (m_max - m_min) - m_min;
+  // span >= 1 mesmo quando m_max == m_min, então esta função não divide por
+  // zero nem quando os limites degeneram (ao contrário de circ_mod).
+  const uint64_t span = (uint64_t)(m_max - m_min) + 1ULL;
+  return m_min + (int64_t)(nm_splitmix64(m_rng) % span);
+}
+
+void NelderMead::setSeed(uint64_t seed) {
+  m_rng = seed;
+  for (unsigned i = 0; i < m_nPoints; ++i)
+    for (unsigned j = 0; j < m_dim; ++j)
+      p_points[i][j] = rand_gen();
 }
 
 NelderMead *NelderMead::Create(int64_t min, int64_t max, unsigned dim,
@@ -64,8 +118,8 @@ NelderMead *NelderMead::Create(int64_t min, int64_t max, unsigned dim,
   nm->m_step = NelderMead::steps::init;
   nm->m_iPoint = 0;
   nm->m_iCost = NelderMead::NO_SAVE;
-  nm->m_costReflection = 0.0;  // Cost of reflected point
-  nm->m_costExpansion = 0.0;   // Cost of expanded point
+  nm->m_costReflection = 0.0; // Cost of reflected point
+  nm->m_costExpansion = 0.0; // Cost of expanded point
   nm->m_costContraction = 0.0; // Cost of contracted point
   nm->m_min = min;
   nm->m_max = max;
@@ -87,8 +141,9 @@ NelderMead *NelderMead::Create(int64_t min, int64_t max, unsigned dim,
   nm->p_pointContraction =
       static_cast<int64_t *>(__kmp_allocate(nm->m_dim * sizeof(int64_t)));
 
-  // Generate inital p_points
-  srand(time(NULL));
+  // Simplex inicial. Cada otimizador tem seu próprio fluxo de números
+  // aleatórios; nada de srand(), que destruía a semente global da aplicação.
+  nm->m_rng = nm_next_seed();
   for (unsigned i = 0; i < nm->m_nPoints; i++) {
     for (unsigned j = 0; j < nm->m_dim; j++) {
       nm->p_points[i][j] = nm->rand_gen();
@@ -221,7 +276,15 @@ int64_t *NelderMead::run(double _cost) {
       m_iCost = NO_SAVE;
     }
 
-  } while (volume() > m_error);
+  } while (simplex_size() > m_error);
+
+  // Ordena antes de congelar. Entre o último sort_points() (feito no início do
+  // passo de reflexão) e este ponto, os passos de reflexão/expansão/contração
+  // já trocaram p_points[m_worstID] por um ponto possivelmente MELHOR que
+  // p_points[m_bestID], sem reordenar. Sem este sort, o chunk congelado -- e
+  // tudo que getMinPoint() devolve daqui pra frente -- não é necessariamente o
+  // melhor ponto medido.
+  sort_points();
 
   m_step = steps::finalization;
 
@@ -282,11 +345,12 @@ inline void NelderMead::calculate_point(int64_t *&p_out, double _const,
 }
 
 void NelderMead::reset(unsigned level) {
-  KMP_ASSERT2((level >= 0 && level <= 2),
-              "Invalid Nelder Mead reset level value, set 0 <= level <= 2.");
+  // level é unsigned, então "level >= 0" era sempre verdadeiro (-Wtype-limits).
+  KMP_ASSERT2((level <= 1),
+              "Invalid Nelder Mead reset level value, set 0 <= level <= 1.");
 
-  m_costReflection = 0.0;  // Cost of reflected point
-  m_costExpansion = 0.0;   // Cost of expanded point
+  m_costReflection = 0.0; // Cost of reflected point
+  m_costExpansion = 0.0; // Cost of expanded point
   m_costContraction = 0.0; // Cost of contracted point
 
   m_iPoint = m_bestID + 1;
@@ -294,7 +358,9 @@ void NelderMead::reset(unsigned level) {
   m_step = steps::init;
 
   sort_points();
-  srand(time(NULL));
+  // Sem srand(): rand_gen() continua de onde m_rng parou, o que dá pontos
+  // novos sem tocar no estado global nem re-semear com time(NULL) (que dava
+  // o mesmo simplex a dois resets no mesmo segundo).
   // Reset point but keep the best solution
   for (unsigned i = 0; i < m_nPoints; ++i) {
     if (i != m_bestID) {
@@ -313,16 +379,36 @@ void NelderMead::reset(unsigned level) {
   }
 }
 
-double NelderMead::volume() const {
+double NelderMead::simplex_size() const {
+  // Calcula o centroide LOCALMENTE, em vez de usar p_centroid.
+  //
+  // p_centroid só é escrito em calculate_centroid(), chamado apenas no passo
+  // de reflexão, e de propósito EXCLUI o pior ponto. Usá-lo aqui media a
+  // dispersão em torno de uma referência (a) de antes da última substituição
+  // de ponto e (b) que nem é o centroide do conjunto sendo medido. Pior: a
+  // primeira avaliação, alcançada pelo "continue" no fim da fase de init,
+  // rodava com p_centroid ainda todo zero, medindo distância até a ORIGEM.
+  //
+  // Como o centroide verdadeiro é o ponto que minimiza a distância RMS,
+  // qualquer outra referência SUPERESTIMA o resultado -- o algoritmo rodava
+  // mais do que o critério pedia. O caso caro era o passo de redução, que
+  // encolhe o simplex e logo em seguida testa a convergência com o centroide
+  // de antes do encolhimento, perdendo a parada por um ciclo inteiro de init
+  // (3 avaliações, isto é, 3 execuções do loop do usuário).
+  //
+  // Duas passadas por dimensão para não precisar alocar um vetor temporário
+  // (m_dim é dinâmico).
   double total = 0.0;
-  for (unsigned i = 0; i < m_nPoints; ++i) {
-    double value = 0.0;
-    for (unsigned j = 0; j < m_dim; ++j) {
-      value += pow(todouble(p_points[i][j] - p_centroid[j]), 2.0);
+  for (unsigned j = 0; j < m_dim; ++j) {
+    double mean = 0.0;
+    for (unsigned i = 0; i < m_nPoints; ++i)
+      mean += todouble(p_points[i][j]);
+    mean /= todouble(m_nPoints);
+
+    for (unsigned i = 0; i < m_nPoints; ++i) {
+      const double d = todouble(p_points[i][j]) - mean;
+      total += d * d; // sem o sqrt()+pow(,2) de ida e volta do original
     }
-    value = sqrt(value);     // With this calculation, 'value' is the norm.
-    value = pow(value, 2.0); // value is equal to norm²
-    total += value;
   }
   return sqrt(total / todouble(m_nPoints));
 }
