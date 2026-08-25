@@ -966,7 +966,10 @@ static void __kmp_dispatch_init(ident_t *loc, int gtid, unsigned atid,
                                 int push_ws) {
   typedef typename traits_t<T>::unsigned_t UT;
 
-  if (schedule & kmp_sch_chunk_mode_auto) {
+  // KMP_AT_FORCE cobre o caso em que ninguem anotou o loop: o flang e o MLIR
+  // nao emitem a cláusula "auto", entao sem ele um binario Fortran nunca entra
+  // aqui. Ver __kmp_at_force_applies em kmp_autotuning.h.
+  if ((schedule & kmp_sch_chunk_mode_auto) || __kmp_at_force_applies(schedule)) {
     T result = __kmp_start_autotuning<T>(gtid, loc, lb, ub);
     chunk = static_cast<typename traits_t<T>::signed_t>(result);
     schedule = SCHEDULE_WITHOUT_MODE(schedule);
@@ -3032,7 +3035,12 @@ See @ref __kmpc_dispatch_deinit
 */
 void __kmpc_dispatch_deinit(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
                             enum sched_type schedule) {
-  if (schedule & kmp_sch_chunk_mode_auto)
+  // O guard tem de casar com o de __kmp_dispatch_init: se um lado entra e o
+  // outro nao, o cronometro da execucao nunca fecha e o otimizador congela no
+  // primeiro ponto. No caminho do OMPIRBuilder `schedule` vem 0 (nao ha
+  // anotacao "auto" para propagar), entao quem decide e' KMP_AT_FORCE -- mas
+  // ali o proprio dispatch_init tambem foi decidido por ele.
+  if ((schedule & kmp_sch_chunk_mode_auto) || __kmp_at_force)
     __kmp_end_autotuning(gtid, loc);
 }
 /*! @} */

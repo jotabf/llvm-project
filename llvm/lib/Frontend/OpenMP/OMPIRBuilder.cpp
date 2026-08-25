@@ -904,6 +904,26 @@ OpenMPIRBuilder::getOrCreateDefaultSrcLocStr(uint32_t &SrcLocStrSize) {
   return getOrCreateSrcLocStr(UnknownLoc, SrcLocStrSize);
 }
 
+Constant *
+OpenMPIRBuilder::getOrCreateWorkshareSrcLocStr(DebugLoc DL,
+                                               uint32_t &SrcLocStrSize) {
+  if (DL.get())
+    return getOrCreateSrcLocStr(DL, SrcLocStrSize);
+
+  // Sem DebugLoc, getOrCreateSrcLocStr cairia no ";unknown;unknown;0;0;;", que
+  // e internado em SrcLocStrMap: um ident_t unico para o modulo todo. Como o
+  // autotuning de chunk e chaveado pelo ponteiro do ident_t, todos os loops do
+  // modulo colapsariam numa entrada so da tabela.
+  //
+  // O contador vai no campo "column" em vez de substituir a string inteira,
+  // para o formato ";file;func;line;col;;" continuar parseavel por
+  // __kmp_str_loc_init() do lado do runtime -- uma psource fora desse formato
+  // faz o runtime devolver campos truncados no lugar do texto da localizacao.
+  std::string LocStr = ";unknown;unknown;0;" +
+                       std::to_string(++UnknownWorkshareLocCounter) + ";;";
+  return getOrCreateSrcLocStr(LocStr, SrcLocStrSize);
+}
+
 Constant *OpenMPIRBuilder::getOrCreateSrcLocStr(DebugLoc DL,
                                                 uint32_t &SrcLocStrSize,
                                                 Function *F) {
@@ -4560,7 +4580,9 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
   Builder.SetCurrentDebugLocation(DL);
 
   uint32_t SrcLocStrSize;
-  Constant *SrcLocStr = getOrCreateSrcLocStr(DL, SrcLocStrSize);
+  // Workshare, e nao o srcloc comum: o ident_t e a chave do autotuning de
+  // chunk, entao dois loops nunca podem compartilha-lo.
+  Constant *SrcLocStr = getOrCreateWorkshareSrcLocStr(DL, SrcLocStrSize);
   Value *SrcLoc = getOrCreateIdent(SrcLocStr, SrcLocStrSize);
 
   // Declare useful OpenMP runtime functions.
@@ -4658,6 +4680,21 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
     FunctionCallee DynamicFini = getKmpcForDynamicFiniForType(IVTy, M, *this);
     Builder.CreateCall(DynamicFini, {SrcLoc, ThreadNum, CAutoID});
   }
+
+  // Contraparte do "init". Upstream nunca a emitia porque
+  // __kmpc_dispatch_deinit era uma funcao vazia; aqui ela e o gancho de
+  // __kmp_end_autotuning, que fecha o cronometro da execucao e faz o
+  // otimizador avancar um ponto. Sem esta chamada, todo loop dynamic vindo do
+  // OMPIRBuilder (flang, MLIR) inicia o autotuning e nunca o conclui.
+  //
+  // Mesma ordem do clang (CGStmtOpenMP: deinit ao sair do loop externo, antes
+  // da barreira implicita da diretiva) e mesmo ident_t do "init". O ultimo
+  // argumento carrega os bits de modo de chunk: o OMPIRBuilder nao tem a
+  // anotacao "auto" do clang, entao vai 0 e quem liga o autotuning neste
+  // caminho e KMP_AT_FORCE do lado do runtime.
+  Builder.SetInsertPoint(&Exit->back());
+  FunctionCallee DynamicDeinit = createDispatchDeinitFunction();
+  Builder.CreateCall(DynamicDeinit, {SrcLoc, ThreadNum, CAutoID, Zero32});
 
   // Add the barrier if requested.
   if (NeedsBarrier) {

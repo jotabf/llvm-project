@@ -7276,6 +7276,11 @@ static void __kmp_do_serial_initialize(void) {
 
   __kmp_env_initialize(NULL);
 
+  // Depois de __kmp_env_initialize e antes de qualquer worksharing: o guard de
+  // __kmp_dispatch_init le __kmp_at_force no caminho quente, entao ele nao pode
+  // ser resolvido por getenv la'. Ver KMP_AT_FORCE em kmp_autotuning.h.
+  __kmp_autotuning_env_initialize();
+
 #if KMP_HAVE_MWAIT || KMP_HAVE_UMWAIT
   __kmp_user_level_mwait_init();
 #endif

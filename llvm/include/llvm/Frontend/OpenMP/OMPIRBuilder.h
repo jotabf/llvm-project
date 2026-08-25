@@ -1950,6 +1950,19 @@ public:
   /// Return the (LLVM-IR) string describing the default source location.
   Constant *getOrCreateDefaultSrcLocStr(uint32_t &SrcLocStrSize);
 
+  /// Return the (LLVM-IR) string describing the source location of a
+  /// worksharing loop, DISTINCT for every loop in the module.
+  ///
+  /// Ao contrario de getOrCreateSrcLocStr(DebugLoc), nunca devolve uma string
+  /// compartilhada entre loops. Sem DebugLoc -- o caso do flang sem -g, e de
+  /// qualquer consumidor do OMPIRBuilder que nao propague localizacao -- todos
+  /// os loops cairiam no ";unknown;unknown;0;0;;" internado em SrcLocStrMap,
+  /// portanto no MESMO ident_t. O autotuning de chunk e chaveado pelo ponteiro
+  /// do ident_t, entao o modulo inteiro colapsaria numa unica entrada da
+  /// tabela e seria ajustado como se fosse um loop so.
+  Constant *getOrCreateWorkshareSrcLocStr(DebugLoc DL,
+                                          uint32_t &SrcLocStrSize);
+
   /// Return the (LLVM-IR) string describing the source location identified by
   /// the arguments.
   Constant *getOrCreateSrcLocStr(StringRef FunctionName, StringRef FileName,
@@ -2045,6 +2058,11 @@ public:
 
   /// Map to remember source location strings
   StringMap<Constant *> SrcLocStrMap;
+
+  /// Distingue os loops de worksharing sem DebugLoc entre si. Por modulo (ha
+  /// um OpenMPIRBuilder por modulo), logo deterministico para uma dada ordem
+  /// de geracao de codigo. Ver getOrCreateWorkshareSrcLocStr.
+  unsigned UnknownWorkshareLocCounter = 0;
 
   /// Map to remember existing ident_t*.
   DenseMap<std::pair<Constant *, uint64_t>, Constant *> IdentMap;

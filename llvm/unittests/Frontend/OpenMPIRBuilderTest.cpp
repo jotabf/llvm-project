@@ -2597,11 +2597,11 @@ TEST_P(OpenMPIRBuilderTestWithParams, DynamicWorkShareLoop) {
   // increment and in the statement that adds the lower bound to it.
   EXPECT_EQ(std::distance(IV->use_begin(), IV->use_end()), 3);
 
-  // The exit block should contain the barrier call, plus the call to obtain
-  // the thread ID.
+  // The exit block should contain the barrier call and the "deinit" call, plus
+  // the call to obtain the thread ID.
   size_t NumCallsInExitBlock =
       count_if(*ExitBlock, [](Instruction &I) { return isa<CallInst>(I); });
-  EXPECT_EQ(NumCallsInExitBlock, 2u);
+  EXPECT_EQ(NumCallsInExitBlock, 3u);
 
   // Add a termination to our block and check that it is internally consistent.
   Builder.restoreIP(EndIP);
@@ -2700,11 +2700,11 @@ TEST_F(OpenMPIRBuilderTest, DynamicWorkShareLoopOrdered) {
   // increment and in the statement that adds the lower bound to it.
   EXPECT_EQ(std::distance(IV->use_begin(), IV->use_end()), 3);
 
-  // The exit block should contain the barrier call, plus the call to obtain
-  // the thread ID.
+  // The exit block should contain the barrier call and the "deinit" call, plus
+  // the call to obtain the thread ID.
   size_t NumCallsInExitBlock =
       count_if(*ExitBlock, [](Instruction &I) { return isa<CallInst>(I); });
-  EXPECT_EQ(NumCallsInExitBlock, 2u);
+  EXPECT_EQ(NumCallsInExitBlock, 3u);
 }
 
 TEST_F(OpenMPIRBuilderTest, MasterDirective) {

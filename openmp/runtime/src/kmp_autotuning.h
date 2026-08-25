@@ -99,6 +99,44 @@ struct kmp_at_prof {
 
 extern int __kmp_at_opt;
 
+/// ---------------------------------------------------------------------------
+/// KMP_AT_FORCE=1: autotuna todo loop schedule(dynamic) do programa, mesmo sem
+/// a anotacao schedule(dynamic, auto).
+///
+/// Existe porque o front-end NAO e' o unico produtor de loops OpenMP: o flang
+/// e o MLIR passam pelo OMPIRBuilder, que nao tem a cláusula "auto" do clang.
+/// Sem este interruptor, medir autotuning em codigo Fortran (o NAS) exigiria
+/// implementar a cláusula no flang primeiro. Com ele, basta compilar
+/// normalmente e ligar a variavel na hora de rodar -- e o binario continua
+/// servindo de baseline com KMP_AT_FORCE ausente, no MESMO executavel.
+///
+/// Escopo deliberado: SO' kmp_sch_dynamic_chunked. E' o unico schedule em que
+/// o chunk tem o significado que o modelo de custo do Nelder-Mead assume (a
+/// unidade de trabalho entregue por pedido). Em guided o chunk e' um piso, em
+/// static ele nem chega ao dispatch. Alargar e' uma linha em
+/// __kmp_at_force_applies().
+/// ---------------------------------------------------------------------------
+extern int __kmp_at_force;
+
+/// Lido em __kmp_do_serial_initialize, antes de qualquer worksharing, para o
+/// guard do caminho quente ser um teste de int e nao um getenv.
+void __kmp_autotuning_env_initialize(void);
+
+/// TRUE se KMP_AT_FORCE deve ligar o autotuning para \p schedule.
+///
+/// Aceita as duas codificacoes de dynamic NAO ordenado que chegam aqui:
+/// kmp_sch_dynamic_chunked (35) e kmp_nm_dynamic_chunked (163, a variante
+/// "nomerge"). As formas ORDENADAS (67 e 195) ficam de fora de proposito --
+/// ordered serializa a entrega das iteracoes, e ajustar o chunk ali nao mede o
+/// que o experimento quer medir.
+static inline int __kmp_at_force_applies(enum sched_type schedule) {
+  if (!__kmp_at_force)
+    return FALSE;
+  const enum sched_type s =
+      SCHEDULE_WITHOUT_MODIFIERS(SCHEDULE_WITHOUT_MODE(schedule));
+  return s == kmp_sch_dynamic_chunked || s == kmp_nm_dynamic_chunked;
+}
+
 extern int __kmp_at_profile;
 extern kmp_at_prof *__kmp_at_prof_tab;
 
@@ -372,9 +410,16 @@ kmp_autotuning_info *__kmp_init_autotuning(int gtid, ident_t *loc, T lb, T ub) {
 
 template <typename T> T __kmp_start_autotuning(int gtid, ident_t *loc, T lb, T ub) {
   // __KMP_NUM_AUTO_MODE é um símbolo FRACO: se o executável não o define, o
-  // endereço resolve para 0 e ler o VALOR seria um deref nulo.
-  // Sem loc não há chave possível.
-  if (&__KMP_NUM_AUTO_MODE == nullptr || loc == NULL)
+  // endereço resolve para 0 e ler o VALOR seria um deref nulo. O teste do
+  // ENDEREÇO é o marcador "este binário tem loop anotado com auto".
+  //
+  // KMP_AT_FORCE tem de furar esse marcador: quem produz o binário no caminho
+  // Fortran é o flang, que não emite a global (só o clang a emite, e só nas TUs
+  // com pelo menos um loop "auto"). Sem esta exceção o modo forçado sairia aqui
+  // e não faria nada -- silenciosamente.
+  //
+  // Sem loc não há chave possível, e aí não há o que fazer nem forçado.
+  if (loc == NULL || (&__KMP_NUM_AUTO_MODE == nullptr && !__kmp_at_force))
     return 1;
 
   kmp_at_prof *prof = __kmp_at_prof_get(gtid);

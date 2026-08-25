@@ -1,4 +1,5 @@
 #include "kmp_autotuning.h"
+#include "kmp_environment.h" // __kmp_env_get / __kmp_env_free
 
 volatile int __kmp_global_auto_initialized = FALSE;
 
@@ -44,6 +45,20 @@ kmp_at_cache_ent *__kmp_at_cache = NULL;
 
 /// Ver KMP_AT_OPT em kmp_autotuning.h.
 int __kmp_at_opt = KMP_AT_OPT_ALL;
+
+/// Ver KMP_AT_FORCE em kmp_autotuning.h.
+int __kmp_at_force = FALSE;
+
+void __kmp_autotuning_env_initialize(void) {
+  // Aqui e nao em __kmp_autotuning_global_initialize: aquele so' roda na
+  // PRIMEIRA chamada de __kmp_start_autotuning, e este valor e' justamente o
+  // que decide se essa chamada acontece.
+  const char *env = __kmp_env_get("KMP_AT_FORCE");
+  if (env != NULL) {
+    __kmp_at_force = __kmp_str_match_true(env) || strtol(env, NULL, 0) != 0;
+    __kmp_env_free(&env);
+  }
+}
 
 /// Segundos por tick de KMP_NOW(). Em x86 KMP_NOW() e' o TSC e a conversao usa
 /// __kmp_ticks_per_usec; nas demais arquiteturas KMP_NOW() ja' e' nanossegundo.
@@ -322,9 +337,11 @@ extern "C" unsigned kmp_autotuning_debug_iters(ident_t *loc) {
 }
 
 void __kmp_end_autotuning(int gtid, ident_t *loc) {
-  // Mesma guarda de símbolo fraco de __kmp_start_autotuning.
-  if (&__KMP_NUM_AUTO_MODE == nullptr || loc == NULL ||
-      !TCR_4(__kmp_global_auto_initialized))
+  // Mesma guarda de símbolo fraco de __kmp_start_autotuning, com a mesma
+  // exceção para KMP_AT_FORCE: um binário do flang não define a global, e se o
+  // end saísse aqui enquanto o start não, a medição nunca fecharia.
+  if (loc == NULL || !TCR_4(__kmp_global_auto_initialized) ||
+      (&__KMP_NUM_AUTO_MODE == nullptr && !__kmp_at_force))
     return;
 
   kmp_at_prof *prof = __kmp_at_prof_get(gtid);
