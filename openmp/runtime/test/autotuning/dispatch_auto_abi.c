@@ -33,13 +33,11 @@ typedef struct ident {
 } ident_t;
 
 extern int __kmpc_global_thread_num(ident_t *);
-extern void __kmpc_dispatch_init_4(ident_t *loc, int gtid, unsigned atid,
-                                   int schedule, int lb, int ub, int st,
-                                   int chunk);
+extern void __kmpc_dispatch_init_4(ident_t *loc, int gtid, int schedule,
+                                   int lb, int ub, int st, int chunk);
 extern int __kmpc_dispatch_next_4(ident_t *loc, int gtid, int *p_last,
                                   int *p_lb, int *p_ub, int *p_st);
-extern void __kmpc_dispatch_deinit(ident_t *loc, int gtid, unsigned atid,
-                                   int schedule);
+extern void __kmpc_dispatch_deinit(ident_t *loc, int gtid);
 
 // O runtime só liga o autotuning se este símbolo estiver definido no binário
 // -- é a global fraca que o clang emite nas TUs com pelo menos um loop "auto".
@@ -96,7 +94,7 @@ static long infer_chunk(const int *who, long n) {
 static void run_once(ident_t *loc, int gtid) {
   int last, lb, ub, st;
   double acc = 0.0;
-  __kmpc_dispatch_init_4(loc, gtid, /*atid=*/1, SCHED_AUTO, 0, N - 1, 1, 1);
+  __kmpc_dispatch_init_4(loc, gtid, SCHED_AUTO, 0, N - 1, 1, 1);
   while (__kmpc_dispatch_next_4(loc, gtid, &last, &lb, &ub, &st)) {
     int tid = omp_get_thread_num();
     for (int i = lb; i <= ub; ++i) {
@@ -105,7 +103,7 @@ static void run_once(ident_t *loc, int gtid) {
       acc += work(i);
     }
   }
-  __kmpc_dispatch_deinit(loc, gtid, /*atid=*/1, SCHED_AUTO);
+  __kmpc_dispatch_deinit(loc, gtid);
   sink += acc;
 }
 

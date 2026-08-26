@@ -73,8 +73,8 @@ static inline void check_loc(ident_t *&loc) {
 
 template <typename T>
 static void __kmp_for_static_init(ident_t *loc, kmp_int32 global_tid,
-                                  kmp_uint32 atid, kmp_int32 schedtype,
-                                  kmp_int32 *plastiter, T *plower, T *pupper,
+                                  kmp_int32 schedtype, kmp_int32 *plastiter,
+                                  T *plower, T *pupper,
                                   typename traits_t<T>::signed_t *pstride,
                                   typename traits_t<T>::signed_t incr,
                                   typename traits_t<T>::signed_t chunk
@@ -851,7 +851,7 @@ static void __kmp_team_static_init(ident_t *loc, kmp_int32 gtid,
       *p_ub = traits_t<T>::max_value;
     if (*p_ub > upper)
       *p_ub = upper; // tracker C73258
-  } else {           // incr < 0
+  } else { // incr < 0
     if (*p_ub > *p_lb)
       *p_ub = traits_t<T>::min_value;
     if (*p_ub < upper)
@@ -895,13 +895,12 @@ increment and chunk size.
 
 @{
 */
-void __kmpc_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
-                              kmp_int32 schedtype, kmp_int32 *plastiter,
-                              kmp_int32 *plower, kmp_int32 *pupper,
-                              kmp_int32 *pstride, kmp_int32 incr,
-                              kmp_int32 chunk) {
-  __kmp_for_static_init<kmp_int32>(loc, gtid, atid, schedtype, plastiter,
-                                   plower, pupper, pstride, incr, chunk
+void __kmpc_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_int32 schedtype,
+                              kmp_int32 *plastiter, kmp_int32 *plower,
+                              kmp_int32 *pupper, kmp_int32 *pstride,
+                              kmp_int32 incr, kmp_int32 chunk) {
+  __kmp_for_static_init<kmp_int32>(loc, gtid, schedtype, plastiter, plower,
+                                   pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                    ,
                                    OMPT_GET_RETURN_ADDRESS(0)
@@ -912,13 +911,13 @@ void __kmpc_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
 /*!
  See @ref __kmpc_for_static_init_4
  */
-void __kmpc_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
+void __kmpc_for_static_init_4u(ident_t *loc, kmp_int32 gtid,
                                kmp_int32 schedtype, kmp_int32 *plastiter,
                                kmp_uint32 *plower, kmp_uint32 *pupper,
                                kmp_int32 *pstride, kmp_int32 incr,
                                kmp_int32 chunk) {
-  __kmp_for_static_init<kmp_uint32>(loc, gtid, atid, schedtype, plastiter,
-                                    plower, pupper, pstride, incr, chunk
+  __kmp_for_static_init<kmp_uint32>(loc, gtid, schedtype, plastiter, plower,
+                                    pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                     ,
                                     OMPT_GET_RETURN_ADDRESS(0)
@@ -929,13 +928,12 @@ void __kmpc_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
 /*!
  See @ref __kmpc_for_static_init_4
  */
-void __kmpc_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
-                              kmp_int32 schedtype, kmp_int32 *plastiter,
-                              kmp_int64 *plower, kmp_int64 *pupper,
-                              kmp_int64 *pstride, kmp_int64 incr,
-                              kmp_int64 chunk) {
-  __kmp_for_static_init<kmp_int64>(loc, gtid, atid, schedtype, plastiter,
-                                   plower, pupper, pstride, incr, chunk
+void __kmpc_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_int32 schedtype,
+                              kmp_int32 *plastiter, kmp_int64 *plower,
+                              kmp_int64 *pupper, kmp_int64 *pstride,
+                              kmp_int64 incr, kmp_int64 chunk) {
+  __kmp_for_static_init<kmp_int64>(loc, gtid, schedtype, plastiter, plower,
+                                   pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                    ,
                                    OMPT_GET_RETURN_ADDRESS(0)
@@ -946,13 +944,13 @@ void __kmpc_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
 /*!
  See @ref __kmpc_for_static_init_4
  */
-void __kmpc_for_static_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
+void __kmpc_for_static_init_8u(ident_t *loc, kmp_int32 gtid,
                                kmp_int32 schedtype, kmp_int32 *plastiter,
                                kmp_uint64 *plower, kmp_uint64 *pupper,
                                kmp_int64 *pstride, kmp_int64 incr,
                                kmp_int64 chunk) {
-  __kmp_for_static_init<kmp_uint64>(loc, gtid, atid, schedtype, plastiter,
-                                    plower, pupper, pstride, incr, chunk
+  __kmp_for_static_init<kmp_uint64>(loc, gtid, schedtype, plastiter, plower,
+                                    pupper, pstride, incr, chunk
 #if OMPT_SUPPORT && OMPT_OPTIONAL
                                     ,
                                     OMPT_GET_RETURN_ADDRESS(0)
@@ -991,7 +989,7 @@ increment and chunks for parallel loop and distribute constructs.
 
 @{
 */
-void __kmpc_dist_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
+void __kmpc_dist_for_static_init_4(ident_t *loc, kmp_int32 gtid,
                                    kmp_int32 schedule, kmp_int32 *plastiter,
                                    kmp_int32 *plower, kmp_int32 *pupper,
                                    kmp_int32 *pupperD, kmp_int32 *pstride,
@@ -1004,7 +1002,7 @@ void __kmpc_dist_for_static_init_4(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid
 /*!
  See @ref __kmpc_dist_for_static_init_4
  */
-void __kmpc_dist_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
+void __kmpc_dist_for_static_init_4u(ident_t *loc, kmp_int32 gtid,
                                     kmp_int32 schedule, kmp_int32 *plastiter,
                                     kmp_uint32 *plower, kmp_uint32 *pupper,
                                     kmp_uint32 *pupperD, kmp_int32 *pstride,
@@ -1017,7 +1015,7 @@ void __kmpc_dist_for_static_init_4u(ident_t *loc, kmp_int32 gtid, kmp_uint32 ati
 /*!
  See @ref __kmpc_dist_for_static_init_4
  */
-void __kmpc_dist_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
+void __kmpc_dist_for_static_init_8(ident_t *loc, kmp_int32 gtid,
                                    kmp_int32 schedule, kmp_int32 *plastiter,
                                    kmp_int64 *plower, kmp_int64 *pupper,
                                    kmp_int64 *pupperD, kmp_int64 *pstride,
@@ -1030,7 +1028,7 @@ void __kmpc_dist_for_static_init_8(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid
 /*!
  See @ref __kmpc_dist_for_static_init_4
  */
-void __kmpc_dist_for_static_init_8u(ident_t *loc, kmp_int32 gtid, kmp_uint32 atid,
+void __kmpc_dist_for_static_init_8u(ident_t *loc, kmp_int32 gtid,
                                     kmp_int32 schedule, kmp_int32 *plastiter,
                                     kmp_uint64 *plower, kmp_uint64 *pupper,
                                     kmp_uint64 *pupperD, kmp_int64 *pstride,

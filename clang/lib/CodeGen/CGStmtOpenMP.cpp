@@ -1226,10 +1226,10 @@ void CodeGenFunction::EmitOMPLastprivateClauseFinal(
         // Get the address of the private variable.
         Address PrivateAddr = GetAddrOfLocalVar(PrivateVD);
         if (const auto *RefTy = PrivateVD->getType()->getAs<ReferenceType>())
-          PrivateAddr =
-              Address(Builder.CreateLoad(PrivateAddr),
-                      CGM.getTypes().ConvertTypeForMem(RefTy->getPointeeType()),
-                      CGM.getNaturalTypeAlignment(RefTy->getPointeeType()));
+          PrivateAddr = Address(
+              Builder.CreateLoad(PrivateAddr),
+              CGM.getTypes().ConvertTypeForMem(RefTy->getPointeeType()),
+              CGM.getNaturalTypeAlignment(RefTy->getPointeeType()));
         // Store the last value to the private copy in the last iteration.
         if (C->getKind() == OMPC_LASTPRIVATE_conditional)
           CGM.getOpenMPRuntime().emitLastprivateConditionalFinalUpdate(
@@ -3000,10 +3000,9 @@ void CodeGenFunction::EmitOMPOuterLoop(
 
   // Tell the runtime we are done.
   auto &&CodeGen = [DynamicOrOrdered, &S, &LoopArgs](CodeGenFunction &CGF) {
-    if (!DynamicOrOrdered) {
-      CGF.CGM.getOpenMPRuntime().emitForStaticFinish(
-          CGF, S.getEndLoc(), LoopArgs.DKind, /*AutoChunkID*/ 0);
-    }
+    if (!DynamicOrOrdered)
+      CGF.CGM.getOpenMPRuntime().emitForStaticFinish(CGF, S.getEndLoc(),
+                                                     LoopArgs.DKind);
   };
   OMPCancelStack.emitExit(*this, EKind, CodeGen);
 }
@@ -3116,7 +3115,7 @@ void CodeGenFunction::EmitOMPForOuterLoop(
   EmitOMPOuterLoop(DynamicOrOrdered, IsMonotonic, S, LoopScope, OuterLoopArgs,
                    emitOMPLoopBodyWithStopPoint, CodeGenOrdered);
   if (DynamicOrOrdered) {
-    RT.emitForDispatchDeinit(*this, S.getBeginLoc(), ScheduleKind);
+    RT.emitForDispatchDeinit(*this, S.getBeginLoc());
   }
 }
 
@@ -3450,7 +3449,6 @@ bool CodeGenFunction::EmitOMPWorksharingLoop(
         ScheduleKind.M1 = C->getFirstScheduleModifier();
         ScheduleKind.M2 = C->getSecondScheduleModifier();
         ScheduleKind.Mode = C->getChunkSizeMode();
-        ScheduleKind.AtID = C->getAutoChunkID();
         ChunkExpr = C->getChunkSize();
       } else {
         // Default behaviour for schedule clause.
@@ -3547,9 +3545,9 @@ bool CodeGenFunction::EmitOMPWorksharingLoop(
             });
         EmitBlock(LoopExit.getBlock());
         // Tell the runtime we are done.
-        auto &&CodeGen = [&S, ScheduleKind](CodeGenFunction &CGF) {
-          CGF.CGM.getOpenMPRuntime().emitForStaticFinish(
-              CGF, S.getEndLoc(), OMPD_for, ScheduleKind.AtID);
+        auto &&CodeGen = [&S](CodeGenFunction &CGF) {
+          CGF.CGM.getOpenMPRuntime().emitForStaticFinish(CGF, S.getEndLoc(),
+                                                         OMPD_for);
         };
         OMPCancelStack.emitExit(*this, EKind, CodeGen);
       } else {
@@ -4003,13 +4001,11 @@ void emitOMPForDirective(const OMPLoopDirective &S, CodeGenFunction &CGF,
 
       llvm::omp::ScheduleKind SchedKind = llvm::omp::OMP_SCHEDULE_Default;
       llvm::Value *ChunkSize = nullptr;
-      unsigned AutoChunkID = 0u;
       if (auto *SchedClause = S.getSingleClause<OMPScheduleClause>()) {
         SchedKind =
             convertClauseKindToSchedKind(SchedClause->getScheduleKind());
         if (const Expr *ChunkSizeExpr = SchedClause->getChunkSize())
           ChunkSize = CGF.EmitScalarExpr(ChunkSizeExpr);
-        AutoChunkID = SchedClause->getAutoChunkID();
       }
 
       // Emit the associated statement and get its loop representation.
@@ -4025,7 +4021,7 @@ void emitOMPForDirective(const OMPLoopDirective &S, CodeGenFunction &CGF,
           CGF.Builder.getCurrentDebugLocation(), CLI, AllocaIP, NeedsBarrier,
           SchedKind, ChunkSize, /*HasSimdModifier=*/false,
           /*HasMonotonicModifier=*/false, /*HasNonmonotonicModifier=*/false,
-          /*HasOrderedClause=*/false, AutoChunkID);
+          /*HasOrderedClause=*/false);
       return;
     }
 
@@ -4189,9 +4185,9 @@ void CodeGenFunction::EmitSections(const OMPExecutableDirective &S) {
     CGF.EmitOMPInnerLoop(S, /*RequiresCleanup=*/false, Cond, Inc, BodyGen,
                          [](CodeGenFunction &) {});
     // Tell the runtime we are done.
-    auto &&CodeGen = [&S, ScheduleKind](CodeGenFunction &CGF) {
-      CGF.CGM.getOpenMPRuntime().emitForStaticFinish(
-          CGF, S.getEndLoc(), OMPD_sections, ScheduleKind.AtID);
+    auto &&CodeGen = [&S](CodeGenFunction &CGF) {
+      CGF.CGM.getOpenMPRuntime().emitForStaticFinish(CGF, S.getEndLoc(),
+                                                     OMPD_sections);
     };
     CGF.OMPCancelStack.emitExit(CGF, EKind, CodeGen);
     CGF.EmitOMPReductionClauseFinal(S, /*ReductionKind=*/OMPD_parallel);
@@ -4520,8 +4516,7 @@ void CodeGenFunction::EmitOMPParallelForDirective(
       OMPLoopScope LoopScope(CGF, S);
       return CGF.EmitScalarExpr(S.getNumIterations());
     };
-    bool IsInscan =
-        llvm::any_of(S.getClausesOfKind<OMPReductionClause>(),
+    bool IsInscan = llvm::any_of(S.getClausesOfKind<OMPReductionClause>(),
                      [](const OMPReductionClause *C) {
                        return C->getModifier() == OMPC_REDUCTION_inscan;
                      });
@@ -4555,8 +4550,7 @@ void CodeGenFunction::EmitOMPParallelForSimdDirective(
       OMPLoopScope LoopScope(CGF, S);
       return CGF.EmitScalarExpr(S.getNumIterations());
     };
-    bool IsInscan =
-        llvm::any_of(S.getClausesOfKind<OMPReductionClause>(),
+    bool IsInscan = llvm::any_of(S.getClausesOfKind<OMPReductionClause>(),
                      [](const OMPReductionClause *C) {
                        return C->getModifier() == OMPC_REDUCTION_inscan;
                      });
@@ -5904,8 +5898,7 @@ void CodeGenFunction::EmitOMPDistributeLoop(const OMPLoopDirective &S,
             });
         EmitBlock(LoopExit.getBlock());
         // Tell the runtime we are done.
-        RT.emitForStaticFinish(*this, S.getEndLoc(), OMPD_distribute,
-                               /*Auto ID*/ 0);
+        RT.emitForStaticFinish(*this, S.getEndLoc(), OMPD_distribute);
       } else {
         // Emit the outer loop, which requests its work chunk [LB..UB] from
         // runtime and runs the inner loop to process it.
@@ -7437,8 +7430,8 @@ void CodeGenFunction::EmitOMPUseDeviceAddrClause(
     // correct mapping, since the pointer to the data was passed to the runtime.
     if (isa<DeclRefExpr>(Ref->IgnoreParenImpCasts()) ||
         MatchingVD->getType()->isArrayType()) {
-      QualType PtrTy =
-          getContext().getPointerType(OrigVD->getType().getNonReferenceType());
+      QualType PtrTy = getContext().getPointerType(
+          OrigVD->getType().getNonReferenceType());
       PrivAddr =
           EmitLoadOfPointer(PrivAddr.withElementType(ConvertTypeForMem(PtrTy)),
                             PtrTy->castAs<PointerType>());

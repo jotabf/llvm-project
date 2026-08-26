@@ -17,10 +17,10 @@
 #include "kmp_i18n.h"
 #include "kmp_itt.h"
 #include "kmp_lock.h"
+#include "kmp_autotuning.h"
 #include "kmp_stats.h"
 #include "kmp_utils.h"
 #include "ompt-specific.h"
-#include "kmp_autotuning.h"
 
 #define MAX_MESSAGE 512
 
@@ -2001,8 +2001,7 @@ void __kmpc_end_single(ident_t *loc, kmp_int32 global_tid) {
 
 Mark the end of a statically scheduled loop.
 */
-void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
-                            kmp_uint32 auto_id) {
+void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid) {
   KMP_POP_PARTITIONED_TIMER();
   KE_TRACE(10, ("__kmpc_for_static_fini called T#%d\n", global_tid));
 
@@ -2033,11 +2032,16 @@ void __kmpc_for_static_fini(ident_t *loc, kmp_int32 global_tid,
   if (__kmp_env_consistency_check)
     __kmp_pop_workshare(global_tid, ct_pdo, loc);
 
-  // auto_id != 0 é só um portão barato: o clang passa 0 em todo loop que não é
-  // "auto", e assim o caminho quente do for_static_fini comum não paga a busca
-  // na tabela. A identidade do loop vem de loc, não deste id.
-  if (auto_id != 0)
-    __kmp_end_autotuning(global_tid, loc);
+  // Sem parametro dizendo se este loop e "auto": a assinatura e a de upstream.
+  // Quem responde e __kmp_end_autotuning, que procura o loc na tabela e sai
+  // sem fazer nada se nao achar. Os dois primeiros testes dele sao baratos (o
+  // simbolo fraco e __kmp_global_auto_initialized), entao um binario sem
+  // autotuning nenhum paga dois loads aqui e mais nada.
+  //
+  // Nota: schedule(static, auto) hoje calcula o chunk e o descarta -- o
+  // caminho static nao usa o valor. Esta chamada existe para manter o par
+  // start/end fechado, nao porque o static ja ajuste algo.
+  __kmp_end_autotuning(global_tid, loc);
 }
 
 // User routines which take C-style arguments (call by value)

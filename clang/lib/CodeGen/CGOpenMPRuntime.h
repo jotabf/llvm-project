@@ -952,8 +952,7 @@ public:
   /// \param CGF Reference to current CodeGenFunction.
   /// \param Loc Clang source location.
   ///
-  virtual void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc,
-                                     const OpenMPScheduleTy &ScheduleKind);
+  virtual void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc);
 
   /// Struct with the values to be passed to the static runtime function
   struct StaticRTInput {
@@ -1035,8 +1034,7 @@ public:
   /// \param DKind Kind of the directive for which the static finish is emitted.
   ///
   virtual void emitForStaticFinish(CodeGenFunction &CGF, SourceLocation Loc,
-                                   OpenMPDirectiveKind DKind,
-                                   unsigned AutoID);
+                                   OpenMPDirectiveKind DKind);
 
   /// Call __kmpc_dispatch_next(
   ///          ident_t *loc, kmp_int32 tid, kmp_int32 *p_lastiter,
@@ -1844,10 +1842,8 @@ public:
   ///
   /// \param CGF Reference to current CodeGenFunction.
   /// \param Loc Clang source location.
-  /// \param ScheduleKind Schedule kind, specified by the 'schedule' clause.
   ///
-  void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc,
-                             const OpenMPScheduleTy &ScheduleKind) override;
+  void emitForDispatchDeinit(CodeGenFunction &CGF, SourceLocation Loc) override;
 
   /// Call the appropriate runtime routine to initialize it before start
   /// of loop.
@@ -1898,8 +1894,7 @@ public:
   /// \param DKind Kind of the directive for which the static finish is emitted.
   ///
   void emitForStaticFinish(CodeGenFunction &CGF, SourceLocation Loc,
-                           OpenMPDirectiveKind DKind,
-                           unsigned AutoID) override;
+                           OpenMPDirectiveKind DKind) override;
 
   /// Call __kmpc_dispatch_next(
   ///          ident_t *loc, kmp_int32 tid, kmp_int32 *p_lastiter,

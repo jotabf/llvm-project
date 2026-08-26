@@ -34,19 +34,18 @@ typedef struct ident {
 } ident_t;
 
 extern int __kmpc_global_thread_num(ident_t *);
-extern void __kmpc_dispatch_init_4(ident_t *loc, int gtid, unsigned atid,
-                                   int schedule, int lb, int ub, int st,
-                                   int chunk);
+extern void __kmpc_dispatch_init_4(ident_t *loc, int gtid, int schedule,
+                                   int lb, int ub, int st, int chunk);
 extern int __kmpc_dispatch_next_4(ident_t *loc, int gtid, int *p_last,
                                   int *p_lb, int *p_ub, int *p_st);
-extern void __kmpc_dispatch_deinit(ident_t *loc, int gtid, unsigned atid,
-                                   int schedule);
+extern void __kmpc_dispatch_deinit(ident_t *loc, int gtid);
 
 // De proposito NAO definimos __KMP_NUM_AUTO_MODE aqui. Ver item 2 acima.
 
 #define KMP_SCH_DYNAMIC_CHUNKED 35
-// Sem bit de modo: e o que o OMPIRBuilder emite. O ultimo argumento do
-// dispatch_deinit tambem vai 0, como no codigo que o OMPIRBuilder gera.
+// Sem bit de modo: e o que o OMPIRBuilder emite. O dispatch_deinit nao tem
+// argumento de modo nenhum -- quem decide se este loop esta sendo ajustado e o
+// runtime, procurando o loc na tabela.
 #define SCHED_PLAIN KMP_SCH_DYNAMIC_CHUNKED
 
 #define N 100000
@@ -87,7 +86,7 @@ static long infer_chunk(const int *who, long n) {
 static void run_once(int gtid) {
   int last, lb, ub, st;
   double acc = 0.0;
-  __kmpc_dispatch_init_4(&loc_f, gtid, /*atid=*/0, SCHED_PLAIN, 0, N - 1, 1,
+  __kmpc_dispatch_init_4(&loc_f, gtid, SCHED_PLAIN, 0, N - 1, 1,
                          CHUNK_IN);
   while (__kmpc_dispatch_next_4(&loc_f, gtid, &last, &lb, &ub, &st)) {
     int tid = omp_get_thread_num();
@@ -97,7 +96,7 @@ static void run_once(int gtid) {
       acc += work(i);
     }
   }
-  __kmpc_dispatch_deinit(&loc_f, gtid, /*atid=*/0, /*schedule=*/0);
+  __kmpc_dispatch_deinit(&loc_f, gtid);
   sink += acc;
 }
 
