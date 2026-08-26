@@ -90,8 +90,9 @@ extern "C" void workshareloop_unsigned_auto(float *a, float *b, float *c, float 
 // CHECK-NEXT:    [[OMP_LOOP_NEXT]] = add nuw i32 [[OMP_LOOP_IV]], 1
 // CHECK-NEXT:    br label [[OMP_LOOP_HEADER:%.*]]
 // CHECK:       omp_loop.exit:
-// CHECK-NEXT:    [[OMP_GLOBAL_THREAD_NUM9:%.*]] = call i32 @__kmpc_global_thread_num(ptr @[[GLOB1]])
-// CHECK-NEXT:    call void @__kmpc_barrier(ptr @[[GLOB2:[0-9]+]], i32 [[OMP_GLOBAL_THREAD_NUM9]])
+// CHECK-NEXT:    call void @__kmpc_dispatch_deinit(ptr @[[GLOB1]], i32 [[OMP_GLOBAL_THREAD_NUM]])
+// CHECK-NEXT:    [[OMP_GLOBAL_THREAD_NUM9:%.*]] = call i32 @__kmpc_global_thread_num(ptr @[[GLOB4:[0-9]+]])
+// CHECK-NEXT:    call void @__kmpc_barrier(ptr @[[GLOB3:[0-9]+]], i32 [[OMP_GLOBAL_THREAD_NUM9]])
 // CHECK-NEXT:    br label [[OMP_LOOP_AFTER:%.*]]
 // CHECK:       omp_loop.after:
 // CHECK-NEXT:    ret void
