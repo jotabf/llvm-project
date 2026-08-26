@@ -4678,7 +4678,14 @@ OpenMPIRBuilder::InsertPointTy OpenMPIRBuilder::applyDynamicWorkshareLoop(
   if (Ordered) {
     Builder.SetInsertPoint(&Latch->back());
     FunctionCallee DynamicFini = getKmpcForDynamicFiniForType(IVTy, M, *this);
-    Builder.CreateCall(DynamicFini, {SrcLoc, ThreadNum, CAutoID});
+    // SEM o atid: __kmpc_dispatch_fini_* nunca o recebeu. A declaracao em
+    // OMPKinds.def e' (IdentPtr, Int32) e o runtime e'
+    // __kmpc_dispatch_fini_4(ident_t *, kmp_int32) -- os dois com 2
+    // parametros. Passar 3 fazia CallInst::init abortar em
+    // "Calling a function with bad signature!" a cada loop dynamic ORDERED
+    // vindo do OMPIRBuilder (flang, MLIR). Nao aparecia porque este branch
+    // nunca havia sido compilado.
+    Builder.CreateCall(DynamicFini, {SrcLoc, ThreadNum});
   }
 
   // Contraparte do "init". Upstream nunca a emitia porque
